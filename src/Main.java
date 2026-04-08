@@ -21,4 +21,6 @@ public class Main {
         String cmd = in.next().toUpperCase();
         return cmd;
     }
+
+
 }

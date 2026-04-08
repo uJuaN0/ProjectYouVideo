@@ -1,6 +1,6 @@
 package youVideo;
 
-public abstract class VideoClass {
+public abstract class VideoClass implements Video{
     private String id;
     private int duration;
     private String videoLocation;
