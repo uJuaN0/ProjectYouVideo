@@ -1,12 +1,14 @@
 package youVideo;
 
+import java.util.Locale;
+
 public class PublishableVideoClass extends VideoClass{
     private String title;
     private String publisher;
-    private String language;
+    private Locale language;
 
     public PublishableVideoClass(String id, int duration, String videoLocation,
-                                 String title, String publisher, String language){
+                                 String title, String publisher, Locale language){
         super(id, duration, videoLocation);
         this.title = title;
         this.publisher = publisher;
@@ -25,7 +27,7 @@ public class PublishableVideoClass extends VideoClass{
         return publisher;
     }
 
-    public String getLanguage(){
+    public Locale getLanguage(){
         return language;
     }
 }

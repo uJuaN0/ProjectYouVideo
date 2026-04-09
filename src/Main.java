@@ -6,10 +6,14 @@ import java.util.Scanner;
 public class Main {
 
     public final static String CMD_ADD_PUBLISHABLE = "createpublishable";
-    
-    public final static String MSG_ADD_PUBLISHABLE_LANG = "Invalid language type.";
-    public final static String MSG_ADD_DURATION = "Invalid value.";
-    public final static String MSG_ADD_ID = "Video with this ID already exists.";
+    public final static String CMD_ADD_PREMIUM =  "createpremium";
+
+    public final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
+    public final static String MSG_LANG_SUBTITLE = "Invalid language type in\n" +
+            "subtitle.";
+    public final static String MSG_LANG = "Invalid language type.";
+    public final static String MSG_DURATION = "Invalid value.";
+    public final static String MSG_ID = "Video with this ID already exists.";
     public final static String MSG_ADD_ADDED = "Video %s created successfully";
     public final static String EXIT = "EXIT";
 
@@ -23,6 +27,7 @@ public class Main {
             cmd = getCommand(in);
             switch (cmd){
                 case CMD_ADD_PUBLISHABLE -> addPublishable(in, yv);
+                case CMD_ADD_PREMIUM -> addPremium(in, yv);
             }
         } while (!cmd.equals(EXIT));
     }
@@ -43,17 +48,49 @@ public class Main {
         in.nextLine();
         String language = in.next();
         in.nextLine();
+        Locale lang = Locale.of(language);
+
         if (!isValidLanguage(language)){
-            System.out.println(MSG_ADD_PUBLISHABLE_LANG);
+            System.out.println(MSG_LANG);
         } else if (duration <= 0) {
-            System.out.println(MSG_ADD_DURATION);
-        } else if (yv.isUnique(id)) {
-            System.out.println(MSG_ADD_ID);
+            System.out.println(MSG_DURATION);
+        } else if (!yv.isUnique(id)) {
+            System.out.println(MSG_ID);
         } else {
-            yv.addPublishable(id, duration, location, title, publisher, language);
+            yv.addPublishable(id, duration, location, title, publisher, lang);
             System.out.printf(MSG_ADD_ADDED, id);
         }
+    }
 
+    private static void addPremium(Scanner in, YouVideoAppClass yv){
+        String id = in.next();
+        int duration = in.nextInt();
+        String location = in.next();
+        in.nextLine();
+        String title = in.next();
+        in.nextLine();
+        String publisher = in.next();
+        in.nextLine();
+        String language = in.next();
+        in.nextLine();
+        String subtitleLocation = in.next();
+        in.nextLine();
+        String subtitleLanguage = in.next();
+        in.nextLine();
+        Locale lang = Locale.of(language);
+
+        if (!isValidLanguage(language)){
+            System.out.println(MSG_LANG);
+        } else if (!isValidLanguage(subtitleLanguage)) {
+            System.out.println(MSG_LANG_SUBTITLE);
+        } else if (duration <= 0) {
+            System.out.println(MSG_DURATION);
+        } else if (!yv.isUnique(id)) {
+            System.out.println(MSG_ID);
+        } else {
+            yv.addPremium(id, duration, location, title, publisher, lang, subtitleLocation, lang);
+            System.out.printf(MSG_ADD_PREMIUM, id);
+        } //TODO REVER CODIGO E TESTAR
     }
 
     private static boolean isValidLanguage(String lang){

@@ -1,9 +1,22 @@
 package youVideo;
 
+import dataStructures.Array;
+import dataStructures.ArrayClass;
+
+import java.util.Locale;
+
 public class PremiumVideoClass extends PublishableVideoClass{
 
-    public PremiumVideoClass(String id, int duration, String location, String title,String publisher, String language) {
+    private Array<Subtitle> subtitles;
+
+    public PremiumVideoClass(String id, int duration, String location, String title,
+                             String publisher, Locale language, Subtitle subtitle) {
         super(id, duration, location, title, publisher, language);
-        //TODO
+        this.subtitles = new ArrayClass<>();
+        addSubtitle(subtitle);
+    }
+
+    public void addSubtitle(Subtitle subtitle){
+        subtitles.insertLast(subtitle);
     }
 }
