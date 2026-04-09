@@ -2,7 +2,6 @@ package youVideo;
 
 import dataStructures.Array;
 import dataStructures.ArrayClass;
-import dataStructures.Iterator;
 
 public class YouVideoAppClass {
     private Array<Video> videos;
@@ -11,21 +10,13 @@ public class YouVideoAppClass {
         videos = new ArrayClass<>();
     }
 
-    public void addPublisable(String id){ //É PRIVADO??
-        if (isUnique(id)){ //so main manda mensagem?
-
-        }
+    public void addPublishable(String id, int duration,
+                              String location, String title, String publisher, String language){
+        Video video = new PublishableVideoClass(id, duration, location, title, publisher, language);
+        videos.insertLast(video);
     }
 
     public boolean isUnique(String id){
-        Iterator<Video> it = videos.iterator();
-
-        while (it.hasNext()){
-            Video v = it.next();
-            if(v.getId().equals(id)){
-                return false;
-            }
-        }
-        return true;
+    return videos.searchBackward(new PublishableVideoClass(id));
     }
 }

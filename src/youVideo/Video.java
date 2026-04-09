@@ -6,4 +6,6 @@ public interface Video {
     public int getDuration();
 
     public String getVideoLocation();
+
+    public boolean equals(Object other);
 }

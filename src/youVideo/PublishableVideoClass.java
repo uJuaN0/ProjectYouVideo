@@ -13,6 +13,10 @@ public class PublishableVideoClass extends VideoClass{
         this.language = language;
     }
 
+    public PublishableVideoClass(String id){
+        super(id);
+    }
+
     public String getTitle(){
         return title;
     }

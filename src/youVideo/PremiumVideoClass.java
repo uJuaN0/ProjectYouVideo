@@ -2,8 +2,8 @@ package youVideo;
 
 public class PremiumVideoClass extends PublishableVideoClass{
 
-    public PremiumVideoClass(String title, int duration, String publisher, String language, String subtitles) {
-        super(title, duration, publisher, language);
+    public PremiumVideoClass(String id, int duration, String location, String title,String publisher, String language) {
+        super(id, duration, location, title, publisher, language);
         //TODO
     }
 }

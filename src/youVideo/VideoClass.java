@@ -11,6 +11,10 @@ public abstract class VideoClass implements Video{
         this.videoLocation = videoLocation;
     }
 
+    public VideoClass(String id){
+        this.id = id;
+    }
+
     public String getId(){
         return id;
     }
@@ -21,5 +25,17 @@ public abstract class VideoClass implements Video{
 
     public String getVideoLocation(){
         return videoLocation;
+    }
+
+    public boolean equals(Object other){
+        if (this==other)
+            return true;
+        if (other==null)
+            return false;
+        if (!(other instanceof Video))
+            return false;
+        if (id==null)
+            return false;
+        return id.equals(((Video)other).getId());
     }
 }
