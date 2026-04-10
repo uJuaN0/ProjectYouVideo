@@ -9,12 +9,11 @@ public class Main {
     public final static String CMD_ADD_PREMIUM =  "createpremium";
 
     public final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
-    public final static String MSG_LANG_SUBTITLE = "Invalid language type in\n" +
-            "subtitle.";
+    public final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
     public final static String MSG_LANG = "Invalid language type.";
     public final static String MSG_DURATION = "Invalid value.";
     public final static String MSG_ID = "Video with this ID already exists.";
-    public final static String MSG_ADD_ADDED = "Video %s created successfully";
+    public final static String MSG_ADD_ADDED = "Video %s created successfully.\n";
     public final static String EXIT = "EXIT";
 
     public static void main(String[] args){
@@ -91,6 +90,7 @@ public class Main {
             yv.addPremium(id, duration, location, title, publisher, lang, subtitleLocation, lang);
             System.out.printf(MSG_ADD_PREMIUM, id);
         } //TODO REVER CODIGO E TESTAR
+        //TODO TESTE ISUNIQUE METHOD
     }
 
     private static boolean isValidLanguage(String lang){

@@ -6,7 +6,7 @@ import dataStructures.ArrayClass;
 import java.util.Locale;
 
 public class PremiumVideoClass extends PublishableVideoClass{
-
+//TODO ADD STRING WITH TYPE
     private Array<Subtitle> subtitles;
 
     public PremiumVideoClass(String id, int duration, String location, String title,
