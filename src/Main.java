@@ -66,6 +66,7 @@ public class Main {
         String location = in.next();
         in.nextLine();
         String language = in.next();
+        Locale lang = Locale.of(language);
         
         if (!yv.isValidLanguage(language)){
             System.out.println(TODO);

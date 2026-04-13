@@ -17,9 +17,9 @@ public class YouVideoAppClass {
         return v instanceof PremiumVideoClass;
     }
 
-    public void addSubtitle(String id){
+    public void addSubtitle(String sublocation, Locale lang){
         Video v = getVideo(id);
-
+        Subtitle subt = new SubtitleClass(sublocation, sublanguage)
     }
 
     public Video getVideo(String id){
