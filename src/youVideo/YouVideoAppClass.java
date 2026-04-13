@@ -12,14 +12,35 @@ public class YouVideoAppClass {
         videos = new ArrayClass<>();
     }
 
+    public String getVideoInfo(String id) {
+        Video v = getVideo(id);
+        String prefix = "";
+        PublishableVideoClass pv = (PublishableVideoClass) v;
+        if (v instanceof PremiumVideoClass){
+            prefix = "PREMIUM";
+        }
+        return String.format(
+                "%s Video %s %d Title: %s%n" +
+                        "File: %s Publisher: %s Language: %s",
+                prefix,
+                pv.getId(),
+                pv.getDuration(),
+                pv.getTitle(),
+                pv.getVideoLocation(),
+                pv.getPublisher(),
+                pv.getLanguage().getLanguage().toUpperCase() //TODO RETURN IN ENGLISH
+        );
+    }
+
     public boolean isPremium(String id){
         Video v = getVideo(id);
         return v instanceof PremiumVideoClass;
     }
 
-    public void addSubtitle(String sublocation, Locale lang){
+    public void addSubtitle(String sublocation, Locale lang, String id){
         Video v = getVideo(id);
-        Subtitle subt = new SubtitleClass(sublocation, sublanguage)
+        Subtitle subt = new SubtitleClass(lang, sublocation);
+        ((PremiumVideoClass)v).addSubtitle(subt);
     }
 
     public Video getVideo(String id){

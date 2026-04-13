@@ -7,6 +7,8 @@ public class Main {
 
     public final static String CMD_ADD_PUBLISHABLE = "createpublishable";
     public final static String CMD_ADD_PREMIUM =  "createpremium";
+    public final static String CMD_ADD_SUBTITLE = "addsubtitle";
+    public final static String CMD_GET_VIDEO = "getvideo";
 
     public final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
     public final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
@@ -27,6 +29,8 @@ public class Main {
             switch (cmd){
                 case CMD_ADD_PUBLISHABLE -> addPublishable(in, yv);
                 case CMD_ADD_PREMIUM -> addPremium(in, yv);
+                case CMD_ADD_SUBTITLE -> addSubtitle(in, yv);
+                case CMD_GET_VIDEO -> getVideo(in, yv);
             }
         } while (!cmd.equals(EXIT));
     }
@@ -69,13 +73,14 @@ public class Main {
         Locale lang = Locale.of(language);
         
         if (!yv.isValidLanguage(language)){
-            System.out.println(TODO);
+            System.out.println("Invalid language type in subtitle.");
         } else if (yv.isUnique(id)) {
             System.out.println("Videos not exist.");
         } else if (!yv.isPremium(id)) {
-            System.out.println("(This operation requires a Premium video.");
+            System.out.println("This operation requires a Premium video.");
         } else {
-
+            yv.addSubtitle(location,lang, id);
+            System.out.println("Subtitle added successfully.");
         }
     }
     private static void addPremium(Scanner in, YouVideoAppClass yv){
@@ -109,4 +114,12 @@ public class Main {
         }
     }
 
+    private static void getVideo(Scanner in, YouVideoAppClass yv){
+        String id = in.next();
+        if (yv.isUnique(id)){
+            System.out.println("Publishable Video videoId does not exist.");
+        } else {
+            System.out.println(yv.getVideoInfo(id));
+        }
+    }
 }

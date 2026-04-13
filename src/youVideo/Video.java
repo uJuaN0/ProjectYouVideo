@@ -8,4 +8,5 @@ public interface Video {
     public String getVideoLocation();
 
     public boolean equals(Object other);
+
 }
