@@ -12,6 +12,22 @@ public class YouVideoAppClass {
         videos = new ArrayClass<>();
     }
 
+    public boolean isPremium(String id){
+        Video v = getVideo(id);
+        return v instanceof PremiumVideoClass;
+    }
+
+    public void addSubtitle(String id){
+        Video v = getVideo(id);
+
+    }
+
+    public Video getVideo(String id){
+        Video v = new PublishableVideoClass(id);
+        int position = videos.searchIndexOf(v);
+        return videos.get(position);
+    }
+
     public void addPublishable(String id, int duration,
                               String location, String title, String publisher, Locale language){
         Video video = new PublishableVideoClass(id, duration, location, title, publisher, language);
@@ -31,5 +47,21 @@ public class YouVideoAppClass {
 
     public boolean isUnique(String id){
     return (!videos.searchBackward(new PublishableVideoClass(id)));
+    }
+
+    public static boolean isValidLanguage(String lang){
+        if (lang.length() != 2 || lang == null){
+            return false;
+        }
+
+        lang = lang.toLowerCase();
+        String languages[] = Locale.getISOLanguages();
+
+        for (int i = 0; i<languages.length; i++){
+            if (languages[i].equals(lang)){
+                return true;
+            }
+        }
+        return false;
     }
 }

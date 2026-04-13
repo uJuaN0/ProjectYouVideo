@@ -49,7 +49,7 @@ public class Main {
         in.nextLine();
         Locale lang = Locale.of(language);
 
-        if (!isValidLanguage(language)){
+        if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG);
         } else if (duration <= 0) {
             System.out.println(MSG_DURATION);
@@ -61,6 +61,22 @@ public class Main {
         }
     }
 
+    private static void addSubtitle(Scanner in, YouVideoAppClass yv){
+        String id = in.next();
+        String location = in.next();
+        in.nextLine();
+        String language = in.next();
+        
+        if (!yv.isValidLanguage(language)){
+            System.out.println(TODO);
+        } else if (yv.isUnique(id)) {
+            System.out.println("Videos not exist.");
+        } else if (!yv.isPremium(id)) {
+            System.out.println("(This operation requires a Premium video.");
+        } else {
+
+        }
+    }
     private static void addPremium(Scanner in, YouVideoAppClass yv){
         String id = in.next();
         int duration = in.nextInt();
@@ -78,9 +94,9 @@ public class Main {
         in.nextLine();
         Locale lang = Locale.of(language);
 
-        if (!isValidLanguage(language)){
+        if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG);
-        } else if (!isValidLanguage(subtitleLanguage)) {
+        } else if (!yv.isValidLanguage(subtitleLanguage)) {
             System.out.println(MSG_LANG_SUBTITLE);
         } else if (duration <= 0) {
             System.out.println(MSG_DURATION);
@@ -89,24 +105,7 @@ public class Main {
         } else {
             yv.addPremium(id, duration, location, title, publisher, lang, subtitleLocation, lang);
             System.out.printf(MSG_ADD_PREMIUM, id);
-        } //TODO REVER CODIGO E TESTAR
-        //TODO TESTE ISUNIQUE METHOD
-    }
-
-    private static boolean isValidLanguage(String lang){
-        if (lang.length() != 2 || lang == null){
-            return false;
         }
-
-        lang = lang.toLowerCase();
-        String languages[] = Locale.getISOLanguages();
-
-        for (int i = 0; i<languages.length; i++){
-            if (languages[i].equals(lang)){
-                return true;
-            }
-        }
-        return false;
     }
 
 }
