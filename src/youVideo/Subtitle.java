@@ -2,8 +2,13 @@ package youVideo;
 
 import java.util.Locale;
 
-public interface Subtitle {
-    public Locale getLanguage();
+public record Subtitle(Locale language, String location) {
 
-    public String getLocation();
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public String getLocation() {
+        return location;
+    }
 }

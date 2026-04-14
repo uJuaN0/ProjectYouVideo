@@ -7,9 +7,29 @@ import java.util.Locale;
 
 public class YouVideoAppClass {
     private Array<Video> videos;
+    private Array<Podcast> podcasts;
 
     public YouVideoAppClass() {
         videos = new ArrayClass<>();
+        podcasts = new ArrayClass<>();
+    }
+
+    public String getSubtitlesInfo(String id){
+        Video v = getVideo(id);
+        PremiumVideoClass pv = (PremiumVideoClass) v;
+
+        String result = "Subtitles for video " + pv.getTitle() + ":\n";
+
+        for (int i=0; i<pv.getSubtitles().size();i++){
+            Subtitle s = pv.getSubtitles().get(i);
+            result += "- " + s.getLocation() + " (" + s.getLanguage().getDisplayLanguage().toUpperCase() + ")";
+
+            if (i < pv.getSubtitles().size() - 1){
+                result += "\n";
+            }
+        }
+
+        return result;
     }
 
     public String getVideoInfo(String id) {
@@ -39,14 +59,21 @@ public class YouVideoAppClass {
 
     public void addSubtitle(String sublocation, Locale lang, String id){
         Video v = getVideo(id);
-        Subtitle subt = new SubtitleClass(lang, sublocation);
+        Subtitle subt = new Subtitle(lang, sublocation);
         ((PremiumVideoClass)v).addSubtitle(subt);
     }
+
+
 
     public Video getVideo(String id){
         Video v = new PublishableVideoClass(id);
         int position = videos.searchIndexOf(v);
         return videos.get(position);
+    }
+
+    public void addPodcast(String title, String author, Locale language){
+        Podcast podc = new PodcastClass(title, author, language);
+        podcasts.insertLast(podc);
     }
 
     public void addPublishable(String id, int duration,
@@ -58,7 +85,7 @@ public class YouVideoAppClass {
     public void addPremium(String id, int duration, String location, String title, String publisher,
                            Locale language, String sublocation, Locale sublanguage){
 
-        Subtitle subtitle = new SubtitleClass(sublanguage, sublocation);
+        Subtitle subtitle = new Subtitle(sublanguage, sublocation);
 
         Video video = new PremiumVideoClass(id, duration, location, title,
                 publisher, language, subtitle);
@@ -68,6 +95,10 @@ public class YouVideoAppClass {
 
     public boolean isUnique(String id){
     return (!videos.searchBackward(new PublishableVideoClass(id)));
+    }
+
+    public boolean isUniquePodcast(String title){
+        return (!podcasts.searchBackward(new PodcastClass(title)));
     }
 
     public static boolean isValidLanguage(String lang){

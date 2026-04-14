@@ -18,4 +18,8 @@ public class PremiumVideoClass extends PublishableVideoClass{
     public void addSubtitle(Subtitle subtitle){
         subtitles.insertLast(subtitle);
     }
+
+    public Array<Subtitle> getSubtitles(){
+        return subtitles;
+    }
 }
