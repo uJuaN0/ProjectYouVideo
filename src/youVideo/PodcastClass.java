@@ -6,7 +6,7 @@ import dataStructures.ArrayClass;
 import java.util.Locale;
 
 public class PodcastClass implements Podcast{
-    private Array<EpisodeClass> episodes;
+    private Array<Episode> episodes;
     private String title;
     private String author;
     private Locale language;
@@ -32,6 +32,28 @@ public class PodcastClass implements Podcast{
 
     public Locale getLanguage(){
         return language;
+    }
+
+    public Array<Episode> getEpisode(){
+        return episodes;
+    }
+
+    public void addEpisode(Episode e){
+        episodes.insertAt(e,0);
+    }
+
+    public boolean isNewerEpisode(String date){
+        if (episodes==null){
+            return true;
+        }
+        return date.compareTo(episodes.get(0).getReleaseDate()) >= 0;
+    }
+
+    public boolean isUnique(String id){
+        if (episodes == null){
+            return true;
+        }
+        return (!episodes.searchBackward(new EpisodeClass(id)));
     }
 
     public boolean equals(Object other){

@@ -1,5 +1,7 @@
 package youVideo;
 
+import dataStructures.Array;
+
 import java.util.Locale;
 
 public interface Podcast {
@@ -10,4 +12,12 @@ public interface Podcast {
     public Locale getLanguage();
 
     public boolean equals(Object other);
+
+    public Array<Episode> getEpisode();
+
+    public void addEpisode(Episode e);
+
+    public boolean isNewerEpisode(String date);
+
+    public boolean isUnique(String id);
 }

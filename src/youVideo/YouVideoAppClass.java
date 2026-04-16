@@ -71,6 +71,12 @@ public class YouVideoAppClass {
         return videos.get(position);
     }
 
+    public Podcast getPodcast(String title){
+        Podcast p = new PodcastClass(title);
+        int position = podcasts.searchIndexOf(p);
+        return podcasts.get(position);
+    }
+
     public void addPodcast(String title, String author, Locale language){
         Podcast podc = new PodcastClass(title, author, language);
         podcasts.insertLast(podc);
@@ -93,6 +99,23 @@ public class YouVideoAppClass {
         videos.insertLast(video);
     }
 
+    public void addEpisode(String title, String id, int duration, String location, String date){
+        Episode e = new EpisodeClass(id, duration, location, date);
+        Podcast p = getPodcast(title);
+        p.addEpisode(e);
+    }
+
+
+    public boolean isNewer(String title, String date){
+        Podcast p = new PodcastClass(title);
+        return p.isNewerEpisode(date);
+    }
+
+    public boolean isUniqueEpisode(String title, String id){
+        Podcast p = new PodcastClass(title);
+        return p.isUnique(id);
+    }
+
     public boolean isUnique(String id){
     return (!videos.searchBackward(new PublishableVideoClass(id)));
     }
@@ -101,7 +124,7 @@ public class YouVideoAppClass {
         return (!podcasts.searchBackward(new PodcastClass(title)));
     }
 
-    public static boolean isValidLanguage(String lang){
+    public boolean isValidLanguage(String lang){
         if (lang.length() != 2 || lang == null){
             return false;
         }
