@@ -1,5 +1,7 @@
 package youVideo;
 
+import dataStructures.Array;
+
 import java.util.Locale;
 
 public interface Podcast {
@@ -18,4 +20,8 @@ public interface Podcast {
     public void addEpisode(Episode e);
 
     public String getLastestDate();
+
+    public boolean hasEpisodes();
+
+    public Array<Episode> getEpisodes();
 }

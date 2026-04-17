@@ -2,33 +2,50 @@ package youVideo;
 
 import dataStructures.Array;
 import dataStructures.ArrayClass;
+import dataStructures.Iterator;
 
 import java.util.Locale;
 
 public class YouVideoAppClass {
     private Array<Video> videos;
     private Array<Podcast> podcasts;
+    private Array<Show> shows;
 
     public YouVideoAppClass() {
         videos = new ArrayClass<>();
         podcasts = new ArrayClass<>();
+        shows = new ArrayClass<>();
     }
 
     public String getSubtitlesInfo(String id){
         Video v = getVideo(id);
         PremiumVideoClass pv = (PremiumVideoClass) v;
 
-        String result = "Subtitles for video " + pv.getTitle() + ":\n";
+        String result = "Subtitles for video " + pv.getTitle() + ":";
 
-        for (int i=0; i<pv.getSubtitles().size();i++){
-            Subtitle s = pv.getSubtitles().get(i);
-            result += "- " + s.getLocation() + " (" + s.getLanguage().getDisplayLanguage().toUpperCase() + ")";
+        Iterator<Subtitle> it = pv.getSubtitles().iterator();
 
-            if (i < pv.getSubtitles().size() - 1){
-                result += "\n";
-            }
+        while (it.hasNext()){
+            Subtitle s = it.next();
+            result += "\n- " + s.getLocation() + " (" +
+                    s.getLanguage().getDisplayLanguage().toUpperCase() + ")";
         }
 
+        return result;
+    }
+
+    public String getEpisodes(String title){
+        Podcast p = getPodcast(title);
+
+        String result = "Episodes for podcast " + p.getTitle() + "\n";
+
+        Iterator<Episode> it = p.getEpisodes().iterator();
+        
+        while (it.hasNext()){
+            Episode e = it.next();
+            result += "Episode " + e.getId() + ": " + e.getDuration()
+                    + " min Date: " + e.getDate() + "\n" + "URL: " + e.getVideoLocation() + "\n";
+        }
         return result;
     }
 
@@ -43,7 +60,7 @@ public class YouVideoAppClass {
                 p.getLastestDate()
         );
     }
-
+//todo arrumar isto
     public String getVideoInfo(String id) {
         Video v = getVideo(id);
         String prefix = "";
@@ -67,6 +84,12 @@ public class YouVideoAppClass {
     public boolean isPremium(String id){
         Video v = getVideo(id);
         return v instanceof PremiumVideoClass;
+    }
+
+    public void removePodcast(String title){
+        Podcast p = getPodcast(title);
+        int index = podcasts.searchIndexOf(p);
+        podcasts.removeAt(index);
     }
 
     public void addSubtitle(String sublocation, Locale lang, String id){
@@ -93,6 +116,11 @@ public class YouVideoAppClass {
         p.addEpisode(e);
     }
 
+    public boolean hasEpisodesPodcast(String title){
+        Podcast p = getPodcast(title);
+        return p.hasEpisodes();
+    }
+
     public void addPodcast(String title, String author, Locale language){
         Podcast podc = new PodcastClass(title, author, language);
         podcasts.insertLast(podc);
@@ -115,7 +143,7 @@ public class YouVideoAppClass {
         videos.insertLast(video);
     }
 
-    public boolean isUnique(String id){
+    public boolean isUniqueVideo(String id){
     return (!videos.searchBackward(new PublishableVideoClass(id)));
     }
 
@@ -147,5 +175,36 @@ public class YouVideoAppClass {
             }
         }
         return false;
+    }
+
+    public boolean isUniqueShow(String title) {
+        return (!shows.searchBackward(new ShowClass(title)));
+    }
+
+    public Show getShow(String title) {
+        Show s = new ShowClass(title);
+        int pos = shows.searchIndexOf(s);
+        return shows.get(pos);
+    }
+
+    public void createShow(String author, String videoId, String transmissionDate) {
+        Show s = new ShowClass(videoId, author, transmissionDate);
+        shows.insertLast(s);
+    }
+
+    public String getShowDate(String title) {
+        Show s = getShow((title));
+        return s.getDate();
+    }
+
+    public String getShowAuthor(String title) {
+        Show s = getShow(title);
+        return s.getAuthor();
+    }
+
+    public void removeShow(String title) {
+        Show s = getShow(title);
+        int pos = shows.searchIndexOf(s);
+        shows.removeAt(pos);
     }
 }

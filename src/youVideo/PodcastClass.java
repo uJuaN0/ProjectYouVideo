@@ -53,6 +53,10 @@ public class PodcastClass implements Podcast{
         }
     }
 
+    public boolean hasEpisodes(){
+        return (episodes.size()>0);
+    }
+
     public void addEpisode(Episode e){
         episodes.insertAt(e, 0);
     }
@@ -71,5 +75,9 @@ public class PodcastClass implements Podcast{
         if (title==null)
             return false;
         return title.equals(((Podcast)other).getTitle());
+    }
+
+    public Array<Episode> getEpisodes(){
+        return episodes;
     }
 }
