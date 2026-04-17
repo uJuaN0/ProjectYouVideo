@@ -12,6 +12,7 @@ public class Main {
     public final static String CMD_GET_VIDEO = "getvideo";
     public final static String CMD_GET_SUBTITLES = "subtitles";
     public final static String CMD_CREATE_PODCAST = "createpodcast";
+    public final static String CMD_ADD_EPISODE = "addepisode";
 
     public final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
     public final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
@@ -19,9 +20,13 @@ public class Main {
     public final static String MSG_DURATION = "Invalid value.";
     public final static String MSG_ID = "Video with this ID already exists.";
     public final static String MSG_ADD_ADDED = "Video %s created successfully.\n";
+    public final static String MSG_EPISODE_NO_PODCAST = "Podcast does not exist.";
+    public final static String MSG_EPISODE_EXISTS = "Episode ID already exists in the system.";
     public final static String MSG_SUB_NOT_FOUND = "No Premium Video with ID.";
     public final static String MSG_PODCAST_EXISTS = "Podcast with this title already exists.";
     public final static String MSG_PODCAST_CREATED = "Podcast created successfully.";
+    public final static String MSG_PODCAST_NEWER = "Episode date must be >= than latest episode date.";
+    public final static String MSG_EPISODE_ADDED = "Episode added successfully.";
     public final static String EXIT = "EXIT";
 
     public static void main(String[] args){
@@ -40,6 +45,7 @@ public class Main {
                 case CMD_GET_VIDEO -> getVideo(in, yv);
                 case CMD_GET_SUBTITLES -> getSubtitles(in, yv);
                 case CMD_CREATE_PODCAST -> addPodcast(in, yv);
+                case CMD_ADD_EPISODE -> addEpisode(in, yv);
             }
         } while (!cmd.equals(EXIT));
     }
@@ -49,19 +55,40 @@ public class Main {
         return cmd;
     }
 
+    private static void addEpisode(Scanner in, YouVideoAppClass yv){
+        String title = in.nextLine().trim();
+        String id = in.next();
+        int duration = in.nextInt();
+        String location = in.nextLine().trim();
+        String date = in.nextLine();
+
+        if (duration <= 0){
+            System.out.println(MSG_DURATION);
+        } else if (yv.isUniquePodcast(title)) {
+            System.out.println(MSG_EPISODE_NO_PODCAST);
+        } else if (!yv.isUniqueEpisode(title, id)) {
+            System.out.println(MSG_EPISODE_EXISTS);
+        } else if (!yv.isNewer(title, date)){
+            System.out.println(MSG_PODCAST_NEWER);
+        } else {
+            yv.addEpisode(title, id, duration, location, date);
+            System.out.println(MSG_EPISODE_ADDED);
+        }
+    }
+
     private static void addPodcast(Scanner in, YouVideoAppClass yv){
-        String title = in.next();
-        in.nextLine();
-        String author = in.next();
-        in.nextLine();
+
+        String title = in.nextLine().trim();
+        String author = in.nextLine();
         String language = in.next();
         in.nextLine();
-        Locale lang = Locale.of(language);
+
         if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG);
         } else if (!yv.isUniquePodcast(title)) {
             System.out.println(MSG_PODCAST_EXISTS);
         } else {
+            Locale lang = Locale.of(language.toLowerCase());
             yv.addPodcast(title, author, lang);
             System.out.println(MSG_PODCAST_CREATED);
         }

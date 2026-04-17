@@ -10,4 +10,10 @@ public interface Podcast {
     public Locale getLanguage();
 
     public boolean equals(Object other);
+
+    public boolean isUnique(String id);
+
+    public boolean isNewer(String date);
+
+    public void addEpisode(Episode e);
 }

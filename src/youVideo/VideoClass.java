@@ -27,6 +27,7 @@ public abstract class VideoClass implements Video{
         return videoLocation;
     }
 
+
     public boolean equals(Object other){
         if (this==other)
             return true;
