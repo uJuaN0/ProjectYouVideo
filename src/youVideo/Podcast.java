@@ -16,4 +16,6 @@ public interface Podcast {
     public boolean isNewer(String date);
 
     public void addEpisode(Episode e);
+
+    public String getLastestDate();
 }

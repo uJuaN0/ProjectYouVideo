@@ -32,6 +32,18 @@ public class YouVideoAppClass {
         return result;
     }
 
+    public String getPodcastInfo(String title){
+        Podcast p = getPodcast(title);
+        return String.format(
+                "Podcast: %s Author: %s Language: %s%n" +
+                        "Latest episode date: %s",
+                p.getTitle(),
+                p.getAuthor(),
+                p.getLanguage().getDisplayLanguage(),
+                p.getLastestDate()
+        );
+    }
+
     public String getVideoInfo(String id) {
         Video v = getVideo(id);
         String prefix = "";

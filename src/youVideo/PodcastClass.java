@@ -23,7 +23,6 @@ public class PodcastClass implements Podcast{
         this.episodes = new ArrayClass<>();
     }
 
-
     public String getTitle(){
         return title;
     }
@@ -56,6 +55,10 @@ public class PodcastClass implements Podcast{
 
     public void addEpisode(Episode e){
         episodes.insertAt(e, 0);
+    }
+
+    public String getLastestDate(){
+        return episodes.get(0).getDate();
     }
 
     public boolean equals(Object other){

@@ -13,6 +13,7 @@ public class Main {
     public final static String CMD_GET_SUBTITLES = "subtitles";
     public final static String CMD_CREATE_PODCAST = "createpodcast";
     public final static String CMD_ADD_EPISODE = "addepisode";
+    public final static String CMD_GET_PODCAST = "getpodcast";
 
     public final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
     public final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
@@ -46,6 +47,7 @@ public class Main {
                 case CMD_GET_SUBTITLES -> getSubtitles(in, yv);
                 case CMD_CREATE_PODCAST -> addPodcast(in, yv);
                 case CMD_ADD_EPISODE -> addEpisode(in, yv);
+                case CMD_GET_PODCAST -> getPodcast(in, yv);
             }
         } while (!cmd.equals(EXIT));
     }
@@ -53,6 +55,11 @@ public class Main {
     private static String getCommand(Scanner in){
         String cmd = in.next().toLowerCase();
         return cmd;
+    }
+
+    private static void getPodcast(Scanner in, YouVideoAppClass yv){
+        String title = in.nextLine().trim();
+        System.out.println(yv.getPodcastInfo(title));
     }
 
     private static void addEpisode(Scanner in, YouVideoAppClass yv){
