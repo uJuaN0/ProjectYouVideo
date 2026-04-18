@@ -181,8 +181,8 @@ public class YouVideoAppClass {
         return (!shows.searchBackward(new ShowClass(title)));
     }
 
-    public Show getShow(String title) {
-        Show s = new ShowClass(title);
+    public Show getShow(String videoId) {
+        Show s = new ShowClass(videoId);
         int pos = shows.searchIndexOf(s);
         return shows.get(pos);
     }
