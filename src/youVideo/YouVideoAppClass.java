@@ -16,7 +16,7 @@ public class YouVideoAppClass {
         podcasts = new ArrayClass<>();
         shows = new ArrayClass<>();
     }
-
+    //todo arrumar isto
     public String getSubtitlesInfo(String id){
         Video v = getVideo(id);
         PremiumVideoClass pv = (PremiumVideoClass) v;
@@ -33,14 +33,14 @@ public class YouVideoAppClass {
 
         return result;
     }
-
+    //todo arrumar isto
     public String getEpisodes(String title){
         Podcast p = getPodcast(title);
 
         String result = "Episodes for podcast " + p.getTitle() + "\n";
 
         Iterator<Episode> it = p.getEpisodes().iterator();
-        
+
         while (it.hasNext()){
             Episode e = it.next();
             result += "Episode " + e.getId() + ": " + e.getDuration()
@@ -48,7 +48,7 @@ public class YouVideoAppClass {
         }
         return result;
     }
-
+    //todo arrumar isto
     public String getPodcastInfo(String title){
         Podcast p = getPodcast(title);
         return String.format(
@@ -60,7 +60,7 @@ public class YouVideoAppClass {
                 p.getLastestDate()
         );
     }
-//todo arrumar isto
+    //todo arrumar isto
     public String getVideoInfo(String id) {
         Video v = getVideo(id);
         String prefix = "";
@@ -127,7 +127,7 @@ public class YouVideoAppClass {
     }
 
     public void addPublishable(String id, int duration,
-                              String location, String title, String publisher, Locale language){
+                               String location, String title, String publisher, Locale language){
         Video video = new PublishableVideoClass(id, duration, location, title, publisher, language);
         videos.insertLast(video);
     }
@@ -144,7 +144,7 @@ public class YouVideoAppClass {
     }
 
     public boolean isUniqueVideo(String id){
-    return (!videos.searchBackward(new PublishableVideoClass(id)));
+        return (!videos.searchBackward(new PublishableVideoClass(id)));
     }
 
     public boolean isUniquePodcast(String title){
@@ -206,5 +206,11 @@ public class YouVideoAppClass {
         Show s = getShow(title);
         int pos = shows.searchIndexOf(s);
         shows.removeAt(pos);
+    }
+
+    public void removeVideo(String videoId) {
+        Video v = getVideo(videoId);
+        int pos = videos.searchIndexOf(v);
+        videos.removeAt(pos);
     }
 }

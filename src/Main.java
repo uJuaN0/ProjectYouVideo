@@ -18,6 +18,9 @@ public class Main {
     private static final String CMD_GET_SHOW = "getshow";
     private static final String CMD_REMOVE_PODCAST = "removepodcast";
     private static final String CMD_REMOVE_SHOW = "removeshow";
+    private static final String CMD_AUTHOR_PODCAST = "authorpodcasts";
+    private static final String CMD_REMOVE_VIDEO = "removevideo";
+    private static final String CMD_HELP = "help";
 
     private final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
     private final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
@@ -28,7 +31,7 @@ public class Main {
     private final static String MSG_ADD_ADDED = "Video %s created successfully.\n";
     private final static String MSG_NO_EPISODES_PODCAST = "No episodes available for this podcast.";
     private final static String MSG_NO_PODCAST = "Podcast does not exist.";
-    private final static String MSG_VIDEO_NOT_EXISTS = "Videos not exist.";
+    private final static String MSG_VIDEO_NOT_EXISTS = "Video does not exist.";
     private final static String MSG_EPISODE_EXISTS = "Episode ID already exists in the system.";
     private final static String MSG_REQUIRES_PREMIUM = "This operation requires a Premium video.";
     private final static String MSG_SUB_NOT_FOUND = "No Premium Video with ID.";
@@ -46,6 +49,27 @@ public class Main {
     private static final String MSG_GET_SHOW_PT2 = "Video: %s\n";
     private static final String MSG_EXIT = "Bye!";
     private static final String MSG_SHOW_REMOVED = "Show removed successfully.";
+    private static final String MSG_UNKNOWN_COMMAND = "Unknown command. Type help to see available commands.";
+    private static final String MSG_VIDEO_IS_EPISODE = "Cannot remove: video is an episode of a podcast.";
+    private static final String MSG_VIDEO_IS_SHOW = "Cannot remove: video is used in a show.";
+    private static final String MSG_VIDEO_REMOVED = "Video removed successfully";
+    private static final String HELP_INFO = "createpublishable - creates a new publishable video\n" +
+            "createpremium - creates a new publishable Premium video\n" +
+            "addsubtitle - adds subtitle to Premium video\n" +
+            "getvideo - presents publishable video data from its id\n" +
+            "subtitles - Lists Premium video subtitles\n" +
+            "createpodcast - creates a new podcast with no episodes\n" +
+            "addepisode - adds an episode to a podcast\n" +
+            "getpodcast - presents podcast data from its title\n" +
+            "episodes - List podcast episodes\n" +
+            "authorpodcasts - List all podcasts of an author\n" +
+            "removepodcast - removes a podcast\n" +
+            "createshow - creates show using an existing publishable video\n" +
+            "getshow - presents show data from its title\n" +
+            "removeshow - removes a show\n" +
+            "removevideo - removes a publishable video\n" +
+            "help - shows the available commands\n" +
+            "exit - terminates the execution of the program";
     private final static String EXIT = "exit";
 
     public static void main(String[] args){
@@ -66,19 +90,47 @@ public class Main {
                 case CMD_CREATE_PODCAST -> addPodcast(in, yv);
                 case CMD_ADD_EPISODE -> addEpisode(in, yv);
                 case CMD_GET_PODCAST -> getPodcast(in, yv);
-                case CMD_CREATE_SHOW -> createShow(in, yv);// todo testar
                 case CMD_EPISODES -> getEpisodeInfo(in, yv);
-                case CMD_GET_SHOW -> getShow(in, yv);
+                case CMD_AUTHOR_PODCAST -> getAuthorPodcasts(in, yv); // todo
                 case CMD_REMOVE_PODCAST -> removePodcast(in, yv);
-                case CMD_REMOVE_SHOW -> removeShow(in, yv);
+                case CMD_CREATE_SHOW -> createShow(in, yv);// todo testar
+                case CMD_GET_SHOW -> getShow(in, yv); // todo testar
+                case CMD_REMOVE_SHOW -> removeShow(in, yv); // todo testar
+                case CMD_REMOVE_VIDEO -> removeVideo(in, yv); // todo ver se é episode e testar
+                case CMD_HELP -> help();
                 case EXIT -> System.out.println(MSG_EXIT);
+                default -> System.out.println(MSG_UNKNOWN_COMMAND);
             }
         } while (!cmd.equals(EXIT));
     }
 
+
     private static String getCommand(Scanner in){
         String cmd = in.next().toLowerCase();
         return cmd;
+    }
+
+    private static void help() {
+        System.out.println(HELP_INFO);
+    }
+
+    private static void removeVideo(Scanner in, YouVideoAppClass yv) {
+        String videoId = in.nextLine().trim();
+        if (yv.isUniqueVideo(videoId)){
+            System.out.println(MSG_VIDEO_NOT_EXISTS);
+        } else if (yv.isEpisode(videoId)){
+            System.out.println(MSG_VIDEO_IS_EPISODE);
+        } else if (!yv.isUniqueShow(videoId)) {
+            System.out.println(MSG_VIDEO_IS_SHOW);
+        } else {
+            yv.removeVideo(videoId);
+            System.out.println(MSG_VIDEO_REMOVED);
+        }
+    }
+
+    private static void getAuthorPodcasts(Scanner in, YouVideoAppClass yv) {
+        String author = in.nextLine().trim();
+        if ()
     }
 
     private static void removeShow(Scanner in, YouVideoAppClass yv) {
@@ -213,7 +265,7 @@ public class Main {
         in.nextLine();
         String language = in.next();
         Locale lang = Locale.of(language);
-        
+
         if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG_SUBTITLE);
         } else if (yv.isUniqueVideo(id)) {
