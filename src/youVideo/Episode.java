@@ -1,7 +1,8 @@
 package youVideo;
 
-public interface Episode extends Video{
-
-    public String getDate();
-
+/**
+ * Represents a podcast episode.
+ */
+public interface Episode extends Video {
+    String getDate();
 }

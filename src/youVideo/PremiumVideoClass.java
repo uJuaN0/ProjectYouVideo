@@ -5,21 +5,35 @@ import dataStructures.ArrayClass;
 
 import java.util.Locale;
 
-public class PremiumVideoClass extends PublishableVideoClass{
-    private Array<Subtitle> subtitles;
+/**
+ * Concrete implementation of a premium video.
+ */
+public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
+    private final Array<Subtitle> subtitles;
 
     public PremiumVideoClass(String id, int duration, String location, String title,
                              String publisher, Locale language, Subtitle subtitle) {
         super(id, duration, location, title, publisher, language);
         this.subtitles = new ArrayClass<>();
-        addSubtitle(subtitle);
+        addInitialSubtitle(subtitle);
     }
 
-    public void addSubtitle(Subtitle subtitle){
+    /**
+     * Adds the first subtitle only when it exists.
+     */
+    private void addInitialSubtitle(Subtitle subtitle) {
+        if (subtitle != null) {
+            addSubtitle(subtitle);
+        }
+    }
+
+    @Override
+    public void addSubtitle(Subtitle subtitle) {
         subtitles.insertLast(subtitle);
     }
 
-    public Array<Subtitle> getSubtitles(){
+    @Override
+    public Array<Subtitle> getSubtitles() {
         return subtitles;
     }
 }

@@ -1,18 +1,26 @@
 package youVideo;
 
-public class EpisodeClass extends VideoClass implements Episode{
-    private String date;
+/**
+ * Concrete implementation of a podcast episode.
+ */
+public class EpisodeClass extends VideoClass implements Episode {
+    private final String date;
 
-    public EpisodeClass(String id, int duration, String videoLocation, String date){
+    public EpisodeClass(String id, int duration, String videoLocation, String date) {
         super(id, duration, videoLocation);
         this.date = date;
     }
 
-    public EpisodeClass(String id){
+    /**
+     * Search constructor used when only the id matters.
+     */
+    public EpisodeClass(String id) {
         super(id);
+        this.date = null;
     }
 
-    public String getDate(){
+    @Override
+    public String getDate() {
         return date;
     }
 }

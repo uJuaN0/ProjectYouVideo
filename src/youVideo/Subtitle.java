@@ -2,13 +2,16 @@ package youVideo;
 
 import java.util.Locale;
 
-public record   Subtitle(Locale language, String location) {
-
-    public Locale getLanguage() {
-        return language;
-    }
+/**
+ * Represents a subtitle file and its language.
+ */
+public record Subtitle(Locale language, String location) {
 
     public String getLocation() {
         return location;
+    }
+
+    public Locale getLanguage() {
+        return language;
     }
 }

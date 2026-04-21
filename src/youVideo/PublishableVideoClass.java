@@ -2,32 +2,44 @@ package youVideo;
 
 import java.util.Locale;
 
-public class PublishableVideoClass extends VideoClass{
-    private String title;
-    private String publisher;
-    private Locale language;
+/**
+ * Concrete implementation of a publishable video.
+ */
+public class PublishableVideoClass extends VideoClass implements PublishableVideo {
+    private final String title;
+    private final String publisher;
+    private final Locale language;
 
     public PublishableVideoClass(String id, int duration, String videoLocation,
-                                 String title, String publisher, Locale language){
+                                 String title, String publisher, Locale language) {
         super(id, duration, videoLocation);
         this.title = title;
         this.publisher = publisher;
         this.language = language;
     }
 
-    public PublishableVideoClass(String id){
+    /**
+     * Search constructor used when only the id matters.
+     */
+    public PublishableVideoClass(String id) {
         super(id);
+        this.title = null;
+        this.publisher = null;
+        this.language = null;
     }
 
-    public String getTitle(){
+    @Override
+    public String getTitle() {
         return title;
     }
 
-    public String getPublisher(){
+    @Override
+    public String getPublisher() {
         return publisher;
     }
 
-    public Locale getLanguage(){
+    @Override
+    public Locale getLanguage() {
         return language;
     }
 }

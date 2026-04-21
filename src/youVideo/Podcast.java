@@ -4,24 +4,25 @@ import dataStructures.Array;
 
 import java.util.Locale;
 
+/**
+ * Represents a podcast and its ordered collection of episodes.
+ */
 public interface Podcast {
-    public String getTitle();
+    String getTitle();
 
-    public String getAuthor();
+    String getAuthor();
 
-    public Locale getLanguage();
+    Locale getLanguage();
 
-    public boolean equals(Object other);
+    boolean isUnique(String id);
 
-    public boolean isUnique(String id);
+    boolean isNewer(String date);
 
-    public boolean isNewer(String date);
+    void addEpisode(Episode episode);
 
-    public void addEpisode(Episode e);
+    String getLastestDate();
 
-    public String getLastestDate();
+    boolean hasEpisodes();
 
-    public boolean hasEpisodes();
-
-    public Array<Episode> getEpisodes();
+    Array<Episode> getEpisodes();
 }

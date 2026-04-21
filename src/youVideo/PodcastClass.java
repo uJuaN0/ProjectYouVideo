@@ -5,81 +5,97 @@ import dataStructures.ArrayClass;
 
 import java.util.Locale;
 
-public class PodcastClass implements Podcast{
-    private Array<Episode> episodes;
-    private String title;
-    private String author;
-    private Locale language;
+/**
+ * Concrete implementation of a podcast.
+ */
+public class PodcastClass implements Podcast {
+    private final Array<Episode> episodes;
+    private final String title;
+    private final String author;
+    private final Locale language;
 
-    public PodcastClass(String title, String author, Locale language){
+    public PodcastClass(String title, String author, Locale language) {
         this.title = title;
         this.author = author;
         this.language = language;
         this.episodes = new ArrayClass<>();
     }
 
-    public PodcastClass(String title){
-        this.title = title;
-        this.episodes = new ArrayClass<>();
+    /**
+     * Search constructor used when only the title matters.
+     */
+    public PodcastClass(String title) {
+        this(title, null, null);
     }
 
-    public String getTitle(){
+    @Override
+    public String getTitle() {
         return title;
     }
 
-    public String getAuthor(){
+    @Override
+    public String getAuthor() {
         return author;
     }
 
-    public Locale getLanguage(){
+    @Override
+    public Locale getLanguage() {
         return language;
     }
 
-    public boolean isUnique(String id){
-        Episode e = new EpisodeClass(id);
-        if (episodes.size() <= 0){
-            return true;
-        } else {
-            return (!episodes.searchBackward(e));
-        }
+    @Override
+    public boolean isUnique(String id) {
+        return !episodes.searchBackward(new EpisodeClass(id));
     }
 
-    public boolean isNewer(String date){
-        if (episodes.size()==0){
-            return true;
-        } else {
-            Episode e = episodes.get(0);
-            return date.compareTo(e.getDate()) >= 0;
-        }
+    @Override
+    public boolean isNewer(String date) {
+        return hasNoEpisodes() || date.compareTo(getLastestDate()) >= 0;
     }
 
-    public boolean hasEpisodes(){
-        return (episodes.size()>0);
+    @Override
+    public void addEpisode(Episode episode) {
+        episodes.insertAt(episode, 0);
     }
 
-    public void addEpisode(Episode e){
-        episodes.insertAt(e, 0);
-    }
-
-    public String getLastestDate(){
+    @Override
+    public String getLastestDate() {
         return episodes.get(0).getDate();
     }
 
     @Override
-    public boolean equals(Object other){
-        if (this == other)
-            return true;
-        if (other == null)
-            return false;
-        if (!(other instanceof Podcast))
-            return false;
-        if (title == null)
-            return false;
-
-        return title.equalsIgnoreCase(((Podcast) other).getTitle());
+    public boolean hasEpisodes() {
+        return episodes.size() > 0;
     }
 
-    public Array<Episode> getEpisodes(){
+    @Override
+    public Array<Episode> getEpisodes() {
         return episodes;
+    }
+
+    /**
+     * Internal helper to make date validation easier to read.
+     */
+    private boolean hasNoEpisodes() {
+        return episodes.size() == 0;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (!(other instanceof Podcast)) {
+            return false;
+        }
+
+        Podcast podcast = (Podcast) other;
+        return title != null && title.equalsIgnoreCase(podcast.getTitle());
+    }
+
+    @Override
+    public int hashCode() {
+        return title == null ? 0 : title.toLowerCase().hashCode();
     }
 }

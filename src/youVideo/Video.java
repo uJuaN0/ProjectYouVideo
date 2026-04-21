@@ -1,12 +1,12 @@
 package youVideo;
 
+/**
+ * Base contract for every video-like element in the system.
+ */
 public interface Video {
-    public String getId();
+    String getId();
 
-    public int getDuration();
+    int getDuration();
 
-    public String getVideoLocation();
-
-    public boolean equals(Object other);
-
+    String getVideoLocation();
 }
