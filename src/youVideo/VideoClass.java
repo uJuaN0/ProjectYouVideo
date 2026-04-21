@@ -28,15 +28,13 @@ public abstract class VideoClass implements Video{
     }
 
 
+    @Override
     public boolean equals(Object other){
-        if (this==other)
-            return true;
-        if (other==null)
-            return false;
-        if (!(other instanceof Video))
-            return false;
-        if (id==null)
-            return false;
-        return id.equals(((Video)other).getId());
+        if (this == other) return true;
+        if (other == null) return false;
+        if (!(other instanceof Video)) return false;
+
+        Video v = (Video) other;
+        return id.equalsIgnoreCase(v.getId());
     }
 }

@@ -16,6 +16,33 @@ public class YouVideoAppClass {
         podcasts = new ArrayClass<>();
         shows = new ArrayClass<>();
     }
+
+
+    public String authorPodcasts(String author){
+        String result = "Podcasts by author " + author + ":\n";
+        boolean found = false;
+
+        Iterator<Podcast> it = podcasts.iterator();
+
+        while (it.hasNext()){
+            Podcast p = it.next();
+
+            if (p.getAuthor().equalsIgnoreCase(author)){
+                found = true;
+                result += "Podcast: " + p.getTitle()
+                        + " Author: " + p.getAuthor()
+                        + " Language: " + p.getLanguage().getLanguage().toUpperCase()
+                        + "\n";
+            }
+        }
+
+        if (!found){
+            return "No podcasts found for this author.";
+        }
+
+        return result.trim();
+    }
+
     //todo arrumar isto
     public String getSubtitlesInfo(String id){
         Video v = getVideo(id);
@@ -33,43 +60,65 @@ public class YouVideoAppClass {
 
         return result;
     }
+    public boolean isVideoUsedInShow(String videoId) {
+        String title = getVideoTitle(videoId);
+
+        Iterator<Show> it = shows.iterator();
+        while (it.hasNext()) {
+            Show s = it.next();
+            if (s.getTitle().equalsIgnoreCase(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //todo arrumar isto
     public String getEpisodes(String title){
         Podcast p = getPodcast(title);
 
-        String result = "Episodes for podcast " + p.getTitle() + "\n";
+        String result = "Episodes for podcast " + title + ":\n";
 
         Iterator<Episode> it = p.getEpisodes().iterator();
 
         while (it.hasNext()){
             Episode e = it.next();
             result += "Episode " + e.getId() + ": " + e.getDuration()
-                    + " min Date: " + e.getDate() + "\n" + "URL: " + e.getVideoLocation() + "\n";
+                    + " min Date: " + e.getDate() + "\n"
+                    + "URL: " + e.getVideoLocation() + "\n";
         }
-        return result;
+
+        return result.trim();
     }
+
     //todo arrumar isto
     public String getPodcastInfo(String title){
         Podcast p = getPodcast(title);
-        return String.format(
-                "Podcast: %s Author: %s Language: %s%n" +
-                        "Latest episode date: %s",
+
+        String result = String.format(
+                "Podcast: %s Author: %s Language: %s",
                 p.getTitle(),
                 p.getAuthor(),
-                p.getLanguage().getDisplayLanguage(),
-                p.getLastestDate()
+                p.getLanguage().getLanguage().toUpperCase()
         );
+
+        if (p.hasEpisodes()){
+            result += String.format("%nLatest episode date: %s", p.getLastestDate());
+        }
+
+        return result;
     }
+
     //todo arrumar isto
     public String getVideoInfo(String id) {
         Video v = getVideo(id);
         String prefix = "";
         PublishableVideoClass pv = (PublishableVideoClass) v;
         if (v instanceof PremiumVideoClass){
-            prefix = "PREMIUM";
+            prefix = "PREMIUM ";
         }
         return String.format(
-                "%s Video %s %d Title: %s%n" +
+                "%sVideo %s %d Title: %s%n" +
                         "File: %s Publisher: %s Language: %s",
                 prefix,
                 pv.getId(),
@@ -77,7 +126,7 @@ public class YouVideoAppClass {
                 pv.getTitle(),
                 pv.getVideoLocation(),
                 pv.getPublisher(),
-                pv.getLanguage().getLanguage().toUpperCase() //TODO RETURN IN ENGLISH
+                pv.getLanguage().getDisplayLanguage().toUpperCase() //TODO RETURN IN ENGLISH
         );
     }
 
@@ -92,6 +141,18 @@ public class YouVideoAppClass {
         podcasts.removeAt(index);
     }
 
+    public boolean isEpisode(String videoId) {
+        Iterator<Podcast> it = podcasts.iterator();
+
+        while (it.hasNext()) {
+            Podcast p = it.next();
+            if (!p.isUnique(videoId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addSubtitle(String sublocation, Locale lang, String id){
         Video v = getVideo(id);
         Subtitle subt = new Subtitle(lang, sublocation);
@@ -101,6 +162,11 @@ public class YouVideoAppClass {
     public Podcast getPodcast(String title){
         Podcast p = new PodcastClass(title);
         int position = podcasts.searchIndexOf(p);
+
+        if (position == -1){
+            return null;
+        }
+
         return podcasts.get(position);
     }
 
@@ -151,9 +217,21 @@ public class YouVideoAppClass {
         return (!podcasts.searchBackward(new PodcastClass(title)));
     }
 
-    public boolean isUniqueEpisode(String title, String id){
-        Podcast p = getPodcast(title);
-        return p.isUnique(id);
+    public boolean isUniqueEpisode(String id){
+        if (!isUniqueVideo(id)) {
+            return false;
+        }
+
+        Iterator<Podcast> it = podcasts.iterator();
+
+        while (it.hasNext()){
+            Podcast p = it.next();
+            if (!p.isUnique(id)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public boolean isNewer(String title, String date){
@@ -178,17 +256,29 @@ public class YouVideoAppClass {
     }
 
     public boolean isUniqueShow(String title) {
-        return (!shows.searchBackward(new ShowClass(title)));
+        return !shows.searchBackward(new ShowClass(title));
     }
 
-    public Show getShow(String videoId) {
-        Show s = new ShowClass(videoId);
+    public Show getShow(String title) {
+        Show s = new ShowClass(title);
         int pos = shows.searchIndexOf(s);
         return shows.get(pos);
     }
 
+    public String getShowVideoTitle(String title) {
+        Show s = getShow(title);
+        return s.getTitle();
+    }
+
+    public String getVideoTitle(String id) {
+        Video v = getVideo(id);
+        PublishableVideoClass pv = (PublishableVideoClass) v;
+        return pv.getTitle();
+    }
+
     public void createShow(String author, String videoId, String transmissionDate) {
-        Show s = new ShowClass(videoId, author, transmissionDate);
+        String title = getVideoTitle(videoId);
+        Show s = new ShowClass(title, author, transmissionDate);
         shows.insertLast(s);
     }
 
@@ -197,9 +287,24 @@ public class YouVideoAppClass {
         return s.getDate();
     }
 
+
+
     public String getShowAuthor(String title) {
         Show s = getShow(title);
         return s.getAuthor();
+    }
+
+    public String getCanonicalAuthor(String author){
+        Iterator<Podcast> it = podcasts.iterator();
+
+        while (it.hasNext()){
+            Podcast p = it.next();
+            if (p.getAuthor().equalsIgnoreCase(author)){
+                return p.getAuthor();
+            }
+        }
+
+        return author;
     }
 
     public void removeShow(String title) {

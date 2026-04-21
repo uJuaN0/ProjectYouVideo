@@ -2,7 +2,7 @@ package youVideo;
 
 import java.util.Locale;
 
-public record Subtitle(Locale language, String location) {
+public record   Subtitle(Locale language, String location) {
 
     public Locale getLanguage() {
         return language;

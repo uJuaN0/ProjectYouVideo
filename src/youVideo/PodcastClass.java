@@ -65,16 +65,18 @@ public class PodcastClass implements Podcast{
         return episodes.get(0).getDate();
     }
 
+    @Override
     public boolean equals(Object other){
-        if (this==other)
+        if (this == other)
             return true;
-        if (other==null)
+        if (other == null)
             return false;
         if (!(other instanceof Podcast))
             return false;
-        if (title==null)
+        if (title == null)
             return false;
-        return title.equals(((Podcast)other).getTitle());
+
+        return title.equalsIgnoreCase(((Podcast) other).getTitle());
     }
 
     public Array<Episode> getEpisodes(){

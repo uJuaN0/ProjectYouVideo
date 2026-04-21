@@ -23,8 +23,8 @@ public class Main {
     private static final String CMD_HELP = "help";
 
     private final static String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.\n";
-    private final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.\n";
-    private final static String MSG_VIDEO_ID_NOT_FOUND = "Publishable Video %s does not exist.";
+    private final static String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.";
+    private final static String MSG_VIDEO_ID_NOT_FOUND = "Publishable Video %s does not exist.\n";
     private final static String MSG_LANG = "Invalid language type.";
     private final static String MSG_DURATION = "Invalid value.";
     private final static String MSG_ID = "Video with this ID already exists.";
@@ -45,14 +45,14 @@ public class Main {
     private static final String MSG_PODCAST_REMOVED = "Podcast removed successfully.";
     private static final String MSG_SHOW_CREATED = "Show created successfully.";
     private static final String MSG_SHOW_NO_EXIST = "Show does not exist.";
-    private static final String MSG_GET_SHOW_PT1 = "Show: %s Author: %s\n";
+    private static final String MSG_GET_SHOW_PT1 = "Show Date: %s Author: %s\n";
     private static final String MSG_GET_SHOW_PT2 = "Video: %s\n";
     private static final String MSG_EXIT = "Bye!";
     private static final String MSG_SHOW_REMOVED = "Show removed successfully.";
     private static final String MSG_UNKNOWN_COMMAND = "Unknown command. Type help to see available commands.";
     private static final String MSG_VIDEO_IS_EPISODE = "Cannot remove: video is an episode of a podcast.";
     private static final String MSG_VIDEO_IS_SHOW = "Cannot remove: video is used in a show.";
-    private static final String MSG_VIDEO_REMOVED = "Video removed successfully";
+    private static final String MSG_VIDEO_REMOVED = "Video removed successfully.";
     private static final String HELP_INFO = "createpublishable - creates a new publishable video\n" +
             "createpremium - creates a new publishable Premium video\n" +
             "addsubtitle - adds subtitle to Premium video\n" +
@@ -74,6 +74,7 @@ public class Main {
 
     public static void main(String[] args){
         Locale.setDefault(Locale.of("EN","GB" ));
+        Locale.setDefault(Locale.ENGLISH);
         Scanner in = new Scanner(System.in);
         YouVideoAppClass yv = new YouVideoAppClass();
 
@@ -91,7 +92,7 @@ public class Main {
                 case CMD_ADD_EPISODE -> addEpisode(in, yv);
                 case CMD_GET_PODCAST -> getPodcast(in, yv);
                 case CMD_EPISODES -> getEpisodeInfo(in, yv);
-                case CMD_AUTHOR_PODCAST -> getAuthorPodcasts(in, yv); // todo
+                case CMD_AUTHOR_PODCAST -> getAuthorPodcasts(in, yv);
                 case CMD_REMOVE_PODCAST -> removePodcast(in, yv);
                 case CMD_CREATE_SHOW -> createShow(in, yv);// todo testar
                 case CMD_GET_SHOW -> getShow(in, yv); // todo testar
@@ -116,11 +117,12 @@ public class Main {
 
     private static void removeVideo(Scanner in, YouVideoAppClass yv) {
         String videoId = in.nextLine().trim();
-        if (yv.isUniqueVideo(videoId)){
-            System.out.println(MSG_VIDEO_NOT_EXISTS);
-        } else if (yv.isEpisode(videoId)){
+
+        if (yv.isEpisode(videoId)) {
             System.out.println(MSG_VIDEO_IS_EPISODE);
-        } else if (!yv.isUniqueShow(videoId)) {
+        } else if (yv.isUniqueVideo(videoId)) {
+            System.out.println(MSG_VIDEO_NOT_EXISTS);
+        } else if (yv.isVideoUsedInShow(videoId)) {
             System.out.println(MSG_VIDEO_IS_SHOW);
         } else {
             yv.removeVideo(videoId);
@@ -130,7 +132,7 @@ public class Main {
 
     private static void getAuthorPodcasts(Scanner in, YouVideoAppClass yv) {
         String author = in.nextLine().trim();
-        if ()
+        System.out.println(yv.authorPodcasts(author));
     }
 
     private static void removeShow(Scanner in, YouVideoAppClass yv) {
@@ -155,11 +157,12 @@ public class Main {
 
     private static void getShow(Scanner in, YouVideoAppClass yv) {
         String title = in.nextLine().trim();
-        if (yv.isUniqueShow(title)){
+
+        if (yv.isUniqueShow(title)) {
             System.out.println(MSG_SHOW_NO_EXIST);
         } else {
-            System.out.printf(MSG_GET_SHOW_PT1, yv.getShowDate(title), yv. getShowAuthor(title));
-            System.out.printf(MSG_GET_SHOW_PT2, title);
+            System.out.printf(MSG_GET_SHOW_PT1, yv.getShowDate(title), yv.getShowAuthor(title));
+            System.out.printf(MSG_GET_SHOW_PT2, yv.getShowVideoTitle(title));
         }
     }
 
@@ -180,19 +183,31 @@ public class Main {
         String videoId = in.next();
         String transmissionDate = in.next();
         in.nextLine();
+
+        author = yv.getCanonicalAuthor(author);
+
         if (yv.isUniqueVideo(videoId)){
             System.out.println(MSG_VIDEO_FOR_SHOW_NOT_EXISTS);
-        } else if (!yv.isUniqueShow(videoId)) {
-            System.out.println(MSG_SHOW_EXISTS);
         } else {
-            yv.createShow(author, videoId, transmissionDate);
-            System.out.println(MSG_SHOW_CREATED);
+            String title = yv.getVideoTitle(videoId);
+
+            if (!yv.isUniqueShow(title)) {
+                System.out.println(MSG_SHOW_EXISTS);
+            } else {
+                yv.createShow(author, videoId, transmissionDate);
+                System.out.println(MSG_SHOW_CREATED);
+            }
         }
     }
 
     private static void getPodcast(Scanner in, YouVideoAppClass yv){
         String title = in.nextLine().trim();
-        System.out.println(yv.getPodcastInfo(title));
+
+        if (yv.isUniquePodcast(title)){
+            System.out.println(MSG_NO_PODCAST);
+        } else {
+            System.out.println(yv.getPodcastInfo(title));
+        }
     }
 
     private static void addEpisode(Scanner in, YouVideoAppClass yv){
@@ -206,7 +221,7 @@ public class Main {
             System.out.println(MSG_DURATION);
         } else if (yv.isUniquePodcast(title)) {
             System.out.println(MSG_NO_PODCAST);
-        } else if (!yv.isUniqueEpisode(title, id)) {
+        } else if (!yv.isUniqueEpisode(id)) {
             System.out.println(MSG_EPISODE_EXISTS);
         } else if (!yv.isNewer(title, date)){
             System.out.println(MSG_PODCAST_NEWER);
@@ -217,7 +232,6 @@ public class Main {
     }
 
     private static void addPodcast(Scanner in, YouVideoAppClass yv){
-
         String title = in.nextLine().trim();
         String author = in.nextLine();
         String language = in.next();
@@ -229,6 +243,7 @@ public class Main {
             System.out.println(MSG_PODCAST_EXISTS);
         } else {
             Locale lang = Locale.of(language.toLowerCase());
+            author = yv.getCanonicalAuthor(author);
             yv.addPodcast(title, author, lang);
             System.out.println(MSG_PODCAST_CREATED);
         }
@@ -239,13 +254,12 @@ public class Main {
         int duration = in.nextInt();
         String location = in.next();
         in.nextLine();
-        String title = in.next();
-        in.nextLine();
-        String publisher = in.next();
-        in.nextLine();
-        String language = in.next();
-        in.nextLine();
-        Locale lang = Locale.of(language);
+
+        String publisher = in.nextLine();
+        String title = in.nextLine();
+        String language = in.nextLine();
+
+        Locale lang = Locale.of(language.toLowerCase());
 
         if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG);
@@ -263,8 +277,9 @@ public class Main {
         String id = in.next();
         String location = in.next();
         in.nextLine();
-        String language = in.next();
-        Locale lang = Locale.of(language);
+        String language = in.nextLine();
+
+        Locale lang = Locale.of(language.toLowerCase());
 
         if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG_SUBTITLE);
@@ -273,26 +288,25 @@ public class Main {
         } else if (!yv.isPremium(id)) {
             System.out.println(MSG_REQUIRES_PREMIUM);
         } else {
-            yv.addSubtitle(location,lang, id);
+            yv.addSubtitle(location, lang, id);
             System.out.println(MSG_SUB_ADDED);
         }
     }
+
     private static void addPremium(Scanner in, YouVideoAppClass yv){
         String id = in.next();
         int duration = in.nextInt();
         String location = in.next();
         in.nextLine();
-        String title = in.next();
-        in.nextLine();
-        String publisher = in.next();
-        in.nextLine();
-        String language = in.next();
-        in.nextLine();
-        String subtitleLocation = in.next();
-        in.nextLine();
-        String subtitleLanguage = in.next();
-        in.nextLine();
-        Locale lang = Locale.of(language);
+
+        String publisher = in.nextLine();
+        String title = in.nextLine();
+        String language = in.nextLine();
+        String subtitleLocation = in.nextLine();
+        String subtitleLanguage = in.nextLine();
+
+        Locale lang = Locale.of(language.toLowerCase());
+        Locale subLang = Locale.of(subtitleLanguage.toLowerCase());
 
         if (!yv.isValidLanguage(language)){
             System.out.println(MSG_LANG);
@@ -303,7 +317,7 @@ public class Main {
         } else if (!yv.isUniqueVideo(id)) {
             System.out.println(MSG_ID);
         } else {
-            yv.addPremium(id, duration, location, title, publisher, lang, subtitleLocation, lang);
+            yv.addPremium(id, duration, location, title, publisher, lang, subtitleLocation, subLang);
             System.out.printf(MSG_ADD_PREMIUM, id);
         }
     }

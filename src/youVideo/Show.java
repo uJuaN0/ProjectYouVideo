@@ -1,9 +1,7 @@
 package youVideo;
 
 public interface Show {
-    String getVideoId();
-
+    String getTitle();
     String getDate();
-
     String getAuthor();
 }
