@@ -3,6 +3,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+/src/TrainingTests.java
 
 ### Eclipse ###
 .apt_generated
