@@ -353,7 +353,7 @@ public class YouVideoAppClass implements YouVideoApp {
     /**
      * Returns the canonical author name already used in the system, if any.
      */
-    public String getCanonicalAuthor(String author) {
+    public String getStoredAuthorName(String author) {
         Iterator<Podcast> iterator = podcasts.iterator();
 
         while (iterator.hasNext()) {

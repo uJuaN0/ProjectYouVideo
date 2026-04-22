@@ -5,13 +5,9 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * Text user interface for the YouVideo application.
- *
- * This class is responsible for:
- * - reading commands and input
- * - delegating operations to the application class
- * - printing the final result
+ * @author Juan Lima 75513 // Miguel Passão 75460
  */
+
 public class Main {
     private static final String CMD_ADD_PUBLISHABLE = "createpublishable";
     private static final String CMD_ADD_PREMIUM = "createpremium";
@@ -259,7 +255,7 @@ public class Main {
         } else if (!app.isUniquePodcast(title)) {
             System.out.println(MSG_PODCAST_EXISTS);
         } else {
-            app.addPodcast(title, app.getCanonicalAuthor(author), toLocale(language));
+            app.addPodcast(title, app.getStoredAuthorName(author), toLocale(language));
             System.out.println(MSG_PODCAST_CREATED);
         }
     }
@@ -352,7 +348,7 @@ public class Main {
         } else if (!app.isUniqueShow(app.getVideoTitle(videoId))) {
             System.out.println(MSG_SHOW_EXISTS);
         } else {
-            app.createShow(app.getCanonicalAuthor(author), videoId, transmissionDate);
+            app.createShow(app.getStoredAuthorName(author), videoId, transmissionDate);
             System.out.println(MSG_SHOW_CREATED);
         }
     }
