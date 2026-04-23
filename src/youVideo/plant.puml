@@ -1,188 +1,311 @@
 @startuml
-skinparam classAttributeIconSize 0
 
-package youVideo {
-
-interface Video {
-    +getId() : String
-    +getDuration() : int
-    +getVideoLocation() : String
-    +equals(other : Object) : boolean
-    +getTitle() : String
-    +getPublisher() : String
-    +getLanguage() : Locale
-}
+!theme plain
+top to bottom direction
+skinparam linetype ortho
 
 abstract class VideoClass {
-    -id : String
-    -duration : int
-    -videoLocation : String
-    +VideoClass(id : String, duration : int, videoLocation : String)
-    +VideoClass(id : String)
-    +getId() : String
-    +getDuration() : int
-    +getVideoLocation() : String
-    +equals(other : Object) : boolean
+  + VideoClass(String, int, String)
+  + VideoClass(String)
+  - id: String
+  - duration: int
+  - videoLocation: String
+  + getId(): String
+  + getDuration(): int
+  + getVideoLocation(): String
+  + equals(Object): boolean
+  + hashCode(): int
+}
+
+interface Video << interface >> {
+  + getId(): String
+  + getDuration(): int
+  + getVideoLocation(): String
+}
+
+interface PublishableVideo << interface >> {
+  + getTitle(): String
+  + getPublisher(): String
+  + getLanguage(): Locale
 }
 
 class PublishableVideoClass {
-    -title : String
-    -publisher : String
-    -language : Locale
-    +PublishableVideoClass(id : String, duration : int, videoLocation : String, title : String, publisher : String, language : Locale)
-    +PublishableVideoClass(id : String)
-    +getTitle() : String
-    +getPublisher() : String
-    +getLanguage() : Locale
+  + PublishableVideoClass(String, int, String, String, String, Locale)
+  + PublishableVideoClass(String)
+  - title: String
+  - publisher: String
+  - language: Locale
+  + getTitle(): String
+  + getPublisher(): String
+  + getLanguage(): Locale
+}
+
+interface PremiumVideo << interface >> {
+  + addSubtitle(Subtitle): void
+  + getSubtitles(): Iterator<Subtitle>
 }
 
 class PremiumVideoClass {
-    -subtitles : Array<Subtitle>
-    +PremiumVideoClass(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitle : Subtitle)
-    +addSubtitle(subtitle : Subtitle) : void
-    +getSubtitles() : Array<Subtitle>
+  + PremiumVideoClass(String, int, String, String, String, Locale, Subtitle)
+  - subtitles: Array<Subtitle>
+  - addInitialSubtitle(Subtitle): void
+  + addSubtitle(Subtitle): void
+  + getSubtitles(): Iterator<Subtitle>
 }
 
-interface Episode {
-    +getDate() : String
+interface Episode << interface >> {
+  + getDate(): String
 }
 
 class EpisodeClass {
-    -date : String
-    +EpisodeClass(id : String, duration : int, videoLocation : String, date : String)
-    +EpisodeClass(id : String)
-    +getDate() : String
+  + EpisodeClass(String, int, String, String)
+  + EpisodeClass(String)
+  - date: String
+  + getDate(): String
 }
 
-interface Podcast {
-    +getTitle() : String
-    +getAuthor() : String
-    +getLanguage() : Locale
-    +isUnique(id : String) : boolean
-    +isNewer(date : String) : boolean
-    +addEpisode(e : Episode) : void
-    +getLastestDate() : String
-    +hasEpisodes() : boolean
-    +getEpisodes() : Array<Episode>
-    +equals(other : Object) : boolean
+interface Podcast << interface >> {
+  + getTitle(): String
+  + getAuthor(): String
+  + getLanguage(): Locale
+  + addEpisode(Episode): void
+  + getEpisodes(): Iterator<Episode>
+  + hasEpisodes(): boolean
+  + isUnique(String): boolean
+  + isNewer(String): boolean
+  + getLastestDate(): String
 }
 
 class PodcastClass {
-    -episodes : Array<Episode>
-    -title : String
-    -author : String
-    -language : Locale
-    +PodcastClass(title : String, author : String, language : Locale)
-    +PodcastClass(title : String)
-    +getTitle() : String
-    +getAuthor() : String
-    +getLanguage() : Locale
-    +isUnique(id : String) : boolean
-    +isNewer(date : String) : boolean
-    +addEpisode(e : Episode) : void
-    +getLastestDate() : String
-    +hasEpisodes() : boolean
-    +getEpisodes() : Array<Episode>
-    +equals(other : Object) : boolean
+  + PodcastClass(String, String, Locale)
+  + PodcastClass(String)
+  - title: String
+  - author: String
+  - language: Locale
+  - episodes: Array<Episode>
+  + getTitle(): String
+  + getAuthor(): String
+  + getLanguage(): Locale
+  + addEpisode(Episode): void
+  + getEpisodes(): Iterator<Episode>
+  + hasEpisodes(): boolean
+  + isUnique(String): boolean
+  + isNewer(String): boolean
+  + getLastestDate(): String
+  + equals(Object): boolean
 }
 
-interface Show {
-    +getTitle() : String
-    +getDate() : String
-    +getAuthor() : String
+interface Show << interface >> {
+  + getTitle(): String
+  + getAuthor(): String
+  + getDate(): String
 }
 
 class ShowClass {
-    -title : String
-    -author : String
-    -transmissionDate : String
-    +ShowClass(title : String)
-    +ShowClass(title : String, author : String, transmissionDate : String)
-    +getTitle() : String
-    +getDate() : String
-    +getAuthor() : String
-    +equals(other : Object) : boolean
+  + ShowClass(String, String, String)
+  + ShowClass(String)
+  - title: String
+  - author: String
+  - date: String
+  + getTitle(): String
+  + getAuthor(): String
+  + getDate(): String
+  + equals(Object): boolean
 }
 
-class Subtitle <<record>> {
-    +language : Locale
-    +location : String
-    +getLanguage() : Locale
-    +getLocation() : String
+class Subtitle {
+  + Subtitle(Locale, String)
+  - language: Locale
+  - location: String
+  + getLanguage(): Locale
+  + getLocation(): String
 }
 
-interface YouVideoApp {
-    +addPublishable(id : String, duration : int, location : String, title : String, publisher : String, language : Locale) : void
-    +addPremium(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitleLocation : String, subtitleLanguage : Locale) : void
-    +addSubtitle(subtitleLocation : String, language : Locale, id : String) : void
-    +addPodcast(title : String, author : String, language : Locale) : void
-    +addEpisode(title : String, id : String, duration : int, location : String, date : String) : void
-    +createShow(author : String, videoId : String, transmissionDate : String) : void
-    +removePodcast(title : String) : void
-    +removeShow(title : String) : void
-    +removeVideo(videoId : String) : void
-    +getVideo(id : String) : Video
-    +getPodcast(title : String) : Podcast
-    +getShow(title : String) : Show
-    +getPodcastsByAuthor(author : String) : Array<Podcast>
-    +isUniqueVideo(id : String) : boolean
-    +isUniquePodcast(title : String) : boolean
-    +isUniqueEpisode(id : String) : boolean
-    +isUniqueShow(title : String) : boolean
-    +isNewer(title : String, date : String) : boolean
-    +isPremium(id : String) : boolean
-    +isEpisode(videoId : String) : boolean
-    +isVideoUsedInShow(videoId : String) : boolean
-    +hasEpisodesPodcast(title : String) : boolean
-    +getStoredAuthorName(author : String) : String
+interface YouVideoApp << interface >> {
+  + addPublishable(String, int, String, String, String, Locale): void
+  + addPremium(String, int, String, String, String, Locale, String, Locale): void
+  + addSubtitle(String, Locale, String): void
+  + addPodcast(String, String, Locale): void
+  + addEpisode(String, String, int, String, String): void
+  + createShow(String, String, String): void
+  + removePodcast(String): void
+  + removeShow(String): void
+  + removeVideo(String): void
+  + getVideo(String): PublishableVideo
+  + getPodcast(String): Podcast
+  + getShow(String): Show
+  + getPodcastsByAuthor(String): Iterator<Podcast>
+  + isUniqueVideo(String): boolean
+  + isUniquePodcast(String): boolean
+  + isUniqueEpisode(String): boolean
+  + isUniqueShow(String): boolean
+  + isNewer(String, String): boolean
+  + isPremium(String): boolean
+  + isEpisode(String): boolean
+  + isVideoUsedInShow(String): boolean
+  + hasEpisodesPodcast(String): boolean
+  + getStoredAuthorName(String): String
 }
 
 class YouVideoAppClass {
-    -videos : Array<Video>
-    -podcasts : Array<Podcast>
-    -shows : Array<Show>
-    +YouVideoAppClass()
-    +addPublishable(id : String, duration : int, location : String, title : String, publisher : String, language : Locale) : void
-    +addPremium(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitleLocation : String, subtitleLanguage : Locale) : void
-    +addSubtitle(subtitleLocation : String, language : Locale, id : String) : void
-    +addPodcast(title : String, author : String, language : Locale) : void
-    +addEpisode(title : String, id : String, duration : int, location : String, date : String) : void
-    +createShow(author : String, videoId : String, transmissionDate : String) : void
-    +removePodcast(title : String) : void
-    +removeShow(title : String) : void
-    +removeVideo(videoId : String) : void
-    +getVideo(id : String) : Video
-    +getPodcast(title : String) : Podcast
-    +getShow(title : String) : Show
-    +getPodcastsByAuthor(author : String) : Array<Podcast>
-    +isUniqueVideo(id : String) : boolean
-    +isUniquePodcast(title : String) : boolean
-    +isUniqueEpisode(id : String) : boolean
-    +isUniqueShow(title : String) : boolean
-    +isNewer(title : String, date : String) : boolean
-    +isPremium(id : String) : boolean
-    +isEpisode(videoId : String) : boolean
-    +isVideoUsedInShow(videoId : String) : boolean
-    +hasEpisodesPodcast(title : String) : boolean
-    +getStoredAuthorName(author : String) : String
+  + YouVideoAppClass()
+  - videos: Array<PublishableVideo>
+  - podcasts: Array<Podcast>
+  - shows: Array<Show>
+  + addPublishable(String, int, String, String, String, Locale): void
+  + addPremium(String, int, String, String, String, Locale, String, Locale): void
+  + addSubtitle(String, Locale, String): void
+  + addPodcast(String, String, Locale): void
+  + addEpisode(String, String, int, String, String): void
+  + createShow(String, String, String): void
+  + removePodcast(String): void
+  + removeShow(String): void
+  + removeVideo(String): void
+  + getVideo(String): PublishableVideo
+  + getPodcast(String): Podcast
+  + getShow(String): Show
+  + getPodcastsByAuthor(String): Iterator<Podcast>
+  + isUniqueVideo(String): boolean
+  + isUniquePodcast(String): boolean
+  + isUniqueEpisode(String): boolean
+  + isUniqueShow(String): boolean
+  + isNewer(String, String): boolean
+  + isPremium(String): boolean
+  + isEpisode(String): boolean
+  + isVideoUsedInShow(String): boolean
+  + hasEpisodesPodcast(String): boolean
+  + getStoredAuthorName(String): String
+  + isValidLanguage(String): boolean
+  - findVideo(String): PublishableVideo
+  - findPodcast(String): Podcast
+  - findShow(String): Show
 }
 
-Video <|.. VideoClass
-Video <|-- Episode
-VideoClass <|-- PublishableVideoClass
-PublishableVideoClass <|-- PremiumVideoClass
-VideoClass <|-- EpisodeClass
-Episode <|.. EpisodeClass
-
-Podcast <|.. PodcastClass
-Show <|.. ShowClass
-YouVideoApp <|.. YouVideoAppClass
-
-PodcastClass *-- "0..*" Episode : episodes
-PremiumVideoClass *-- "0..*" Subtitle : subtitles
-
-YouVideoAppClass *-- "0..*" Video : videos
-YouVideoAppClass *-- "0..*" Podcast : podcasts
-YouVideoAppClass *-- "0..*" Show : shows
+class Main {
+  + main(String[]): void
+  - readCommand(Scanner): String
+  - executeCommand(String, Scanner, YouVideoApp): void
+  - printHelp(): void
+  - handleAddPublishable(Scanner, YouVideoApp): void
+  - handleAddPremium(Scanner, YouVideoApp): void
+  - handleAddSubtitle(Scanner, YouVideoApp): void
+  - handleGetVideo(Scanner, YouVideoApp): void
+  - handleGetSubtitles(Scanner, YouVideoApp): void
+  - handleAddPodcast(Scanner, YouVideoApp): void
+  - handleAddEpisode(Scanner, YouVideoApp): void
+  - handleGetPodcast(Scanner, YouVideoApp): void
+  - handleGetEpisodes(Scanner, YouVideoApp): void
+  - handleGetAuthorPodcasts(Scanner, YouVideoApp): void
+  - handleRemovePodcast(Scanner, YouVideoApp): void
+  - handleCreateShow(Scanner, YouVideoApp): void
+  - handleGetShow(Scanner, YouVideoApp): void
+  - handleRemoveShow(Scanner, YouVideoApp): void
+  - handleRemoveVideo(Scanner, YouVideoApp): void
+  - printVideo(PublishableVideo, boolean): void
+  - printSubtitles(PremiumVideo): void
+  - printPodcast(Podcast): void
+  - printEpisodes(String, Podcast): void
+  - printAuthorPodcasts(String, Iterator<Podcast>): void
+  - printShow(Show): void
+  - toLocale(String): Locale
+  - getLanguageCode(Locale): String
+  - getLanguageDisplayName(Locale): String
+  - printFormatted(String, String): void
 }
+
+interface Array<E> << interface >> {
+  + size(): int
+  + get(int): E
+  + insertLast(E): void
+  + insertAt(E, int): void
+  + removeAt(int): void
+  + removeLast(): void
+  + searchForward(E): boolean
+  + searchBackward(E): boolean
+  + searchIndexOf(E): int
+  + iterator(): Iterator<E>
+}
+
+class ArrayClass<E> {
+  + ArrayClass()
+  + ArrayClass(int)
+  - elems: E[]
+  - counter: int
+  - MAX_ELEMS: int
+  - FACTOR: int
+  + size(): int
+  + get(int): E
+  + insertLast(E): void
+  + insertAt(E, int): void
+  + removeAt(int): void
+  + removeLast(): void
+  + searchForward(E): boolean
+  + searchBackward(E): boolean
+  + searchIndexOf(E): int
+  + iterator(): Iterator<E>
+  - resize(): void
+}
+
+interface Iterator<E> << interface >> {
+  + hasNext(): boolean
+  + next(): E
+}
+
+class ArrayIteratorClass<E> {
+  + ArrayIteratorClass(E[], int)
+  - elems: E[]
+  - counter: int
+  - current: int
+  + hasNext(): boolean
+  + next(): E
+}
+
+VideoClass           -[#008200,dashed]-^  Video
+PublishableVideo     -[#008200,plain]-^   Video
+PremiumVideo         -[#008200,plain]-^   PublishableVideo
+Episode              -[#008200,plain]-^   Video
+
+PublishableVideoClass -[#000082,plain]-^  VideoClass
+PremiumVideoClass     -[#000082,plain]-^  PublishableVideoClass
+EpisodeClass          -[#000082,plain]-^  VideoClass
+
+PublishableVideoClass -[#008200,dashed]-^ PublishableVideo
+PremiumVideoClass     -[#008200,dashed]-^ PremiumVideo
+EpisodeClass          -[#008200,dashed]-^ Episode
+
+PodcastClass          -[#008200,dashed]-^ Podcast
+ShowClass             -[#008200,dashed]-^ Show
+YouVideoAppClass      -[#008200,dashed]-^ YouVideoApp
+
+ArrayClass            -[#008200,dashed]-^ Array
+ArrayIteratorClass    -[#008200,dashed]-^ Iterator
+ArrayClass            -[#595959,dashed]->  ArrayIteratorClass : "«create»"
+
+PremiumVideoClass    "1" *-[#595959,plain]-> "subtitles\n1" Array
+PremiumVideoClass     -[#595959,dashed]->  ArrayClass : "«create»"
+PremiumVideoClass     -[#595959,dashed]->  Subtitle : "«create»"
+
+PodcastClass         "1" *-[#595959,plain]-> "episodes\n1" Array
+PodcastClass          -[#595959,dashed]->  ArrayClass : "«create»"
+
+YouVideoAppClass     "1" *-[#595959,plain]-> "videos\n1" Array
+YouVideoAppClass     "1" *-[#595959,plain]-> "podcasts\n1" Array
+YouVideoAppClass     "1" *-[#595959,plain]-> "shows\n1" Array
+YouVideoAppClass      -[#595959,dashed]->  ArrayClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  PublishableVideoClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  PremiumVideoClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  PodcastClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  EpisodeClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  ShowClass : "«create»"
+YouVideoAppClass      -[#595959,dashed]->  Subtitle : "«create»"
+
+Main                  -[#595959,dashed]->  YouVideoAppClass : "«create»"
+Main                  -[#595959,dashed]->  YouVideoApp
+Main                  -[#595959,dashed]->  PublishableVideo
+Main                  -[#595959,dashed]->  PremiumVideo
+Main                  -[#595959,dashed]->  Podcast
+Main                  -[#595959,dashed]->  Episode
+Main                  -[#595959,dashed]->  Show
+Main                  -[#595959,dashed]->  Subtitle
+
 @enduml
