@@ -1,25 +1,28 @@
 package youVideo;
 
-import dataStructures.Array;
-
-import java.util.Locale;
-
+/**
+ * Represents the common information shared by every video in the system.
+ */
 public interface Video {
+
+    /**
+     * Returns the unique identifier of the video.
+     *
+     * @return video identifier
+     */
     String getId();
 
+    /**
+     * Returns the duration of the video.
+     *
+     * @return video duration
+     */
     int getDuration();
 
+    /**
+     * Returns the location of the video file.
+     *
+     * @return video location
+     */
     String getVideoLocation();
-
-    String getTitle();
-
-    String getPublisher();
-
-    Locale getLanguage();
-
-    String getDate();
-
-    void addSubtitle(Subtitle subtitle);
-
-    Array<Subtitle> getSubtitles();
 }

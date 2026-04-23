@@ -1,16 +1,13 @@
 package youVideo;
 
 /**
- * Concrete implementation of a show.
+ * implementation of a show.
  */
 public class ShowClass implements Show {
     private final String title;
     private final String author;
     private final String transmissionDate;
 
-    /**
-     * Search constructor used when only the title matters.
-     */
     public ShowClass(String title) {
         this(title, null, null);
     }
@@ -48,10 +45,5 @@ public class ShowClass implements Show {
 
         Show show = (Show) other;
         return title != null && title.equalsIgnoreCase(show.getTitle());
-    }
-
-    @Override
-    public int hashCode() {
-        return title == null ? 0 : title.toLowerCase().hashCode();
     }
 }

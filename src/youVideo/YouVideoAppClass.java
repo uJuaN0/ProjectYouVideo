@@ -3,24 +3,16 @@ package youVideo;
 import dataStructures.Array;
 import dataStructures.ArrayClass;
 import dataStructures.Iterator;
-
 import java.util.Locale;
 
 /**
  * This class is responsible for storing and managing the domain objects
  * of the system: videos, podcasts and shows.
- *
- * Input/output formatting is handled by the Main class.
  */
 public class YouVideoAppClass implements YouVideoApp {
 
-    // Stores all videos in the system.
-    private final Array<Video> videos;
-
-    // Stores all podcasts in the system.
+    private final Array<PublishableVideo> videos;
     private final Array<Podcast> podcasts;
-
-    // Stores all shows in the system.
     private final Array<Show> shows;
 
     /**
@@ -34,26 +26,23 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     // Adds a new publishable video to the system.
-    public void addPublishable(String id, int duration, String location,
-                               String title, String publisher, Locale language) {
-        Video video = new PublishableVideoClass(id, duration, location, title, publisher, language);
+    public void addPublishable(String id, int duration, String location, String title, String publisher, Locale language) {
+        PublishableVideo video = new PublishableVideoClass(id, duration, location, title, publisher, language);
         videos.insertLast(video);
     }
 
     @Override
     // Adds a new premium video with its first subtitle.
-    public void addPremium(String id, int duration, String location, String title,
-                           String publisher, Locale language, String subtitleLocation,
-                           Locale subtitleLanguage) {
+    public void addPremium(String id, int duration, String location, String title, String publisher, Locale language, String subtitleLocation, Locale subtitleLanguage) {
         Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
-        Video video = new PremiumVideoClass(id, duration, location, title, publisher, language, subtitle);
+        PublishableVideo video = new PremiumVideoClass(id, duration, location, title, publisher, language, subtitle);
         videos.insertLast(video);
     }
 
     @Override
     // Adds a subtitle to an existing premium video.
     public void addSubtitle(String subtitleLocation, Locale language, String id) {
-        Video video = getVideo(id);
+        PremiumVideo video = (PremiumVideo) getVideo(id);
         video.addSubtitle(new Subtitle(language, subtitleLocation));
     }
 
@@ -75,7 +64,7 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     // Creates a new show using the title of a stored video.
     public void createShow(String author, String videoId, String transmissionDate) {
-        Video video = getVideo(videoId);
+        PublishableVideo video = getVideo(videoId);
         Show show = new ShowClass(video.getTitle(), author, transmissionDate);
         shows.insertLast(show);
     }
@@ -99,14 +88,14 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     // Removes a video from the system.
     public void removeVideo(String videoId) {
-        Video video = getVideo(videoId);
+        PublishableVideo video = getVideo(videoId);
         int index = videos.searchIndexOf(video);
         videos.removeAt(index);
     }
 
     @Override
     // Returns the video with the given id.
-    public Video getVideo(String id) {
+    public PublishableVideo getVideo(String id) {
         return findVideo(id);
     }
 
@@ -124,7 +113,7 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     // Returns all podcasts written by a given author.
-    public Array<Podcast> getPodcastsByAuthor(String author) {
+    public Iterator<Podcast> getPodcastsByAuthor(String author) {
         Array<Podcast> authorPodcasts = new ArrayClass<>();
         Iterator<Podcast> iterator = podcasts.iterator();
 
@@ -134,8 +123,7 @@ public class YouVideoAppClass implements YouVideoApp {
                 authorPodcasts.insertLast(podcast);
             }
         }
-
-        return authorPodcasts;
+        return authorPodcasts.iterator();
     }
 
     @Override
@@ -160,7 +148,6 @@ public class YouVideoAppClass implements YouVideoApp {
             Podcast podcast = iterator.next();
             unique = podcast.isUnique(id);
         }
-
         return unique;
     }
 
@@ -180,8 +167,8 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     // Checks if a given video is premium.
     public boolean isPremium(String id) {
-        Video video = getVideo(id);
-        return video instanceof PremiumVideoClass;
+        PublishableVideo video = getVideo(id);
+        return video instanceof PremiumVideo;
     }
 
     @Override
@@ -194,21 +181,14 @@ public class YouVideoAppClass implements YouVideoApp {
             Podcast podcast = iterator.next();
             found = !podcast.isUnique(videoId);
         }
-
         return found;
     }
 
     @Override
     // Checks if a video is being used in some show.
     public boolean isVideoUsedInShow(String videoId) {
-        Video video = getVideo(videoId);
-        String title = video.getTitle();
-
-        if (title == null) {
-            return false;
-        }
-
-        return findShow(title) != null;
+        PublishableVideo video = getVideo(videoId);
+        return findShow(video.getTitle()) != null;
     }
 
     @Override
@@ -232,7 +212,6 @@ public class YouVideoAppClass implements YouVideoApp {
                 found = true;
             }
         }
-
         return storedName;
     }
 
@@ -251,7 +230,6 @@ public class YouVideoAppClass implements YouVideoApp {
                 }
             }
         }
-
         return valid;
     }
 
@@ -261,13 +239,11 @@ public class YouVideoAppClass implements YouVideoApp {
      * @param id video identifier
      * @return matching video, or null if it does not exist
      */
-    private Video findVideo(String id) {
+    private PublishableVideo findVideo(String id) {
         int index = videos.searchIndexOf(new PublishableVideoClass(id));
-
         if (index == -1) {
             return null;
         }
-
         return videos.get(index);
     }
 
@@ -279,11 +255,9 @@ public class YouVideoAppClass implements YouVideoApp {
      */
     private Podcast findPodcast(String title) {
         int index = podcasts.searchIndexOf(new PodcastClass(title));
-
         if (index == -1) {
             return null;
         }
-
         return podcasts.get(index);
     }
 
@@ -295,11 +269,9 @@ public class YouVideoAppClass implements YouVideoApp {
      */
     private Show findShow(String title) {
         int index = shows.searchIndexOf(new ShowClass(title));
-
         if (index == -1) {
             return null;
         }
-
         return shows.get(index);
     }
 }

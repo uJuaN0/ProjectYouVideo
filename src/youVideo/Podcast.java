@@ -1,6 +1,7 @@
 package youVideo;
 
-import dataStructures.Array;
+import dataStructures.Iterator;
+
 import java.util.Locale;
 
 /**
@@ -71,5 +72,5 @@ public interface Podcast {
      *
      * @return episode collection
      */
-    Array<Episode> getEpisodes();
+    Iterator<Episode> getEpisodes();
 }

@@ -8,10 +8,7 @@ public abstract class VideoClass implements Video {
     private final int duration;
     private final String videoLocation;
 
-    /**
-     * Full constructor.
-     */
-    protected VideoClass(String id, int duration, String videoLocation) {
+    public VideoClass(String id, int duration, String videoLocation) {
         this.id = id;
         this.duration = duration;
         this.videoLocation = videoLocation;
@@ -20,7 +17,7 @@ public abstract class VideoClass implements Video {
     /**
      * Search constructor used when only the id matters.
      */
-    protected VideoClass(String id) {
+    public VideoClass(String id) {
         this(id, 0, null);
     }
 
@@ -54,10 +51,5 @@ public abstract class VideoClass implements Video {
 
         Video video = (Video) other;
         return id != null && id.equalsIgnoreCase(video.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return id == null ? 0 : id.toLowerCase().hashCode();
     }
 }

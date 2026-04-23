@@ -1,6 +1,6 @@
 package youVideo;
 
-import dataStructures.Array;
+import dataStructures.Iterator;
 import java.util.Locale;
 
 public interface YouVideoApp {
@@ -15,8 +15,7 @@ public interface YouVideoApp {
      * @param publisher video publisher
      * @param language video language
      */
-    void addPublishable(String id, int duration, String location,
-                        String title, String publisher, Locale language);
+    void addPublishable(String id, int duration, String location, String title, String publisher, Locale language);
 
     /**
      * Adds a new premium video to the system.
@@ -30,9 +29,7 @@ public interface YouVideoApp {
      * @param subtitleLocation initial subtitle location
      * @param subtitleLanguage initial subtitle language
      */
-    void addPremium(String id, int duration, String location, String title,
-                    String publisher, Locale language, String subtitleLocation,
-                    Locale subtitleLanguage);
+    void addPremium(String id, int duration, String location, String title, String publisher, Locale language, String subtitleLocation, Locale subtitleLanguage);
 
     /**
      * Adds a subtitle to an existing premium video.
@@ -106,12 +103,12 @@ public interface YouVideoApp {
     void removeVideo(String videoId);
 
     /**
-     * Returns the video with the given identifier.
+     * Returns the publishable video with the given identifier.
      *
      * @param id video identifier
      * @return the matching video, or null if it does not exist
      */
-    Video getVideo(String id);
+    PublishableVideo getVideo(String id);
 
     /**
      * Returns the podcast with the given title.
@@ -133,9 +130,9 @@ public interface YouVideoApp {
      * Returns all podcasts written by a given author.
      *
      * @param author author name
-     * @return collection of podcasts by that author
+     * @return iterator over the podcasts of that author
      */
-    Array<Podcast> getPodcastsByAuthor(String author);
+    Iterator<Podcast> getPodcastsByAuthor(String author);
 
     /**
      * Checks whether a video identifier is unique in the system.
@@ -217,6 +214,4 @@ public interface YouVideoApp {
      * @return stored author name or the original name if not found
      */
     String getStoredAuthorName(String author);
-
-
 }

@@ -1,10 +1,10 @@
-import dataStructures.Array;
 import dataStructures.Iterator;
 import youVideo.Episode;
 import youVideo.Podcast;
+import youVideo.PremiumVideo;
+import youVideo.PublishableVideo;
 import youVideo.Show;
 import youVideo.Subtitle;
-import youVideo.Video;
 import youVideo.YouVideoApp;
 import youVideo.YouVideoAppClass;
 
@@ -113,7 +113,6 @@ public class Main {
     // Starts the application loop.
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);
-
         Scanner in = new Scanner(System.in);
         YouVideoApp app = new YouVideoAppClass();
         String command;
@@ -164,7 +163,6 @@ public class Main {
         int duration = in.nextInt();
         String location = in.next();
         in.nextLine();
-
         String publisher = in.nextLine();
         String title = in.nextLine();
         String language = in.nextLine();
@@ -187,7 +185,6 @@ public class Main {
         int duration = in.nextInt();
         String location = in.next();
         in.nextLine();
-
         String publisher = in.nextLine();
         String title = in.nextLine();
         String language = in.nextLine();
@@ -243,7 +240,7 @@ public class Main {
         if (app.isUniqueVideo(id)) {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         } else {
-            Video video = app.getVideo(id);
+            PublishableVideo video = app.getVideo(id);
             printVideo(video, app.isPremium(id));
         }
     }
@@ -255,7 +252,7 @@ public class Main {
         if (app.isUniqueVideo(id) || !app.isPremium(id)) {
             System.out.println(MSG_SUB_NOT_FOUND);
         } else {
-            Video video = app.getVideo(id);
+            PremiumVideo video = (PremiumVideo) app.getVideo(id);
             printSubtitles(video);
         }
     }
@@ -328,13 +325,8 @@ public class Main {
     // Handles the visualization of all podcasts by a given author.
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String author = in.nextLine().trim();
-        Array<Podcast> authorPodcasts = app.getPodcastsByAuthor(author);
-
-        if (authorPodcasts.size() == 0) {
-            System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
-        } else {
-            printAuthorPodcasts(author, authorPodcasts);
-        }
+        Iterator<Podcast> iterator = app.getPodcastsByAuthor(author);
+        printAuthorPodcasts(author, iterator);
     }
 
     // Handles the removal of a podcast.
@@ -407,9 +399,8 @@ public class Main {
     }
 
     // Prints a video using the required output format.
-    private static void printVideo(Video video, boolean premium) {
+    private static void printVideo(PublishableVideo video, boolean premium) {
         String prefix = EMPTY_STRING;
-
         if (premium) {
             prefix = PREMIUM_PREFIX;
         }
@@ -421,7 +412,6 @@ public class Main {
                 video.getDuration(),
                 video.getTitle()
         );
-
         System.out.printf(
                 FORMAT_VIDEO_DETAILS,
                 video.getVideoLocation(),
@@ -431,9 +421,8 @@ public class Main {
     }
 
     // Prints all subtitles of a premium video.
-    private static void printSubtitles(Video video) {
-        Iterator<Subtitle> iterator = video.getSubtitles().iterator();
-
+    private static void printSubtitles(PremiumVideo video) {
+        Iterator<Subtitle> iterator = video.getSubtitles();
         System.out.printf(FORMAT_SUBTITLES_HEADER, video.getTitle());
 
         while (iterator.hasNext()) {
@@ -462,8 +451,7 @@ public class Main {
 
     // Prints all episodes of a podcast.
     private static void printEpisodes(String title, Podcast podcast) {
-        Iterator<Episode> iterator = podcast.getEpisodes().iterator();
-
+        Iterator<Episode> iterator = podcast.getEpisodes();
         System.out.printf(FORMAT_EPISODES_HEADER, title);
 
         while (iterator.hasNext()) {
@@ -479,19 +467,25 @@ public class Main {
     }
 
     // Prints all podcasts of a given author.
-    private static void printAuthorPodcasts(String author, Array<Podcast> podcasts) {
-        Iterator<Podcast> iterator = podcasts.iterator();
-
-        System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author);
+    private static void printAuthorPodcasts(String author, Iterator<Podcast> iterator) {
+        boolean found = false;
 
         while (iterator.hasNext()) {
             Podcast podcast = iterator.next();
+            if (!found) {
+                System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author);
+                found = true;
+            }
             System.out.printf(
                     FORMAT_AUTHOR_PODCASTS_LINE,
                     podcast.getTitle(),
                     podcast.getAuthor(),
                     getLanguageCode(podcast.getLanguage())
             );
+        }
+
+        if (!found) {
+            System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
         }
     }
 
@@ -514,11 +508,9 @@ public class Main {
     // Returns the language display name in the expected format.
     private static String getLanguageDisplayName(Locale language) {
         String code = language.getLanguage().toLowerCase();
-
         if (FULAH_CODE.equals(code)) {
             return FULAH_NAME;
         }
-
         return language.getDisplayLanguage(Locale.ENGLISH).toUpperCase();
     }
 

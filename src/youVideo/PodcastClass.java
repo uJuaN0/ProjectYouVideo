@@ -2,6 +2,7 @@ package youVideo;
 
 import dataStructures.Array;
 import dataStructures.ArrayClass;
+import dataStructures.Iterator;
 
 import java.util.Locale;
 
@@ -69,8 +70,8 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
-    public Array<Episode> getEpisodes() {
-        return episodes;
+    public Iterator<Episode> getEpisodes() {
+        return episodes.iterator();
     }
 
     /**
@@ -92,10 +93,5 @@ public class PodcastClass implements Podcast {
 
         Podcast podcast = (Podcast) other;
         return title != null && title.equalsIgnoreCase(podcast.getTitle());
-    }
-
-    @Override
-    public int hashCode() {
-        return title == null ? 0 : title.toLowerCase().hashCode();
     }
 }

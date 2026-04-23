@@ -2,19 +2,19 @@ package youVideo;
 
 import dataStructures.Array;
 import dataStructures.ArrayClass;
-
+import dataStructures.Iterator;
 import java.util.Locale;
 
 /**
  * Concrete implementation of a premium video.
  */
-public class PremiumVideoClass extends PublishableVideoClass {
+public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
+
     private final Array<Subtitle> subtitles;
 
-    public PremiumVideoClass(String id, int duration, String location, String title,
-                             String publisher, Locale language, Subtitle subtitle) {
+    public PremiumVideoClass(String id, int duration, String location, String title, String publisher, Locale language, Subtitle subtitle) {
         super(id, duration, location, title, publisher, language);
-        this.subtitles = new ArrayClass<>();
+        subtitles = new ArrayClass<>();
         addInitialSubtitle(subtitle);
     }
 
@@ -33,7 +33,7 @@ public class PremiumVideoClass extends PublishableVideoClass {
     }
 
     @Override
-    public Array<Subtitle> getSubtitles() {
-        return subtitles;
+    public Iterator<Subtitle> getSubtitles() {
+        return subtitles.iterator();
     }
 }
