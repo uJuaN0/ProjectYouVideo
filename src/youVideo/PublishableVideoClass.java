@@ -1,11 +1,13 @@
 package youVideo;
 
+import dataStructures.Array;
+
 import java.util.Locale;
 
 /**
  * Concrete implementation of a publishable video.
  */
-public class PublishableVideoClass extends VideoClass implements PublishableVideo {
+public class PublishableVideoClass extends VideoClass {
     private final String title;
     private final String publisher;
     private final Locale language;
@@ -41,5 +43,20 @@ public class PublishableVideoClass extends VideoClass implements PublishableVide
     @Override
     public Locale getLanguage() {
         return language;
+    }
+
+    @Override
+    public String getDate() {
+        return "";
+    }
+
+    @Override
+    public void addSubtitle(Subtitle subtitle) {
+
+    }
+
+    @Override
+    public Array<Subtitle> getSubtitles() {
+        return null;
     }
 }

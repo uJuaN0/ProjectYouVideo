@@ -6,471 +6,300 @@ import dataStructures.Iterator;
 
 import java.util.Locale;
 
+/**
+ * This class is responsible for storing and managing the domain objects
+ * of the system: videos, podcasts and shows.
+ *
+ * Input/output formatting is handled by the Main class.
+ */
 public class YouVideoAppClass implements YouVideoApp {
-    private static final String NO_PODCASTS_BY_AUTHOR = "No podcasts found for this author.";
-    private static final String FULAH_CODE = "ff";
-    private static final String FULAH_NAME = "FULAH";
 
+    // Stores all videos in the system.
     private final Array<Video> videos;
+
+    // Stores all podcasts in the system.
     private final Array<Podcast> podcasts;
+
+    // Stores all shows in the system.
     private final Array<Show> shows;
 
+    /**
+     * Creates an empty YouVideo application.
+     */
     public YouVideoAppClass() {
         videos = new ArrayClass<>();
         podcasts = new ArrayClass<>();
         shows = new ArrayClass<>();
     }
 
-    /**
-     * Returns all podcasts written by a given author.
-     */
-    public String authorPodcasts(String author) {
-        StringBuilder result = new StringBuilder();
-        boolean found = false;
-
-        result.append("Podcasts by author ")
-                .append(author)
-                .append(":\n");
-
-        Iterator<Podcast> iterator = podcasts.iterator();
-        while (iterator.hasNext()) {
-            Podcast podcast = iterator.next();
-
-            if (podcast.getAuthor().equalsIgnoreCase(author)) {
-                found = true;
-                appendPodcastAuthorLine(result, podcast);
-            }
-        }
-
-        if (!found) {
-            return NO_PODCASTS_BY_AUTHOR;
-        }
-
-        return result.toString().trim();
+    @Override
+    // Adds a new publishable video to the system.
+    public void addPublishable(String id, int duration, String location,
+                               String title, String publisher, Locale language) {
+        Video video = new PublishableVideoClass(id, duration, location, title, publisher, language);
+        videos.insertLast(video);
     }
 
-    /**
-     * Returns the subtitle list of a premium video using the required output format.
-     */
-    public String getSubtitlesInfo(String id) {
-        PremiumVideo premiumVideo = (PremiumVideo) getVideo(id);
-        StringBuilder result = new StringBuilder();
-
-        result.append("Subtitles for video ")
-                .append(premiumVideo.getTitle())
-                .append(":");
-
-        Iterator<Subtitle> iterator = premiumVideo.getSubtitles().iterator();
-        while (iterator.hasNext()) {
-            Subtitle subtitle = iterator.next();
-            appendSubtitleLine(result, subtitle);
-        }
-
-        return result.toString();
+    @Override
+    // Adds a new premium video with its first subtitle.
+    public void addPremium(String id, int duration, String location, String title,
+                           String publisher, Locale language, String subtitleLocation,
+                           Locale subtitleLanguage) {
+        Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
+        Video video = new PremiumVideoClass(id, duration, location, title, publisher, language, subtitle);
+        videos.insertLast(video);
     }
 
-    /**
-     * Checks whether the given video is currently used by a show.
-     */
-    public boolean isVideoUsedInShow(String videoId) {
-        String title = getVideoTitle(videoId);
-        return findShow(title) != null;
-    }
-
-    /**
-     * Returns all episodes of a podcast using the required output format.
-     */
-    public String getEpisodes(String title) {
-        Podcast podcast = getPodcast(title);
-        StringBuilder result = new StringBuilder();
-
-        result.append("Episodes for podcast ")
-                .append(title)
-                .append(":\n");
-
-        Iterator<Episode> iterator = podcast.getEpisodes().iterator();
-        while (iterator.hasNext()) {
-            Episode episode = iterator.next();
-            appendEpisodeBlock(result, episode);
-        }
-
-        return result.toString().trim();
-    }
-
-    /**
-     * Returns the summary information of a podcast.
-     */
-    public String getPodcastInfo(String title) {
-        Podcast podcast = getPodcast(title);
-        StringBuilder result = new StringBuilder();
-
-        result.append("Podcast: ")
-                .append(podcast.getTitle())
-                .append(" Author: ")
-                .append(podcast.getAuthor())
-                .append(" Language: ")
-                .append(getLanguageCode(podcast.getLanguage()));
-
-        if (podcast.hasEpisodes()) {
-            result.append("\nLatest episode date: ")
-                    .append(podcast.getLastestDate());
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * Returns the summary information of a video.
-     */
-    public String getVideoInfo(String id) {
-        Video video = getVideo(id);
-        PublishableVideo publishableVideo = (PublishableVideo) video;
-
-        return String.format(
-                "%sVideo %s %d Title: %s%nFile: %s Publisher: %s Language: %s",
-                getVideoPrefix(video),
-                publishableVideo.getId(),
-                publishableVideo.getDuration(),
-                publishableVideo.getTitle(),
-                publishableVideo.getVideoLocation(),
-                publishableVideo.getPublisher(),
-                getLanguageDisplayName(publishableVideo.getLanguage())
-        );
-    }
-
-    /**
-     * Checks whether a given video is premium.
-     */
-    public boolean isPremium(String id) {
-        Video video = getVideo(id);
-        return video instanceof PremiumVideo;
-    }
-
-    /**
-     * Removes a podcast from the system.
-     */
-    public void removePodcast(String title) {
-        Podcast podcast = getPodcast(title);
-        int index = podcasts.searchIndexOf(podcast);
-        podcasts.removeAt(index);
-    }
-
-    /**
-     * Checks whether an id belongs to an episode of any podcast.
-     */
-    public boolean isEpisode(String videoId) {
-        Iterator<Podcast> iterator = podcasts.iterator();
-
-        while (iterator.hasNext()) {
-            Podcast podcast = iterator.next();
-            if (!podcast.isUnique(videoId)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Adds a subtitle to an existing premium video.
-     */
+    @Override
+    // Adds a subtitle to an existing premium video.
     public void addSubtitle(String subtitleLocation, Locale language, String id) {
-        PremiumVideo premiumVideo = (PremiumVideo) getVideo(id);
-        premiumVideo.addSubtitle(new Subtitle(language, subtitleLocation));
+        Video video = getVideo(id);
+        video.addSubtitle(new Subtitle(language, subtitleLocation));
     }
 
-    /**
-     * Returns a podcast by title, or null if not found.
-     */
-    public Podcast getPodcast(String title) {
-        return findPodcast(title);
+    @Override
+    // Adds a new podcast to the system.
+    public void addPodcast(String title, String author, Locale language) {
+        Podcast podcast = new PodcastClass(title, author, language);
+        podcasts.insertLast(podcast);
     }
 
-    /**
-     * Returns a video by id.
-     */
-    public Video getVideo(String id) {
-        return findVideo(id);
-    }
-
-    /**
-     * Adds a new episode to a podcast.
-     */
+    @Override
+    // Adds a new episode to an existing podcast.
     public void addEpisode(String title, String id, int duration, String location, String date) {
         Podcast podcast = getPodcast(title);
         Episode episode = new EpisodeClass(id, duration, location, date);
         podcast.addEpisode(episode);
     }
 
-    /**
-     * Checks whether a podcast already has episodes.
-     */
-    public boolean hasEpisodesPodcast(String title) {
-        Podcast podcast = getPodcast(title);
-        return podcast.hasEpisodes();
-    }
-
-    /**
-     * Adds a new podcast to the system.
-     */
-    public void addPodcast(String title, String author, Locale language) {
-        podcasts.insertLast(new PodcastClass(title, author, language));
-    }
-
-    /**
-     * Adds a new publishable video to the system.
-     */
-    public void addPublishable(String id, int duration, String location,
-                               String title, String publisher, Locale language) {
-        videos.insertLast(new PublishableVideoClass(id, duration, location, title, publisher, language));
-    }
-
-    /**
-     * Adds a new premium video to the system.
-     */
-    public void addPremium(String id, int duration, String location, String title,
-                           String publisher, Locale language, String subtitleLocation,
-                           Locale subtitleLanguage) {
-        Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
-        videos.insertLast(new PremiumVideoClass(id, duration, location, title, publisher, language, subtitle));
-    }
-
-    /**
-     * Checks whether a video id is still unique in the system.
-     */
-    public boolean isUniqueVideo(String id) {
-        return findVideo(id) == null;
-    }
-
-    /**
-     * Checks whether a podcast title is still unique in the system.
-     */
-    public boolean isUniquePodcast(String title) {
-        return findPodcast(title) == null;
-    }
-
-    /**
-     * Checks whether an episode id is globally unique across videos and podcasts.
-     */
-    public boolean isUniqueEpisode(String id) {
-        if (!isUniqueVideo(id)) {
-            return false;
-        }
-
-        Iterator<Podcast> iterator = podcasts.iterator();
-        while (iterator.hasNext()) {
-            Podcast podcast = iterator.next();
-            if (!podcast.isUnique(id)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks whether a podcast accepts a new episode date.
-     */
-    public boolean isNewer(String title, String date) {
-        Podcast podcast = getPodcast(title);
-        return podcast.isNewer(date);
-    }
-
-    /**
-     * Checks whether a language code is a valid ISO language.
-     */
-    public static boolean isValidLanguage(String lang) {
-        if (lang == null || lang.length() != 2) {
-            return false;
-        }
-
-        String normalized = lang.toLowerCase();
-        String[] languages = Locale.getISOLanguages();
-
-        for (String language : languages) {
-            if (language.equals(normalized)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether a show title is still unique in the system.
-     */
-    public boolean isUniqueShow(String title) {
-        return findShow(title) == null;
-    }
-
-    /**
-     * Returns a show by title.
-     */
-    public Show getShow(String title) {
-        return findShow(title);
-    }
-
-    /**
-     * Returns the title used by a show.
-     */
-    public String getShowVideoTitle(String title) {
-        Show show = getShow(title);
-        return show.getTitle();
-    }
-
-    /**
-     * Returns the title of a video by id.
-     */
-    public String getVideoTitle(String id) {
-        PublishableVideo publishableVideo = (PublishableVideo) getVideo(id);
-        return publishableVideo.getTitle();
-    }
-
-    /**
-     * Creates a show using the title of the target video.
-     */
+    @Override
+    // Creates a new show using the title of a stored video.
     public void createShow(String author, String videoId, String transmissionDate) {
-        String title = getVideoTitle(videoId);
-        shows.insertLast(new ShowClass(title, author, transmissionDate));
+        Video video = getVideo(videoId);
+        Show show = new ShowClass(video.getTitle(), author, transmissionDate);
+        shows.insertLast(show);
     }
 
-    /**
-     * Returns the transmission date of a show.
-     */
-    public String getShowDate(String title) {
-        Show show = getShow(title);
-        return show.getDate();
+    @Override
+    // Removes a podcast from the system.
+    public void removePodcast(String title) {
+        Podcast podcast = getPodcast(title);
+        int index = podcasts.searchIndexOf(podcast);
+        podcasts.removeAt(index);
     }
 
-    /**
-     * Returns the author of a show.
-     */
-    public String getShowAuthor(String title) {
-        Show show = getShow(title);
-        return show.getAuthor();
-    }
-
-    /**
-     * Returns the canonical author name already used in the system, if any.
-     */
-    public String getStoredAuthorName(String author) {
-        Iterator<Podcast> iterator = podcasts.iterator();
-
-        while (iterator.hasNext()) {
-            Podcast podcast = iterator.next();
-            if (podcast.getAuthor().equalsIgnoreCase(author)) {
-                return podcast.getAuthor();
-            }
-        }
-
-        return author;
-    }
-
-    /**
-     * Removes a show from the system.
-     */
+    @Override
+    // Removes a show from the system.
     public void removeShow(String title) {
         Show show = getShow(title);
         int index = shows.searchIndexOf(show);
         shows.removeAt(index);
     }
 
-    /**
-     * Removes a publishable video from the system.
-     */
+    @Override
+    // Removes a video from the system.
     public void removeVideo(String videoId) {
         Video video = getVideo(videoId);
         int index = videos.searchIndexOf(video);
         videos.removeAt(index);
     }
 
+    @Override
+    // Returns the video with the given id.
+    public Video getVideo(String id) {
+        return findVideo(id);
+    }
+
+    @Override
+    // Returns the podcast with the given title.
+    public Podcast getPodcast(String title) {
+        return findPodcast(title);
+    }
+
+    @Override
+    // Returns the show with the given title.
+    public Show getShow(String title) {
+        return findShow(title);
+    }
+
+    @Override
+    // Returns all podcasts written by a given author.
+    public Array<Podcast> getPodcastsByAuthor(String author) {
+        Array<Podcast> authorPodcasts = new ArrayClass<>();
+        Iterator<Podcast> iterator = podcasts.iterator();
+
+        while (iterator.hasNext()) {
+            Podcast podcast = iterator.next();
+            if (podcast.getAuthor().equalsIgnoreCase(author)) {
+                authorPodcasts.insertLast(podcast);
+            }
+        }
+
+        return authorPodcasts;
+    }
+
+    @Override
+    // Checks if a video id is still unique in the system.
+    public boolean isUniqueVideo(String id) {
+        return findVideo(id) == null;
+    }
+
+    @Override
+    // Checks if a podcast title is still unique in the system.
+    public boolean isUniquePodcast(String title) {
+        return findPodcast(title) == null;
+    }
+
+    @Override
+    // Checks if an episode id is unique across videos and podcasts.
+    public boolean isUniqueEpisode(String id) {
+        boolean unique = isUniqueVideo(id);
+        Iterator<Podcast> iterator = podcasts.iterator();
+
+        while (iterator.hasNext() && unique) {
+            Podcast podcast = iterator.next();
+            unique = podcast.isUnique(id);
+        }
+
+        return unique;
+    }
+
+    @Override
+    // Checks if a show title is still unique in the system.
+    public boolean isUniqueShow(String title) {
+        return findShow(title) == null;
+    }
+
+    @Override
+    // Checks if a new episode date is valid for a podcast.
+    public boolean isNewer(String title, String date) {
+        Podcast podcast = getPodcast(title);
+        return podcast.isNewer(date);
+    }
+
+    @Override
+    // Checks if a given video is premium.
+    public boolean isPremium(String id) {
+        Video video = getVideo(id);
+        return video instanceof PremiumVideoClass;
+    }
+
+    @Override
+    // Checks if a given id already belongs to an episode.
+    public boolean isEpisode(String videoId) {
+        Iterator<Podcast> iterator = podcasts.iterator();
+        boolean found = false;
+
+        while (iterator.hasNext() && !found) {
+            Podcast podcast = iterator.next();
+            found = !podcast.isUnique(videoId);
+        }
+
+        return found;
+    }
+
+    @Override
+    // Checks if a video is being used in some show.
+    public boolean isVideoUsedInShow(String videoId) {
+        Video video = getVideo(videoId);
+        String title = video.getTitle();
+
+        if (title == null) {
+            return false;
+        }
+
+        return findShow(title) != null;
+    }
+
+    @Override
+    // Checks if a podcast already has episodes.
+    public boolean hasEpisodesPodcast(String title) {
+        Podcast podcast = getPodcast(title);
+        return podcast.hasEpisodes();
+    }
+
+    @Override
+    // Returns the stored version of an author name, if it already exists.
+    public String getStoredAuthorName(String author) {
+        Iterator<Podcast> iterator = podcasts.iterator();
+        String storedName = author;
+        boolean found = false;
+
+        while (iterator.hasNext() && !found) {
+            Podcast podcast = iterator.next();
+            if (podcast.getAuthor().equalsIgnoreCase(author)) {
+                storedName = podcast.getAuthor();
+                found = true;
+            }
+        }
+
+        return storedName;
+    }
+
+    // Checks if a language code is a valid ISO language.
+    public static boolean isValidLanguage(String lang) {
+        boolean valid = false;
+        String[] languages;
+
+        if (lang != null && lang.length() == 2) {
+            lang = lang.toLowerCase();
+            languages = Locale.getISOLanguages();
+
+            for (String language : languages) {
+                if (language.equals(lang)) {
+                    valid = true;
+                }
+            }
+        }
+
+        return valid;
+    }
+
     /**
-     * Finds a video by id, or returns null if it does not exist.
+     * Finds a video by its identifier.
+     *
+     * @param id video identifier
+     * @return matching video, or null if it does not exist
      */
     private Video findVideo(String id) {
         int index = videos.searchIndexOf(new PublishableVideoClass(id));
-        return index == -1 ? null : videos.get(index);
+
+        if (index == -1) {
+            return null;
+        }
+
+        return videos.get(index);
     }
 
     /**
-     * Finds a podcast by title, or returns null if it does not exist.
+     * Finds a podcast by its title.
+     *
+     * @param title podcast title
+     * @return matching podcast, or null if it does not exist
      */
     private Podcast findPodcast(String title) {
         int index = podcasts.searchIndexOf(new PodcastClass(title));
-        return index == -1 ? null : podcasts.get(index);
+
+        if (index == -1) {
+            return null;
+        }
+
+        return podcasts.get(index);
     }
 
     /**
-     * Finds a show by title, or returns null if it does not exist.
+     * Finds a show by its title.
+     *
+     * @param title show title
+     * @return matching show, or null if it does not exist
      */
     private Show findShow(String title) {
         int index = shows.searchIndexOf(new ShowClass(title));
-        return index == -1 ? null : shows.get(index);
-    }
 
-    /**
-     * Appends one podcast line to the author listing.
-     */
-    private void appendPodcastAuthorLine(StringBuilder result, Podcast podcast) {
-        result.append("Podcast: ")
-                .append(podcast.getTitle())
-                .append(" Author: ")
-                .append(podcast.getAuthor())
-                .append(" Language: ")
-                .append(getLanguageCode(podcast.getLanguage()))
-                .append("\n");
-    }
-
-    /**
-     * Appends one subtitle line to the output.
-     */
-    private void appendSubtitleLine(StringBuilder result, Subtitle subtitle) {
-        result.append("\n- ")
-                .append(subtitle.getLocation())
-                .append(" (")
-                .append(getLanguageDisplayName(subtitle.getLanguage()))
-                .append(")");
-    }
-
-    /**
-     * Appends one episode block to the output.
-     */
-    private void appendEpisodeBlock(StringBuilder result, Episode episode) {
-        result.append("Episode ")
-                .append(episode.getId())
-                .append(": ")
-                .append(episode.getDuration())
-                .append(" min Date: ")
-                .append(episode.getDate())
-                .append("\nURL: ")
-                .append(episode.getVideoLocation())
-                .append("\n");
-    }
-
-    /**
-     * Returns the prefix used in video formatting.
-     */
-    private String getVideoPrefix(Video video) {
-        return video instanceof PremiumVideo ? "PREMIUM " : "";
-    }
-
-    /**
-     * Returns the uppercase ISO language code.
-     */
-    private String getLanguageCode(Locale language) {
-        return language.getLanguage().toUpperCase();
-    }
-
-    /**
-     * Returns the language display name in the exact output format required.
-     */
-    private String getLanguageDisplayName(Locale language) {
-        String code = language.getLanguage().toLowerCase();
-
-        if (FULAH_CODE.equals(code)) {
-            return FULAH_NAME;
+        if (index == -1) {
+            return null;
         }
 
-        return language.getDisplayLanguage(Locale.ENGLISH).toUpperCase();
+        return shows.get(index);
     }
 }

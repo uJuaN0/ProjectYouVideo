@@ -1,126 +1,16 @@
 package youVideo;
 
+import dataStructures.Array;
 import java.util.Locale;
 
-/**
- * Defines the public operations available in the YouVideo application.
- */
 public interface YouVideoApp {
-
-    /**
-     * Returns all podcasts written by a given author.
-     *
-     * @param author author name
-     * @return formatted podcast list or an error message if none exist
-     */
-    String authorPodcasts(String author);
-
-    /**
-     * Returns the subtitle information of a premium video.
-     *
-     * @param id video identifier
-     * @return formatted subtitle list
-     */
-    String getSubtitlesInfo(String id);
-
-    /**
-     * Checks whether a video is currently being used in a show.
-     *
-     * @param videoId video identifier
-     * @return true if the video is used in a show, false otherwise
-     */
-    boolean isVideoUsedInShow(String videoId);
-
-    /**
-     * Returns all episodes of a podcast.
-     *
-     * @param title podcast title
-     * @return formatted episode list
-     */
-    String getEpisodes(String title);
-
-    /**
-     * Returns the summary information of a podcast.
-     *
-     * @param title podcast title
-     * @return formatted podcast information
-     */
-    String getPodcastInfo(String title);
-
-    /**
-     * Returns the summary information of a video.
-     *
-     * @param id video identifier
-     * @return formatted video information
-     */
-    String getVideoInfo(String id);
-
-    /**
-     * Checks whether a given video is premium.
-     *
-     * @param id video identifier
-     * @return true if the video is premium, false otherwise
-     */
-    boolean isPremium(String id);
-
-    /**
-     * Removes a podcast from the system.
-     *
-     * @param title title of the podcast to remove
-     */
-    void removePodcast(String title);
-
-    /**
-     * Checks whether an identifier belongs to an episode.
-     *
-     * @param videoId identifier to check
-     * @return true if the identifier belongs to an episode, false otherwise
-     */
-    boolean isEpisode(String videoId);
-
-    /**
-     * Adds a subtitle to an existing premium video.
-     *
-     * @param subtitleLocation subtitle file location
-     * @param language subtitle language
-     * @param id premium video identifier
-     */
-    void addSubtitle(String subtitleLocation, Locale language, String id);
-
-    /**
-     * Adds a new episode to an existing podcast.
-     *
-     * @param title podcast title
-     * @param id episode identifier
-     * @param duration episode duration
-     * @param location episode file location
-     * @param date episode publication date
-     */
-    void addEpisode(String title, String id, int duration, String location, String date);
-
-    /**
-     * Checks whether a podcast already contains episodes.
-     *
-     * @param title podcast title
-     * @return true if the podcast has episodes, false otherwise
-     */
-    boolean hasEpisodesPodcast(String title);
-
-    /**
-     * Adds a new podcast to the system.
-     *
-     * @param title podcast title
-     * @param author podcast author
-     * @param language podcast language
-     */
-    void addPodcast(String title, String author, Locale language);
 
     /**
      * Adds a new publishable video to the system.
      *
      * @param id video identifier
      * @param duration video duration
-     * @param location video file location
+     * @param location video location
      * @param title video title
      * @param publisher video publisher
      * @param language video language
@@ -133,16 +23,119 @@ public interface YouVideoApp {
      *
      * @param id video identifier
      * @param duration video duration
-     * @param location video file location
+     * @param location video location
      * @param title video title
      * @param publisher video publisher
      * @param language video language
-     * @param subtitleLocation initial subtitle file location
+     * @param subtitleLocation initial subtitle location
      * @param subtitleLanguage initial subtitle language
      */
     void addPremium(String id, int duration, String location, String title,
                     String publisher, Locale language, String subtitleLocation,
                     Locale subtitleLanguage);
+
+    /**
+     * Adds a subtitle to an existing premium video.
+     *
+     * @param subtitleLocation subtitle location
+     * @param language subtitle language
+     * @param id premium video identifier
+     *
+     * @pre !isUniqueVideo(id) && isPremium(id)
+     */
+    void addSubtitle(String subtitleLocation, Locale language, String id);
+
+    /**
+     * Adds a new podcast to the system.
+     *
+     * @param title podcast title
+     * @param author podcast author
+     * @param language podcast language
+     */
+    void addPodcast(String title, String author, Locale language);
+
+    /**
+     * Adds a new episode to an existing podcast.
+     *
+     * @param title podcast title
+     * @param id episode identifier
+     * @param duration episode duration
+     * @param location episode location
+     * @param date episode date
+     *
+     * @pre !isUniquePodcast(title) && isUniqueEpisode(id) && isNewer(title, date)
+     */
+    void addEpisode(String title, String id, int duration, String location, String date);
+
+    /**
+     * Creates a show using an existing publishable video.
+     *
+     * @param author show author
+     * @param videoId video identifier
+     * @param transmissionDate show transmission date
+     *
+     * @pre !isUniqueVideo(videoId)
+     */
+    void createShow(String author, String videoId, String transmissionDate);
+
+    /**
+     * Removes a podcast from the system.
+     *
+     * @param title podcast title
+     *
+     * @pre !isUniquePodcast(title)
+     */
+    void removePodcast(String title);
+
+    /**
+     * Removes a show from the system.
+     *
+     * @param title show title
+     *
+     * @pre !isUniqueShow(title)
+     */
+    void removeShow(String title);
+
+    /**
+     * Removes a publishable video from the system.
+     *
+     * @param videoId video identifier
+     *
+     * @pre !isUniqueVideo(videoId) && !isEpisode(videoId) && !isVideoUsedInShow(videoId)
+     */
+    void removeVideo(String videoId);
+
+    /**
+     * Returns the video with the given identifier.
+     *
+     * @param id video identifier
+     * @return the matching video, or null if it does not exist
+     */
+    Video getVideo(String id);
+
+    /**
+     * Returns the podcast with the given title.
+     *
+     * @param title podcast title
+     * @return the matching podcast, or null if it does not exist
+     */
+    Podcast getPodcast(String title);
+
+    /**
+     * Returns the show with the given title.
+     *
+     * @param title show title
+     * @return the matching show, or null if it does not exist
+     */
+    Show getShow(String title);
+
+    /**
+     * Returns all podcasts written by a given author.
+     *
+     * @param author author name
+     * @return collection of podcasts by that author
+     */
+    Array<Podcast> getPodcastsByAuthor(String author);
 
     /**
      * Checks whether a video identifier is unique in the system.
@@ -169,15 +162,6 @@ public interface YouVideoApp {
     boolean isUniqueEpisode(String id);
 
     /**
-     * Checks whether a date is valid for insertion in the given podcast.
-     *
-     * @param title podcast title
-     * @param date date to validate
-     * @return true if the date is valid, false otherwise
-     */
-    boolean isNewer(String title, String date);
-
-    /**
      * Checks whether a show title is unique in the system.
      *
      * @param title show title
@@ -186,66 +170,53 @@ public interface YouVideoApp {
     boolean isUniqueShow(String title);
 
     /**
-     * Returns the title of the video associated with a show.
+     * Checks whether a podcast accepts a new episode date.
      *
-     * @param title show title
-     * @return video title used by the show
+     * @param title podcast title
+     * @param date new episode date
+     * @return true if the date is valid, false otherwise
      */
-    String getShowVideoTitle(String title);
+    boolean isNewer(String title, String date);
 
     /**
-     * Returns the title of a video.
+     * Checks whether a given video is premium.
      *
      * @param id video identifier
-     * @return video title
+     * @return true if the video is premium, false otherwise
      */
-    String getVideoTitle(String id);
+    boolean isPremium(String id);
 
     /**
-     * Creates a new show from an existing publishable video.
+     * Checks whether a given identifier belongs to an episode.
      *
-     * @param author show author
-     * @param videoId source video identifier
-     * @param transmissionDate show transmission date
+     * @param videoId identifier to test
+     * @return true if it belongs to an episode, false otherwise
      */
-    void createShow(String author, String videoId, String transmissionDate);
+    boolean isEpisode(String videoId);
 
     /**
-     * Returns the date of a show.
+     * Checks whether a publishable video is used in a show.
      *
-     * @param title show title
-     * @return show date
+     * @param videoId video identifier
+     * @return true if the video is used in a show, false otherwise
      */
-    String getShowDate(String title);
+    boolean isVideoUsedInShow(String videoId);
 
     /**
-     * Returns the author of a show.
+     * Checks whether a podcast already has episodes.
      *
-     * @param title show title
-     * @return show author
+     * @param title podcast title
+     * @return true if the podcast has episodes, false otherwise
      */
-    String getShowAuthor(String title);
+    boolean hasEpisodesPodcast(String title);
 
     /**
-     * Returns the canonical author name already stored in the system.
-     * If no equivalent author exists, returns the given name.
+     * Returns the stored version of an author name if it already exists.
      *
-     * @param author author name to normalize
-     * @return canonical author name
+     * @param author author name
+     * @return stored author name or the original name if not found
      */
     String getStoredAuthorName(String author);
 
-    /**
-     * Removes a show from the system.
-     *
-     * @param title title of the show to remove
-     */
-    void removeShow(String title);
 
-    /**
-     * Removes a publishable video from the system.
-     *
-     * @param videoId identifier of the video to remove
-     */
-    void removeVideo(String videoId);
 }

@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Concrete implementation of a premium video.
  */
-public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
+public class PremiumVideoClass extends PublishableVideoClass {
     private final Array<Subtitle> subtitles;
 
     public PremiumVideoClass(String id, int duration, String location, String title,

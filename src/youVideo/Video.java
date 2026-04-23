@@ -1,28 +1,25 @@
 package youVideo;
 
-/**
- * Represents a generic video element in the system.
- */
-public interface Video {
+import dataStructures.Array;
 
-    /**
-     * Returns the unique identifier of the video.
-     *
-     * @return video identifier
-     */
+import java.util.Locale;
+
+public interface Video {
     String getId();
 
-    /**
-     * Returns the duration of the video in minutes.
-     *
-     * @return video duration
-     */
     int getDuration();
 
-    /**
-     * Returns the location or URL of the video file.
-     *
-     * @return video location
-     */
     String getVideoLocation();
+
+    String getTitle();
+
+    String getPublisher();
+
+    Locale getLanguage();
+
+    String getDate();
+
+    void addSubtitle(Subtitle subtitle);
+
+    Array<Subtitle> getSubtitles();
 }

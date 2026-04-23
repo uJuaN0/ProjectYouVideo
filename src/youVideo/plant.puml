@@ -1,0 +1,188 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package youVideo {
+
+interface Video {
+    +getId() : String
+    +getDuration() : int
+    +getVideoLocation() : String
+    +equals(other : Object) : boolean
+    +getTitle() : String
+    +getPublisher() : String
+    +getLanguage() : Locale
+}
+
+abstract class VideoClass {
+    -id : String
+    -duration : int
+    -videoLocation : String
+    +VideoClass(id : String, duration : int, videoLocation : String)
+    +VideoClass(id : String)
+    +getId() : String
+    +getDuration() : int
+    +getVideoLocation() : String
+    +equals(other : Object) : boolean
+}
+
+class PublishableVideoClass {
+    -title : String
+    -publisher : String
+    -language : Locale
+    +PublishableVideoClass(id : String, duration : int, videoLocation : String, title : String, publisher : String, language : Locale)
+    +PublishableVideoClass(id : String)
+    +getTitle() : String
+    +getPublisher() : String
+    +getLanguage() : Locale
+}
+
+class PremiumVideoClass {
+    -subtitles : Array<Subtitle>
+    +PremiumVideoClass(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitle : Subtitle)
+    +addSubtitle(subtitle : Subtitle) : void
+    +getSubtitles() : Array<Subtitle>
+}
+
+interface Episode {
+    +getDate() : String
+}
+
+class EpisodeClass {
+    -date : String
+    +EpisodeClass(id : String, duration : int, videoLocation : String, date : String)
+    +EpisodeClass(id : String)
+    +getDate() : String
+}
+
+interface Podcast {
+    +getTitle() : String
+    +getAuthor() : String
+    +getLanguage() : Locale
+    +isUnique(id : String) : boolean
+    +isNewer(date : String) : boolean
+    +addEpisode(e : Episode) : void
+    +getLastestDate() : String
+    +hasEpisodes() : boolean
+    +getEpisodes() : Array<Episode>
+    +equals(other : Object) : boolean
+}
+
+class PodcastClass {
+    -episodes : Array<Episode>
+    -title : String
+    -author : String
+    -language : Locale
+    +PodcastClass(title : String, author : String, language : Locale)
+    +PodcastClass(title : String)
+    +getTitle() : String
+    +getAuthor() : String
+    +getLanguage() : Locale
+    +isUnique(id : String) : boolean
+    +isNewer(date : String) : boolean
+    +addEpisode(e : Episode) : void
+    +getLastestDate() : String
+    +hasEpisodes() : boolean
+    +getEpisodes() : Array<Episode>
+    +equals(other : Object) : boolean
+}
+
+interface Show {
+    +getTitle() : String
+    +getDate() : String
+    +getAuthor() : String
+}
+
+class ShowClass {
+    -title : String
+    -author : String
+    -transmissionDate : String
+    +ShowClass(title : String)
+    +ShowClass(title : String, author : String, transmissionDate : String)
+    +getTitle() : String
+    +getDate() : String
+    +getAuthor() : String
+    +equals(other : Object) : boolean
+}
+
+class Subtitle <<record>> {
+    +language : Locale
+    +location : String
+    +getLanguage() : Locale
+    +getLocation() : String
+}
+
+interface YouVideoApp {
+    +addPublishable(id : String, duration : int, location : String, title : String, publisher : String, language : Locale) : void
+    +addPremium(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitleLocation : String, subtitleLanguage : Locale) : void
+    +addSubtitle(subtitleLocation : String, language : Locale, id : String) : void
+    +addPodcast(title : String, author : String, language : Locale) : void
+    +addEpisode(title : String, id : String, duration : int, location : String, date : String) : void
+    +createShow(author : String, videoId : String, transmissionDate : String) : void
+    +removePodcast(title : String) : void
+    +removeShow(title : String) : void
+    +removeVideo(videoId : String) : void
+    +getVideo(id : String) : Video
+    +getPodcast(title : String) : Podcast
+    +getShow(title : String) : Show
+    +getPodcastsByAuthor(author : String) : Array<Podcast>
+    +isUniqueVideo(id : String) : boolean
+    +isUniquePodcast(title : String) : boolean
+    +isUniqueEpisode(id : String) : boolean
+    +isUniqueShow(title : String) : boolean
+    +isNewer(title : String, date : String) : boolean
+    +isPremium(id : String) : boolean
+    +isEpisode(videoId : String) : boolean
+    +isVideoUsedInShow(videoId : String) : boolean
+    +hasEpisodesPodcast(title : String) : boolean
+    +getStoredAuthorName(author : String) : String
+}
+
+class YouVideoAppClass {
+    -videos : Array<Video>
+    -podcasts : Array<Podcast>
+    -shows : Array<Show>
+    +YouVideoAppClass()
+    +addPublishable(id : String, duration : int, location : String, title : String, publisher : String, language : Locale) : void
+    +addPremium(id : String, duration : int, location : String, title : String, publisher : String, language : Locale, subtitleLocation : String, subtitleLanguage : Locale) : void
+    +addSubtitle(subtitleLocation : String, language : Locale, id : String) : void
+    +addPodcast(title : String, author : String, language : Locale) : void
+    +addEpisode(title : String, id : String, duration : int, location : String, date : String) : void
+    +createShow(author : String, videoId : String, transmissionDate : String) : void
+    +removePodcast(title : String) : void
+    +removeShow(title : String) : void
+    +removeVideo(videoId : String) : void
+    +getVideo(id : String) : Video
+    +getPodcast(title : String) : Podcast
+    +getShow(title : String) : Show
+    +getPodcastsByAuthor(author : String) : Array<Podcast>
+    +isUniqueVideo(id : String) : boolean
+    +isUniquePodcast(title : String) : boolean
+    +isUniqueEpisode(id : String) : boolean
+    +isUniqueShow(title : String) : boolean
+    +isNewer(title : String, date : String) : boolean
+    +isPremium(id : String) : boolean
+    +isEpisode(videoId : String) : boolean
+    +isVideoUsedInShow(videoId : String) : boolean
+    +hasEpisodesPodcast(title : String) : boolean
+    +getStoredAuthorName(author : String) : String
+}
+
+Video <|.. VideoClass
+Video <|-- Episode
+VideoClass <|-- PublishableVideoClass
+PublishableVideoClass <|-- PremiumVideoClass
+VideoClass <|-- EpisodeClass
+Episode <|.. EpisodeClass
+
+Podcast <|.. PodcastClass
+Show <|.. ShowClass
+YouVideoApp <|.. YouVideoAppClass
+
+PodcastClass *-- "0..*" Episode : episodes
+PremiumVideoClass *-- "0..*" Subtitle : subtitles
+
+YouVideoAppClass *-- "0..*" Video : videos
+YouVideoAppClass *-- "0..*" Podcast : podcasts
+YouVideoAppClass *-- "0..*" Show : shows
+}
+@enduml

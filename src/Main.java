@@ -1,3 +1,10 @@
+import dataStructures.Array;
+import dataStructures.Iterator;
+import youVideo.Episode;
+import youVideo.Podcast;
+import youVideo.Show;
+import youVideo.Subtitle;
+import youVideo.Video;
 import youVideo.YouVideoApp;
 import youVideo.YouVideoAppClass;
 
@@ -5,10 +12,12 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * @author Juan Lima 75513 // Miguel Passão 75460
+ * @author Juan Lima 75513
+ * @author Miguel Passão 75460
  */
-
 public class Main {
+
+    // Commands available in the application.
     private static final String CMD_ADD_PUBLISHABLE = "createpublishable";
     private static final String CMD_ADD_PREMIUM = "createpremium";
     private static final String CMD_ADD_SUBTITLE = "addsubtitle";
@@ -27,6 +36,7 @@ public class Main {
     private static final String CMD_HELP = "help";
     private static final String CMD_EXIT = "exit";
 
+    // Output messages used by the interface.
     private static final String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.";
     private static final String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.";
     private static final String MSG_VIDEO_ID_NOT_FOUND = "Publishable Video %s does not exist.";
@@ -50,15 +60,37 @@ public class Main {
     private static final String MSG_PODCAST_REMOVED = "Podcast removed successfully.";
     private static final String MSG_SHOW_CREATED = "Show created successfully.";
     private static final String MSG_SHOW_NO_EXIST = "Show does not exist.";
-    private static final String MSG_GET_SHOW_PT1 = "Show Date: %s Author: %s%n";
-    private static final String MSG_GET_SHOW_PT2 = "Video: %s%n";
     private static final String MSG_EXIT = "Bye!";
     private static final String MSG_SHOW_REMOVED = "Show removed successfully.";
     private static final String MSG_UNKNOWN_COMMAND = "Unknown command. Type help to see available commands.";
     private static final String MSG_VIDEO_IS_EPISODE = "Cannot remove: video is an episode of a podcast.";
     private static final String MSG_VIDEO_IS_SHOW = "Cannot remove: video is used in a show.";
     private static final String MSG_VIDEO_REMOVED = "Video removed successfully.";
+    private static final String MSG_NO_PODCASTS_BY_AUTHOR = "No podcasts found for this author.";
 
+    // Special constants used in output formatting.
+    private static final String FULAH_CODE = "ff";
+    private static final String FULAH_NAME = "FULAH";
+    private static final String PREMIUM_PREFIX = "PREMIUM ";
+    private static final String EMPTY_STRING = "";
+
+    // Format strings used when printing structured information.
+    private static final String FORMAT_VIDEO_HEADER = "%sVideo %s %d Title: %s%n";
+    private static final String FORMAT_VIDEO_DETAILS = "File: %s Publisher: %s Language: %s%n";
+    private static final String FORMAT_SUBTITLES_HEADER = "Subtitles for video %s:%n";
+    private static final String FORMAT_SUBTITLE_LINE = "- %s (%s)%n";
+    private static final String FORMAT_PODCAST_INFO = "Podcast: %s Author: %s Language: %s%n";
+    private static final String FORMAT_PODCAST_LATEST = "Latest episode date: %s%n";
+    private static final String FORMAT_EPISODES_HEADER = "Episodes for podcast %s:%n";
+    private static final String FORMAT_EPISODE_LINE = "Episode %s: %d min Date: %s%n";
+    private static final String FORMAT_EPISODE_URL = "URL: %s%n";
+    private static final String FORMAT_AUTHOR_PODCASTS_HEADER = "Podcasts by author %s:%n";
+    private static final String FORMAT_AUTHOR_PODCASTS_LINE = "Podcast: %s Author: %s Language: %s%n";
+    private static final String FORMAT_SHOW_HEADER = "Show Date: %s Author: %s%n";
+    private static final String FORMAT_SHOW_VIDEO = "Video: %s%n";
+    private static final String FORMAT_ONE_VALUE_NEWLINE = "%s%n";
+
+    // Help text shown to the user.
     private static final String HELP_INFO =
             "createpublishable - creates a new publishable video\n" +
                     "createpremium - creates a new publishable Premium video\n" +
@@ -78,6 +110,7 @@ public class Main {
                     "help - shows the available commands\n" +
                     "exit - terminates the execution of the program";
 
+    // Starts the application loop.
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);
 
@@ -91,16 +124,12 @@ public class Main {
         } while (!CMD_EXIT.equals(command));
     }
 
-    /**
-     * Reads the next command and converts it to lowercase.
-     */
+    // Reads the next command and converts it to lowercase.
     private static String readCommand(Scanner in) {
         return in.next().toLowerCase();
     }
 
-    /**
-     * Dispatches a command to the correct handler.
-     */
+    // Dispatches the command to the correct handler.
     private static void executeCommand(String command, Scanner in, YouVideoApp app) {
         switch (command) {
             case CMD_ADD_PUBLISHABLE -> handleAddPublishable(in, app);
@@ -124,16 +153,12 @@ public class Main {
         }
     }
 
-    /**
-     * Prints the help information.
-     */
+    // Prints the help information.
     private static void printHelp() {
         System.out.println(HELP_INFO);
     }
 
-    /**
-     * Handles the creation of a normal publishable video.
-     */
+    // Handles the creation of a normal publishable video.
     private static void handleAddPublishable(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -156,9 +181,7 @@ public class Main {
         }
     }
 
-    /**
-     * Handles the creation of a premium video.
-     */
+    // Handles the creation of a premium video.
     private static void handleAddPremium(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -194,9 +217,7 @@ public class Main {
         }
     }
 
-    /**
-     * Handles subtitle creation for a premium video.
-     */
+    // Handles the addition of a subtitle to a premium video.
     private static void handleAddSubtitle(Scanner in, YouVideoApp app) {
         String id = in.next();
         String location = in.next();
@@ -215,35 +236,31 @@ public class Main {
         }
     }
 
-    /**
-     * Handles the getvideo command.
-     */
+    // Handles the visualization of a video.
     private static void handleGetVideo(Scanner in, YouVideoApp app) {
         String id = in.next();
 
         if (app.isUniqueVideo(id)) {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         } else {
-            System.out.println(app.getVideoInfo(id));
+            Video video = app.getVideo(id);
+            printVideo(video, app.isPremium(id));
         }
     }
 
-    /**
-     * Handles the subtitles command.
-     */
+    // Handles the visualization of subtitles of a premium video.
     private static void handleGetSubtitles(Scanner in, YouVideoApp app) {
         String id = in.next();
 
         if (app.isUniqueVideo(id) || !app.isPremium(id)) {
             System.out.println(MSG_SUB_NOT_FOUND);
         } else {
-            System.out.println(app.getSubtitlesInfo(id));
+            Video video = app.getVideo(id);
+            printSubtitles(video);
         }
     }
 
-    /**
-     * Handles podcast creation.
-     */
+    // Handles the creation of a podcast.
     private static void handleAddPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String author = in.nextLine();
@@ -260,9 +277,7 @@ public class Main {
         }
     }
 
-    /**
-     * Handles episode creation.
-     */
+    // Handles the creation of an episode for a podcast.
     private static void handleAddEpisode(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String id = in.next();
@@ -284,22 +299,19 @@ public class Main {
         }
     }
 
-    /**
-     * Handles the getpodcast command.
-     */
+    // Handles the visualization of podcast information.
     private static void handleGetPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
         if (app.isUniquePodcast(title)) {
             System.out.println(MSG_NO_PODCAST);
         } else {
-            System.out.println(app.getPodcastInfo(title));
+            Podcast podcast = app.getPodcast(title);
+            printPodcast(podcast);
         }
     }
 
-    /**
-     * Handles the episodes command.
-     */
+    // Handles the visualization of all episodes of a podcast.
     private static void handleGetEpisodes(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -308,21 +320,24 @@ public class Main {
         } else if (!app.hasEpisodesPodcast(title)) {
             System.out.println(MSG_NO_EPISODES_PODCAST);
         } else {
-            System.out.println(app.getEpisodes(title));
+            Podcast podcast = app.getPodcast(title);
+            printEpisodes(title, podcast);
         }
     }
 
-    /**
-     * Handles the authorpodcasts command.
-     */
+    // Handles the visualization of all podcasts by a given author.
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String author = in.nextLine().trim();
-        System.out.println(app.authorPodcasts(author));
+        Array<Podcast> authorPodcasts = app.getPodcastsByAuthor(author);
+
+        if (authorPodcasts.size() == 0) {
+            System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
+        } else {
+            printAuthorPodcasts(author, authorPodcasts);
+        }
     }
 
-    /**
-     * Handles podcast removal.
-     */
+    // Handles the removal of a podcast.
     private static void handleRemovePodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -334,9 +349,7 @@ public class Main {
         }
     }
 
-    /**
-     * Handles show creation.
-     */
+    // Handles the creation of a show.
     private static void handleCreateShow(Scanner in, YouVideoApp app) {
         String author = in.nextLine().trim();
         String videoId = in.next();
@@ -345,7 +358,7 @@ public class Main {
 
         if (app.isUniqueVideo(videoId)) {
             System.out.println(MSG_VIDEO_FOR_SHOW_NOT_EXISTS);
-        } else if (!app.isUniqueShow(app.getVideoTitle(videoId))) {
+        } else if (!app.isUniqueShow(app.getVideo(videoId).getTitle())) {
             System.out.println(MSG_SHOW_EXISTS);
         } else {
             app.createShow(app.getStoredAuthorName(author), videoId, transmissionDate);
@@ -353,23 +366,19 @@ public class Main {
         }
     }
 
-    /**
-     * Handles the getshow command.
-     */
+    // Handles the visualization of a show.
     private static void handleGetShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
         if (app.isUniqueShow(title)) {
             System.out.println(MSG_SHOW_NO_EXIST);
         } else {
-            System.out.printf(MSG_GET_SHOW_PT1, app.getShowDate(title), app.getShowAuthor(title));
-            System.out.printf(MSG_GET_SHOW_PT2, app.getShowVideoTitle(title));
+            Show show = app.getShow(title);
+            printShow(show);
         }
     }
 
-    /**
-     * Handles show removal.
-     */
+    // Handles the removal of a show.
     private static void handleRemoveShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -381,9 +390,7 @@ public class Main {
         }
     }
 
-    /**
-     * Handles video removal.
-     */
+    // Handles the removal of a video.
     private static void handleRemoveVideo(Scanner in, YouVideoApp app) {
         String videoId = in.nextLine().trim();
 
@@ -399,17 +406,124 @@ public class Main {
         }
     }
 
-    /**
-     * Converts a language code into a Locale.
-     */
+    // Prints a video using the required output format.
+    private static void printVideo(Video video, boolean premium) {
+        String prefix = EMPTY_STRING;
+
+        if (premium) {
+            prefix = PREMIUM_PREFIX;
+        }
+
+        System.out.printf(
+                FORMAT_VIDEO_HEADER,
+                prefix,
+                video.getId(),
+                video.getDuration(),
+                video.getTitle()
+        );
+
+        System.out.printf(
+                FORMAT_VIDEO_DETAILS,
+                video.getVideoLocation(),
+                video.getPublisher(),
+                getLanguageDisplayName(video.getLanguage())
+        );
+    }
+
+    // Prints all subtitles of a premium video.
+    private static void printSubtitles(Video video) {
+        Iterator<Subtitle> iterator = video.getSubtitles().iterator();
+
+        System.out.printf(FORMAT_SUBTITLES_HEADER, video.getTitle());
+
+        while (iterator.hasNext()) {
+            Subtitle subtitle = iterator.next();
+            System.out.printf(
+                    FORMAT_SUBTITLE_LINE,
+                    subtitle.getLocation(),
+                    getLanguageDisplayName(subtitle.getLanguage())
+            );
+        }
+    }
+
+    // Prints the basic information of a podcast.
+    private static void printPodcast(Podcast podcast) {
+        System.out.printf(
+                FORMAT_PODCAST_INFO,
+                podcast.getTitle(),
+                podcast.getAuthor(),
+                getLanguageCode(podcast.getLanguage())
+        );
+
+        if (podcast.hasEpisodes()) {
+            System.out.printf(FORMAT_PODCAST_LATEST, podcast.getLastestDate());
+        }
+    }
+
+    // Prints all episodes of a podcast.
+    private static void printEpisodes(String title, Podcast podcast) {
+        Iterator<Episode> iterator = podcast.getEpisodes().iterator();
+
+        System.out.printf(FORMAT_EPISODES_HEADER, title);
+
+        while (iterator.hasNext()) {
+            Episode episode = iterator.next();
+            System.out.printf(
+                    FORMAT_EPISODE_LINE,
+                    episode.getId(),
+                    episode.getDuration(),
+                    episode.getDate()
+            );
+            System.out.printf(FORMAT_EPISODE_URL, episode.getVideoLocation());
+        }
+    }
+
+    // Prints all podcasts of a given author.
+    private static void printAuthorPodcasts(String author, Array<Podcast> podcasts) {
+        Iterator<Podcast> iterator = podcasts.iterator();
+
+        System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author);
+
+        while (iterator.hasNext()) {
+            Podcast podcast = iterator.next();
+            System.out.printf(
+                    FORMAT_AUTHOR_PODCASTS_LINE,
+                    podcast.getTitle(),
+                    podcast.getAuthor(),
+                    getLanguageCode(podcast.getLanguage())
+            );
+        }
+    }
+
+    // Prints the information of a show.
+    private static void printShow(Show show) {
+        System.out.printf(FORMAT_SHOW_HEADER, show.getDate(), show.getAuthor());
+        System.out.printf(FORMAT_SHOW_VIDEO, show.getTitle());
+    }
+
+    // Converts a language code into a Locale object.
     private static Locale toLocale(String languageCode) {
         return Locale.of(languageCode.toLowerCase());
     }
 
-    /**
-     * Prints a formatted success or error message with one line break.
-     */
+    // Returns the uppercase language code.
+    private static String getLanguageCode(Locale language) {
+        return language.getLanguage().toUpperCase();
+    }
+
+    // Returns the language display name in the expected format.
+    private static String getLanguageDisplayName(Locale language) {
+        String code = language.getLanguage().toLowerCase();
+
+        if (FULAH_CODE.equals(code)) {
+            return FULAH_NAME;
+        }
+
+        return language.getDisplayLanguage(Locale.ENGLISH).toUpperCase();
+    }
+
+    // Prints a formatted message followed by a newline.
     private static void printFormatted(String message, String value) {
-        System.out.printf(message + "%n", value);
+        System.out.printf(FORMAT_ONE_VALUE_NEWLINE, String.format(message, value));
     }
 }
