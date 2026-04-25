@@ -1,7 +1,7 @@
 package youVideo;
 
 /**
- * Concrete implementation of a podcast episode.
+ * implementation of a podcast episode.
  */
 public class EpisodeClass extends VideoClass implements Episode {
 

@@ -6,8 +6,8 @@ import dataStructures.Iterator;
 import java.util.Locale;
 
 /**
- * This class is responsible for storing and managing the domain objects
- * of the system: videos, podcasts and shows.
+ * This class is responsible for storing and managing objects
+ * of the system.
  */
 public class YouVideoAppClass implements YouVideoApp {
 
@@ -26,16 +26,20 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     // Adds a new publishable video to the system.
-    public void addPublishable(String id, int duration, String location, String title, String publisher, Locale language) {
-        PublishableVideo video = new PublishableVideoClass(id, duration, location, title, publisher, language);
+    public void addPublishable(String id, int duration, String location, String title,
+                               String publisher, Locale language) {
+        PublishableVideo video = new PublishableVideoClass(id, duration, location,
+                title, publisher, language);
         videos.insertLast(video);
     }
 
     @Override
-    // Adds a new premium video with its first subtitle.
-    public void addPremium(String id, int duration, String location, String title, String publisher, Locale language, String subtitleLocation, Locale subtitleLanguage) {
+    // Adds a new premium video.
+    public void addPremium(String id, int duration, String location, String title, String publisher,
+                           Locale language, String subtitleLocation, Locale subtitleLanguage) {
         Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
-        PublishableVideo video = new PremiumVideoClass(id, duration, location, title, publisher, language, subtitle);
+        PublishableVideo video = new PremiumVideoClass(id, duration, location,
+                title, publisher, language, subtitle);
         videos.insertLast(video);
     }
 
@@ -224,7 +228,8 @@ public class YouVideoAppClass implements YouVideoApp {
             lang = lang.toLowerCase();
             languages = Locale.getISOLanguages();
 
-            for (String language : languages) {
+            for (int i = 0; i < languages.length; i++) {
+                String language = languages[i];
                 if (language.equals(lang)) {
                     valid = true;
                 }

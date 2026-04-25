@@ -15,7 +15,8 @@ public interface YouVideoApp {
      * @param publisher video publisher
      * @param language video language
      */
-    void addPublishable(String id, int duration, String location, String title, String publisher, Locale language);
+    void addPublishable(String id, int duration, String location, String title,
+                        String publisher, Locale language);
 
     /**
      * Adds a new premium video to the system.
@@ -29,7 +30,8 @@ public interface YouVideoApp {
      * @param subtitleLocation initial subtitle location
      * @param subtitleLanguage initial subtitle language
      */
-    void addPremium(String id, int duration, String location, String title, String publisher, Locale language, String subtitleLocation, Locale subtitleLanguage);
+    void addPremium(String id, int duration, String location, String title, String publisher,
+                    Locale language, String subtitleLocation, Locale subtitleLanguage);
 
     /**
      * Adds a subtitle to an existing premium video.

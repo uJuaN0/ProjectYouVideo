@@ -6,7 +6,7 @@ import dataStructures.Iterator;
 import java.util.Locale;
 
 /**
- * Concrete implementation of a premium video.
+ * Implementation of a premium video.
  */
 public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
 

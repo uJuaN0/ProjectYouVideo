@@ -7,7 +7,7 @@ import dataStructures.Iterator;
 import java.util.Locale;
 
 /**
- * Concrete implementation of a podcast.
+ * implementation of a podcast.
  */
 public class PodcastClass implements Podcast {
     private final Array<Episode> episodes;

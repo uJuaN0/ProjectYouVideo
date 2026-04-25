@@ -36,7 +36,7 @@ public class Main {
     private static final String CMD_HELP = "help";
     private static final String CMD_EXIT = "exit";
 
-    // Output messages used by the interface.
+    // Output messages.
     private static final String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.";
     private static final String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.";
     private static final String MSG_VIDEO_ID_NOT_FOUND = "Publishable Video %s does not exist.";
@@ -90,7 +90,7 @@ public class Main {
     private static final String FORMAT_SHOW_VIDEO = "Video: %s%n";
     private static final String FORMAT_ONE_VALUE_NEWLINE = "%s%n";
 
-    // Help text shown to the user.
+    // Help command text.
     private static final String HELP_INFO =
             "createpublishable - creates a new publishable video\n" +
                     "createpremium - creates a new publishable Premium video\n" +
@@ -128,7 +128,7 @@ public class Main {
         return in.next().toLowerCase();
     }
 
-    // Dispatches the command to the correct handler.
+    // Directs the command to the correct handler.
     private static void executeCommand(String command, Scanner in, YouVideoApp app) {
         switch (command) {
             case CMD_ADD_PUBLISHABLE -> handleAddPublishable(in, app);
@@ -214,7 +214,7 @@ public class Main {
         }
     }
 
-    // Handles the addition of a subtitle to a premium video.
+    // Handles the addition of a subtitle to a video.
     private static void handleAddSubtitle(Scanner in, YouVideoApp app) {
         String id = in.next();
         String location = in.next();
@@ -233,7 +233,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of a video.
+    // Handles the print of video information.
     private static void handleGetVideo(Scanner in, YouVideoApp app) {
         String id = in.next();
 
@@ -245,7 +245,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of subtitles of a premium video.
+    // Handles the print of subtitle information.
     private static void handleGetSubtitles(Scanner in, YouVideoApp app) {
         String id = in.next();
 
@@ -296,7 +296,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of podcast information.
+    // Handles the print of podcast information.
     private static void handleGetPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -308,7 +308,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of all episodes of a podcast.
+    // Handles the print of all episodes information of a podcast.
     private static void handleGetEpisodes(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -322,7 +322,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of all podcasts by a given author.
+    // Handles the print of all podcasts information by a given author.
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String author = in.nextLine().trim();
         Iterator<Podcast> iterator = app.getPodcastsByAuthor(author);
@@ -358,7 +358,7 @@ public class Main {
         }
     }
 
-    // Handles the visualization of a show.
+    // Handles the print of a show information.
     private static void handleGetShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
 
@@ -435,7 +435,7 @@ public class Main {
         }
     }
 
-    // Prints the basic information of a podcast.
+    // Prints the information of a podcast.
     private static void printPodcast(Podcast podcast) {
         System.out.printf(
                 FORMAT_PODCAST_INFO,

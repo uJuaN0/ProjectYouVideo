@@ -3,7 +3,7 @@ package youVideo;
 import java.util.Locale;
 
 /**
- * Concrete implementation of a publishable video.
+ * implementation of a publishable video.
  */
 public class PublishableVideoClass extends VideoClass implements PublishableVideo {
 
