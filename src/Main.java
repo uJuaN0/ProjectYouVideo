@@ -90,7 +90,7 @@ public class Main {
     private static final String FORMAT_SHOW_VIDEO = "Video: %s%n";
     private static final String FORMAT_ONE_VALUE_NEWLINE = "%s%n";
 
-    // Help command text.
+    // Help command text. //TODO CHANGE THIS TO ENUMERATES
     private static final String HELP_INFO =
             "createpublishable - creates a new publishable video\n" +
                     "createpremium - creates a new publishable Premium video\n" +

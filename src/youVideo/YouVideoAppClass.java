@@ -1,9 +1,9 @@
 package youVideo;
+import java.util.*;
 
-import dataStructures.Array;
-import dataStructures.ArrayClass;
-import dataStructures.Iterator;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class is responsible for storing and managing objects
@@ -11,17 +11,21 @@ import java.util.Locale;
  */
 public class YouVideoAppClass implements YouVideoApp {
 
-    private final Array<PublishableVideo> videos;
-    private final Array<Podcast> podcasts;
-    private final Array<Show> shows;
+    private final Map<String, PublishableVideo> videos;
+    private final Map<String, Podcast> podcasts;
+    private final Map<String, Show> shows;
 
     /**
      * Creates an empty YouVideo application.
      */
     public YouVideoAppClass() {
-        videos = new ArrayClass<>();
-        podcasts = new ArrayClass<>();
-        shows = new ArrayClass<>();
+        videos = new HashMap<>();
+        podcasts = new LinkedHashMap<>();
+        shows = new HashMap<>();
+    }
+
+    public String normalizeKey(String key){
+        return key.trim().toUpperCase();
     }
 
     @Override
@@ -30,7 +34,9 @@ public class YouVideoAppClass implements YouVideoApp {
                                String publisher, Locale language) {
         PublishableVideo video = new PublishableVideoClass(id, duration, location,
                 title, publisher, language);
-        videos.insertLast(video);
+
+        String key = normalizeKey(id);
+        videos.put(key, video);
     }
 
     @Override
@@ -40,7 +46,9 @@ public class YouVideoAppClass implements YouVideoApp {
         Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
         PublishableVideo video = new PremiumVideoClass(id, duration, location,
                 title, publisher, language, subtitle);
-        videos.insertLast(video);
+
+        String key = normalizeKey(id);
+        videos.put(key, video);
     }
 
     @Override
@@ -54,11 +62,13 @@ public class YouVideoAppClass implements YouVideoApp {
     // Adds a new podcast to the system.
     public void addPodcast(String title, String author, Locale language) {
         Podcast podcast = new PodcastClass(title, author, language);
-        podcasts.insertLast(podcast);
+
+        String key = normalizeKey(title);
+        podcasts.put(key, podcast);
     }
 
     @Override
-    // Adds a new episode to an existing podcast.
+    // Adds a new episode to an existing podcast. //todo change podcast do java util
     public void addEpisode(String title, String id, int duration, String location, String date) {
         Podcast podcast = getPodcast(title);
         Episode episode = new EpisodeClass(id, duration, location, date);
@@ -70,56 +80,55 @@ public class YouVideoAppClass implements YouVideoApp {
     public void createShow(String author, String videoId, String transmissionDate) {
         PublishableVideo video = getVideo(videoId);
         Show show = new ShowClass(video.getTitle(), author, transmissionDate);
-        shows.insertLast(show);
+
+        String key = normalizeKey(video.getTitle());
+        shows.put(key, show);
     }
 
     @Override
     // Removes a podcast from the system.
     public void removePodcast(String title) {
-        Podcast podcast = getPodcast(title);
-        int index = podcasts.searchIndexOf(podcast);
-        podcasts.removeAt(index);
+        String key = normalizeKey(title);
+        podcasts.remove(key);
     }
 
     @Override
     // Removes a show from the system.
     public void removeShow(String title) {
-        Show show = getShow(title);
-        int index = shows.searchIndexOf(show);
-        shows.removeAt(index);
+        String key = normalizeKey(title); //todo change (parametro) to normalizekey
+        shows.remove(key);
     }
 
     @Override
     // Removes a video from the system.
     public void removeVideo(String videoId) {
-        PublishableVideo video = getVideo(videoId);
-        int index = videos.searchIndexOf(video);
-        videos.removeAt(index);
+        String key = normalizeKey(videoId);
+        videos.remove(key);
     }
 
     @Override
     // Returns the video with the given id.
     public PublishableVideo getVideo(String id) {
-        return findVideo(id);
+        return videos.get(normalizeKey(id));
     }
 
     @Override
     // Returns the podcast with the given title.
     public Podcast getPodcast(String title) {
-        return findPodcast(title);
+        return podcasts.get(normalizeKey(title));
     }
 
     @Override
     // Returns the show with the given title.
     public Show getShow(String title) {
-        return findShow(title);
+        return shows.get(normalizeKey(title));
     }
 
     @Override
     // Returns all podcasts written by a given author.
     public Iterator<Podcast> getPodcastsByAuthor(String author) {
         Array<Podcast> authorPodcasts = new ArrayClass<>();
-        Iterator<Podcast> iterator = podcasts.iterator();
+        Iterator<Podcast> iterator = podcasts.;
 
         while (iterator.hasNext()) {
             Podcast podcast = iterator.next();
@@ -146,7 +155,7 @@ public class YouVideoAppClass implements YouVideoApp {
     // Checks if an episode id is unique across videos and podcasts.
     public boolean isUniqueEpisode(String id) {
         boolean unique = isUniqueVideo(id);
-        Iterator<Podcast> iterator = podcasts.iterator();
+        Iterator<Podcast> iterator = podcasts.;
 
         while (iterator.hasNext() && unique) {
             Podcast podcast = iterator.next();
