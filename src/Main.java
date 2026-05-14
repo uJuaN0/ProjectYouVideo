@@ -9,27 +9,6 @@ import java.util.Scanner;
  * @author Miguel Passão 75460
  */
 public class Main {
-
-    // Commands available in the application.
-    private static final String CMD_ADD_PUBLISHABLE = "createpublishable";
-    private static final String CMD_ADD_PREMIUM = "createpremium";
-    private static final String CMD_ADD_SUBTITLE = "addsubtitle";
-    private static final String CMD_GET_VIDEO = "getvideo";
-    private static final String CMD_GET_SUBTITLES = "subtitles";
-    private static final String CMD_CREATE_PODCAST = "createpodcast";
-    private static final String CMD_ADD_EPISODE = "addepisode";
-    private static final String CMD_GET_PODCAST = "getpodcast";
-    private static final String CMD_EPISODES = "episodes";
-    private static final String CMD_CREATE_SHOW = "createshow";
-    private static final String CMD_GET_SHOW = "getshow";
-    private static final String CMD_REMOVE_PODCAST = "removepodcast";
-    private static final String CMD_REMOVE_SHOW = "removeshow";
-    private static final String CMD_AUTHOR_PODCAST = "authorpodcasts";
-    private static final String CMD_REMOVE_VIDEO = "removevideo";
-    private static final String CMD_AUTHOR_SHOWS = "authorshows";
-    private static final String CMD_HELP = "help";
-    private static final String CMD_EXIT = "exit";
-
     // Output messages.
     private static final String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.";
     private static final String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.";
@@ -70,6 +49,7 @@ public class Main {
     private static final String EMPTY_STRING = "";
 
     // Format strings used when printing structured information.
+    private static final String FORMAT_HELP_BODY = "%s - %s%n";
     private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s%n";
     private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s";
     private static final String FORMAT_TAGS_HEADER = "Tags:";
@@ -88,72 +68,68 @@ public class Main {
     private static final String FORMAT_SHOW_VIDEO = "Video: %s%n";
     private static final String FORMAT_ONE_VALUE_NEWLINE = "%s%n";
 
-    // Help command text. //TODO CHANGE THIS TO ENUMERATES
-    private static final String HELP_INFO =
-            "createpublishable - creates a new publishable video\n" +
-                    "createpremium - creates a new publishable Premium video\n" +
-                    "addsubtitle - adds subtitle to Premium video\n" +
-                    "getvideo - presents publishable video data from its id\n" +
-                    "subtitles - Lists Premium video subtitles\n" +
-                    "createpodcast - creates a new podcast with no episodes\n" +
-                    "addepisode - adds an episode to a podcast\n" +
-                    "getpodcast - presents podcast data from its title\n" +
-                    "episodes - List podcast episodes\n" +
-                    "authorpodcasts - List all podcasts of an author\n" +
-                    "removepodcast - removes a podcast\n" +
-                    "createshow - creates show using an existing publishable video\n" +
-                    "getshow - presents show data from its title\n" +
-                    "removeshow - removes a show\n" +
-                    "removevideo - removes a publishable video\n" +
-                    "help - shows the available commands\n" +
-                    "exit - terminates the execution of the program";
-
-    // Starts the application loop.
     public static void main(String[] args) {
         Locale.setDefault(Locale.ENGLISH);
         Scanner in = new Scanner(System.in);
         YouVideoApp app = new YouVideoAppClass();
-        String command;
+        processCommands(app, in);
+        in.close();
+    }
+
+    private static void processCommands(YouVideoApp app, Scanner in) {
+        Command command;
 
         do {
-            command = readCommand(in);
-            executeCommand(command, in, app);
-        } while (!CMD_EXIT.equals(command));
+            command = getCommand(in);
+            processCommand(app, command, in);
+        } while (!command.equals(Command.EXIT));
     }
 
-    // Reads the next command and converts it to lowercase.
-    private static String readCommand(Scanner in) {
-        return in.next().toLowerCase();
-    }
-
-    // Directs the command to the correct handler.
-    private static void executeCommand(String command, Scanner in, YouVideoApp app) {
+    private static void processCommand(YouVideoApp app, Command command, Scanner in) {
         switch (command) {
-            case CMD_ADD_PUBLISHABLE -> handleAddPublishable(in, app);
-            case CMD_ADD_PREMIUM -> handleAddPremium(in, app);
-            case CMD_ADD_SUBTITLE -> handleAddSubtitle(in, app);
-            case CMD_GET_VIDEO -> handleGetVideo(in, app);
-            case CMD_GET_SUBTITLES -> handleGetSubtitles(in, app);
-            case CMD_CREATE_PODCAST -> handleAddPodcast(in, app);
-            case CMD_ADD_EPISODE -> handleAddEpisode(in, app);
-            case CMD_GET_PODCAST -> handleGetPodcast(in, app);
-            case CMD_EPISODES -> handleGetEpisodes(in, app);
-            case CMD_AUTHOR_PODCAST -> handleGetAuthorPodcasts(in, app);
-            case CMD_REMOVE_PODCAST -> handleRemovePodcast(in, app);
-            case CMD_CREATE_SHOW -> handleCreateShow(in, app);
-            case CMD_GET_SHOW -> handleGetShow(in, app);
-            case CMD_REMOVE_SHOW -> handleRemoveShow(in, app);
-            case CMD_REMOVE_VIDEO -> handleRemoveVideo(in, app);
-            case CMD_AUTHOR_SHOWS -> handleAuthorShow(in, app);
-            case CMD_HELP -> printHelp();
-            case CMD_EXIT -> System.out.println(MSG_EXIT);
-            default -> System.out.println(MSG_UNKNOWN_COMMAND);
+            case CREATEPUBLISHABLE -> handleAddPublishable(in, app);
+            case CREATEPREMIUM -> handleAddPremium(in, app);
+            case ADDSUBTITLE -> handleAddSubtitle(in, app);
+            case GETVIDEO -> handleGetVideo(in, app);
+            case SUBTITLES -> handleGetSubtitles(in, app);
+            case CREATEPODCAST -> handleAddPodcast(in, app);
+            case ADDEPISODE -> handleAddEpisode(in, app);
+            case GETPODCAST -> handleGetPodcast(in, app);
+            case EPISODES -> handleGetEpisodes(in, app);
+            case AUTHORPODCASTS -> handleGetAuthorPodcasts(in, app);
+            case REMOVEPODCAST -> handleRemovePodcast(in, app);
+            case CREATESHOW -> handleCreateShow(in, app);
+            case GETSHOW -> handleGetShow(in, app);
+            case AUTHORSHOWS -> handleAuthorShow(in, app);
+            case REMOVESHOW -> handleRemoveShow(in, app);
+            case REMOVEVIDEO -> handleRemoveVideo(in, app);
+//            case AUTHORSPRODUCTIVITY -> handleAuthorsProductivity(app);
+//            case ADDTAG -> handleAddTag(in, app);
+//            case REMOVETAG -> handleRemoveTag(in, app);
+//            case TAGGED -> handleTagged(in, app);
+            case HELP -> printHelp();
+            case EXIT -> System.out.println(MSG_EXIT);
+            case UNKNOWN -> System.out.println(MSG_UNKNOWN_COMMAND);
+        }
+    }
+
+    private static Command getCommand(Scanner in) {
+        try {
+            String command = in.next().toUpperCase();
+            return Command.valueOf(command);
+        } catch (IllegalArgumentException e) {
+            return Command.UNKNOWN;
         }
     }
 
     // Prints the help information.
     private static void printHelp() {
-        System.out.println(HELP_INFO);
+        for (Command command : Command.values()){
+            if (command != Command.UNKNOWN){
+                System.out.printf(FORMAT_HELP_BODY,
+                        command.name().toLowerCase(), command.getDescription());
+            }
+        }
     }
 
     // Handles the creation of a normal publishable video.
