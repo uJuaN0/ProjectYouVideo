@@ -1,8 +1,9 @@
-import youVideo.*;
+import youVideo.*; //todo usar apenas necessário
 
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
+import Exceptions.*;
 
 /**
  * @author Juan Lima 75513
@@ -132,7 +133,6 @@ public class Main {
         }
     }
 
-    // Handles the creation of a normal publishable video.
     private static void handleAddPublishable(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -142,19 +142,18 @@ public class Main {
         String title = in.nextLine();
         String language = in.nextLine();
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
-            System.out.println(MSG_LANG);
-        } else if (duration <= 0) {
-            System.out.println(MSG_DURATION);
-        } else if (!app.isUniqueVideo(id)) {
-            System.out.println(MSG_ID);
-        } else {
-            app.addPublishable(id, duration, location, title, publisher, toLocale(language));
+        try {
+            app.addPublishable(id, duration, location, title, publisher, language);
             printFormatted(MSG_ADD_ADDED, id);
+        } catch (InvalidLanguageException e) {
+            System.out.println(MSG_LANG);
+        } catch (InvalidDurationException e) {
+            System.out.println(MSG_DURATION);
+        } catch (VideoAlreadyExistsException e) {
+            System.out.println(MSG_ID);
         }
     }
 
-    // Handles the creation of a premium video.
     private static void handleAddPremium(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -166,90 +165,76 @@ public class Main {
         String subtitleLocation = in.nextLine();
         String subtitleLanguage = in.nextLine();
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
-            System.out.println(MSG_LANG);
-        } else if (!YouVideoAppClass.isValidLanguage(subtitleLanguage)) {
-            System.out.println(MSG_LANG_SUBTITLE);
-        } else if (duration <= 0) {
-            System.out.println(MSG_DURATION);
-        } else if (!app.isUniqueVideo(id)) {
-            System.out.println(MSG_ID);
-        } else {
-            app.addPremium(
-                    id,
-                    duration,
-                    location,
-                    title,
-                    publisher,
-                    toLocale(language),
-                    subtitleLocation,
-                    toLocale(subtitleLanguage)
-            );
+        try {
+            app.addPremium(id, duration, location, title, publisher,
+                    language, subtitleLocation, subtitleLanguage);
             printFormatted(MSG_ADD_PREMIUM, id);
+        } catch (InvalidLanguageException e) {
+            System.out.println(MSG_LANG);
+        } catch (InvalidSubtitleLanguageException e){
+            System.out.println(MSG_LANG_SUBTITLE);
+        } catch (InvalidDurationException e) {
+            System.out.println(MSG_DURATION);
+        } catch (VideoAlreadyExistsException e) {
+            System.out.println(MSG_ID);
         }
     }
 
-    // Handles the addition of a subtitle to a video.
     private static void handleAddSubtitle(Scanner in, YouVideoApp app) {
         String id = in.next();
         String location = in.next();
         in.nextLine();
         String language = in.nextLine();
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
-            System.out.println(MSG_LANG_SUBTITLE);
-        } else if (app.isUniqueVideo(id)) {
-            System.out.println(MSG_VIDEO_NOT_EXISTS);
-        } else if (!app.isPremium(id)) {
-            System.out.println(MSG_REQUIRES_PREMIUM);
-        } else {
-            app.addSubtitle(location, toLocale(language), id);
+        try {
+            app.addSubtitle(location, language, id);
             System.out.println(MSG_SUB_ADDED);
+        } catch (InvalidSubtitleLanguageException e){
+            System.out.println(MSG_LANG_SUBTITLE);
+        } catch (VideoDoesNotExistException e) {
+            System.out.println(MSG_VIDEO_NOT_EXISTS);
+        } catch (PremiumVideoRequiredException e) {
+            System.out.println(MSG_REQUIRES_PREMIUM);
         }
     }
 
-    // Handles the print of video information.
     private static void handleGetVideo(Scanner in, YouVideoApp app) {
         String id = in.next();
-
-        if (app.isUniqueVideo(id)) {
-            printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
-        } else {
+        try {
             PublishableVideo video = (PublishableVideo) app.getVideo(id);
-            printVideo(video, app.isPremium(id));
+            printVideo(video, video instanceof PremiumVideo);
+        } catch (VideoDoesNotExistException e) {
+            printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         }
     }
 
-    // Handles the print of subtitle information.
     private static void handleGetSubtitles(Scanner in, YouVideoApp app) {
         String id = in.next();
-
-        if (app.isUniqueVideo(id) || !app.isPremium(id)) {
+        try {
+            Video v = app.getVideo(id);
+            Iterator<Subtitle> iterator = app.getSubtitles(v);
+            printSubtitles(v, iterator);
+        } catch (VideoDoesNotExistException | PremiumVideoRequiredException e) {
             System.out.println(MSG_SUB_NOT_FOUND);
-        } else {
-            PremiumVideo video = (PremiumVideo) app.getVideo(id);
-            printSubtitles(video, app);
         }
     }
 
-    // Handles the creation of a podcast.
     private static void handleAddPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String author = in.nextLine();
         String language = in.next();
         in.nextLine();
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
-            System.out.println(MSG_LANG);
-        } else if (!app.isUniquePodcast(title)) {
-            System.out.println(MSG_PODCAST_EXISTS);
-        } else {
-            app.addPodcast(title, author, toLocale(language));
+        try {
+            app.addPodcast(title, author, language);
             System.out.println(MSG_PODCAST_CREATED);
+        } catch (InvalidLanguageException e){
+            System.out.println(MSG_LANG);
+        } catch (PodcastAlreadyExistsException e) {
+            System.out.println(MSG_PODCAST_EXISTS);
         }
     }
 
-    // Handles the creation of an episode for a podcast.
     private static void handleAddEpisode(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String id = in.next();
@@ -257,134 +242,95 @@ public class Main {
         String location = in.nextLine().trim();
         String date = in.nextLine();
 
-        if (duration <= 0) {
-            System.out.println(MSG_DURATION);
-        } else if (app.isUniquePodcast(title)) {
-            System.out.println(MSG_NO_PODCAST);
-        } else if (!app.isUniqueVideo(id)) {
-            System.out.println(MSG_EPISODE_EXISTS);
-        } else if (!app.isNewer(title, date)) {
-            System.out.println(MSG_PODCAST_NEWER);
-        } else {
+        try {
             app.addEpisode(title, id, duration, location, date);
             System.out.println(MSG_EPISODE_ADDED);
+        } catch (InvalidDurationException e) {
+            System.out.println(MSG_DURATION);
+        } catch (PodcastDoesNotExistException e) {
+            System.out.println(MSG_NO_PODCAST);
+        } catch (EpisodeIdAlreadyExistsException e) {
+            System.out.println(MSG_EPISODE_EXISTS);
+        } catch (EpisodeDateTooEarlyException e) {
+            System.out.println(MSG_PODCAST_NEWER);
         }
     }
 
-    // Handles the print of podcast information.
     private static void handleGetPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
-
-        if (app.isUniquePodcast(title)) {
-            System.out.println(MSG_NO_PODCAST);
-        } else {
+        try {
             Podcast podcast = app.getPodcast(title);
             printPodcast(podcast);
-            printTags(app.getTagsIterator(podcast.getTitle()));
+            printTags(app.getTagsIterator(title));
+        } catch (PodcastDoesNotExistException e) {
+            System.out.println(MSG_NO_PODCAST);
         }
     }
 
-    // Handles the print of all episodes information of a podcast.
     private static void handleGetEpisodes(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
-
-        if (app.isUniquePodcast(title)) {
-            System.out.println(MSG_NO_PODCAST);
-        } else if (!app.hasEpisodesPodcast(title)) {
-            System.out.println(MSG_NO_EPISODES_PODCAST);
-        } else {
+        try {
             Podcast podcast = app.getPodcast(title);
-            printEpisodes(title, podcast);
+            if (!podcast.hasEpisodes()) {
+                System.out.println(MSG_NO_EPISODES_PODCAST);
+            } else {
+                printEpisodes(title, podcast);
+            }
+        } catch (PodcastDoesNotExistException e) {
+            System.out.println(MSG_NO_PODCAST);
         }
     }
 
-    // Handles the print of all podcasts information by a given author.
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String name = in.nextLine().trim();
         Author author = app.createOrGetAuthor(name);
-        Iterator<Podcast> iterator = app.getPodcastsByAuthor(name);
-
-        if (!author.hasPodcasts()) {
+        if (!author.hasPodcasts()){
             System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
         } else {
+            Iterator<Podcast> iterator = app.getPodcastsByAuthor(name);
             printAuthorPodcasts(author, iterator);
         }
     }
 
-    // Handles the removal of a podcast.
     private static void handleRemovePodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
-
-        if (app.isUniquePodcast(title)) {
-            System.out.println(MSG_NO_PODCAST);
-        } else {
+        try {
             app.removePodcast(title);
             System.out.println(MSG_PODCAST_REMOVED);
+        } catch (PodcastDoesNotExistException e) {
+            System.out.println(MSG_NO_PODCAST);
         }
     }
 
-    // Handles the creation of a show.
     private static void handleCreateShow(Scanner in, YouVideoApp app) {
         String name = in.nextLine().trim();
         String videoId = in.next();
         String transmissionDate = in.next();
         in.nextLine();
-        PublishableVideo video = (PublishableVideo) app.getVideo(videoId);
 
-        if (app.isUniqueVideo(videoId)) {
-            System.out.println(MSG_VIDEO_FOR_SHOW_NOT_EXISTS);
-        } else if (!app.isUniqueShow(video.getTitle())) {
-            System.out.println(MSG_SHOW_EXISTS);
-        } else {
+        try {
             app.createShow(name, videoId, transmissionDate);
             System.out.println(MSG_SHOW_CREATED);
+        } catch (VideoForShowDoesNotExistException e) {
+            System.out.println(MSG_VIDEO_FOR_SHOW_NOT_EXISTS);
+        } catch (ShowAlreadyExistsException e) {
+            System.out.println(MSG_SHOW_EXISTS);
         }
     }
 
-    // Handles the print of a show information.
     private static void handleGetShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
-
-        if (app.isUniqueShow(title)) {
-            System.out.println(MSG_SHOW_NO_EXIST);
-        } else {
+        try {
             Show show = app.getShow(title);
             printShow(show);
             printTags(app.getTagsIterator(title));
-        }
-    }
-
-    // Handles the removal of a show.
-    private static void handleRemoveShow(Scanner in, YouVideoApp app) {
-        String title = in.nextLine().trim();
-
-        if (app.isUniqueShow(title)) {
+        } catch (ShowDoesNotExistException e) {
             System.out.println(MSG_SHOW_NO_EXIST);
-        } else {
-            app.removeShow(title);
-            System.out.println(MSG_SHOW_REMOVED);
-        }
-    }
-
-    // Handles the removal of a video.
-    private static void handleRemoveVideo(Scanner in, YouVideoApp app) {
-        String videoId = in.nextLine().trim();
-
-        if (app.isEpisode(videoId)) {
-            System.out.println(MSG_VIDEO_IS_EPISODE);
-        } else if (app.isUniqueVideo(videoId)) {
-            System.out.println(MSG_VIDEO_NOT_EXISTS);
-        } else if (app.isVideoUsedInShow(videoId)) {
-            System.out.println(MSG_VIDEO_IS_SHOW);
-        } else {
-            app.removeVideo(videoId);
-            System.out.println(MSG_VIDEO_REMOVED);
         }
     }
 
     private static void handleAuthorShow(Scanner in, YouVideoApp app){
         String name = in.nextLine().trim();
-
         if (!app.authorHasShows(name)){
             System.out.println(MSG_NO_SHOWS_BY_AUTHOR);
         } else {
@@ -392,6 +338,31 @@ public class Main {
             printShowByAuthor(app.getShowsByAuthorIterator(name), author);
         }
     }
+
+    private static void handleRemoveShow(Scanner in, YouVideoApp app) {
+        String title = in.nextLine().trim();
+        try {
+            app.removeShow(title);
+            System.out.println(MSG_SHOW_REMOVED);
+        } catch (ShowDoesNotExistException e) {
+            System.out.println(MSG_SHOW_NO_EXIST);
+        }
+    }
+
+    private static void handleRemoveVideo(Scanner in, YouVideoApp app) {
+        String videoId = in.nextLine().trim();
+        try {
+            app.removeVideo(videoId);
+            System.out.println(MSG_VIDEO_REMOVED);
+        } catch (VideoDoesNotExistException e) {
+            System.out.println(MSG_VIDEO_NOT_EXISTS);
+        } catch (VideoIsEpisodeException e) {
+            System.out.println(MSG_VIDEO_IS_EPISODE);
+        } catch (VideoUsedInShowException e) {
+            System.out.println(MSG_VIDEO_IS_SHOW);
+        }
+    }
+
 
     private static void printShowByAuthor(Iterator<Show> it, Author author) {
         System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, author.getName());
@@ -427,9 +398,8 @@ public class Main {
     }
 
     // Prints all subtitles of a premium video.
-    private static void printSubtitles(PremiumVideo video, YouVideoApp app) {
-        Iterator<Subtitle> iterator = app.getSubtitles(video);
-        System.out.printf(FORMAT_SUBTITLES_HEADER, video.getTitle());
+    private static void printSubtitles(Video v, Iterator<Subtitle> iterator) {
+        System.out.printf(FORMAT_SUBTITLES_HEADER, ((PremiumVideo) v).getTitle());
 
         while (iterator.hasNext()) {
             Subtitle subtitle = iterator.next();
