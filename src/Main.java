@@ -401,6 +401,27 @@ public class Main {
         }
     }
 
+    private static void handleAuthorShow(Scanner in, YouVideoApp app){
+        String name = in.nextLine().trim();
+
+        if (!app.authorHasShows(name)){
+            System.out.println(MSG_NO_SHOWS_BY_AUTHOR);
+        } else {
+            Author author = app.createOrGetAuthor(name);
+            printShowByAuthor(app.getShowsByAuthorIterator(name), author);
+        }
+    }
+
+    private static void printShowByAuthor(Iterator<Show> it, Author author) {
+        System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, author.getName());
+
+        while (it.hasNext()) {
+            Show show = it.next();
+            System.out.printf(FORMAT_AUTHOR_SHOWS_BODY, show.getDate(), show.getVideo().getTitle(),
+                    show.getVideo().getDuration(), show.getVideo().getVideoLocation());
+        }
+    }
+
     // Prints a video using the required output format.
     private static void printVideo(PublishableVideo video, boolean premium) {
 
