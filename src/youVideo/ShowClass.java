@@ -5,14 +5,14 @@ package youVideo;
  */
 public class ShowClass implements Show {
     private final String title;
-    private final String author;
+    private final Author author;
     private final String transmissionDate;
 
     public ShowClass(String title) {
         this(title, null, null);
     }
 
-    public ShowClass(String title, String author, String transmissionDate) {
+    public ShowClass(String title, Author author, String transmissionDate) {
         this.title = title;
         this.author = author;
         this.transmissionDate = transmissionDate;
@@ -29,7 +29,7 @@ public class ShowClass implements Show {
     }
 
     @Override
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 

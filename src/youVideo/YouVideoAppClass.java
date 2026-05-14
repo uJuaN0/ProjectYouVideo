@@ -9,19 +9,22 @@ import java.util.Map;
  * This class is responsible for storing and managing objects
  * of the system.
  */
-public class YouVideoAppClass implements YouVideoApp {
+public class  YouVideoAppClass implements YouVideoApp {
 
-    private final Map<String, PublishableVideo> videos;
+    private final Map<String, Video> videos;
     private final Map<String, Podcast> podcasts;
     private final Map<String, Show> shows;
-
+    private final Map<String, Author> authors;
+    private final SortedMap<String, SortedSet<String>> tags;
     /**
      * Creates an empty YouVideo application.
      */
     public YouVideoAppClass() {
         videos = new HashMap<>();
-        podcasts = new LinkedHashMap<>();
+        podcasts = new HashMap<>();
         shows = new HashMap<>();
+        authors = new HashMap<>();
+        tags = new TreeMap<>();
     }
 
     public String normalizeKey(String key){
@@ -32,7 +35,7 @@ public class YouVideoAppClass implements YouVideoApp {
     // Adds a new publishable video to the system.
     public void addPublishable(String id, int duration, String location, String title,
                                String publisher, Locale language) {
-        PublishableVideo video = new PublishableVideoClass(id, duration, location,
+        Video video = new PublishableVideoClass(id, duration, location,
                 title, publisher, language);
 
         String key = normalizeKey(id);
@@ -44,7 +47,7 @@ public class YouVideoAppClass implements YouVideoApp {
     public void addPremium(String id, int duration, String location, String title, String publisher,
                            Locale language, String subtitleLocation, Locale subtitleLanguage) {
         Subtitle subtitle = new Subtitle(subtitleLanguage, subtitleLocation);
-        PublishableVideo video = new PremiumVideoClass(id, duration, location,
+        Video video = new PremiumVideoClass(id, duration, location,
                 title, publisher, language, subtitle);
 
         String key = normalizeKey(id);
@@ -60,11 +63,12 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     // Adds a new podcast to the system.
-    public void addPodcast(String title, String author, Locale language) {
+    public void addPodcast(String title, String name, Locale language) {
+        Author author = createOrGetAuthor(name);
         Podcast podcast = new PodcastClass(title, author, language);
 
-        String key = normalizeKey(title);
-        podcasts.put(key, podcast);
+        author.addPodcast(podcast);
+        podcasts.put(normalizeKey(title), podcast);
     }
 
     @Override
@@ -73,29 +77,52 @@ public class YouVideoAppClass implements YouVideoApp {
         Podcast podcast = getPodcast(title);
         Episode episode = new EpisodeClass(id, duration, location, date);
         podcast.addEpisode(episode);
+        videos.put(normalizeKey(id), episode);
     }
 
     @Override
     // Creates a new show using the title of a stored video.
-    public void createShow(String author, String videoId, String transmissionDate) {
-        PublishableVideo video = getVideo(videoId);
+    public void createShow(String name, String videoId, String transmissionDate) {
+        PublishableVideo video = (PublishableVideo) getVideo(videoId);
+        Author author = createOrGetAuthor(name);
         Show show = new ShowClass(video.getTitle(), author, transmissionDate);
 
         String key = normalizeKey(video.getTitle());
+        author.addShow(show);
         shows.put(key, show);
+    }
+
+    @Override
+    //This method guarantees there's no duplicated authors names.
+    public Author createOrGetAuthor(String name){
+        String key = normalizeKey(name);
+        if (!authors.containsKey(key)){
+            Author author = new AuthorClass(name);
+            authors.put(key, author);
+            return author;
+        }
+
+        return authors.get(key);
     }
 
     @Override
     // Removes a podcast from the system.
     public void removePodcast(String title) {
         String key = normalizeKey(title);
+        // Removes all episodes from the podcast from the Map videos
+        Iterator<Episode> it = podcasts.get(key).getEpisodes();
+        while (it.hasNext()){
+            Episode episode = it.next();
+            videos.remove(normalizeKey(episode.getId()));
+        }
+
         podcasts.remove(key);
     }
 
     @Override
     // Removes a show from the system.
     public void removeShow(String title) {
-        String key = normalizeKey(title); //todo change (parametro) to normalizekey
+        String key = normalizeKey(title);
         shows.remove(key);
     }
 
@@ -108,7 +135,7 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     // Returns the video with the given id.
-    public PublishableVideo getVideo(String id) {
+    public Video getVideo(String id) {
         return videos.get(normalizeKey(id));
     }
 
@@ -124,50 +151,27 @@ public class YouVideoAppClass implements YouVideoApp {
         return shows.get(normalizeKey(title));
     }
 
-    @Override
-    // Returns all podcasts written by a given author.
-    public Iterator<Podcast> getPodcastsByAuthor(String author) {
-        Array<Podcast> authorPodcasts = new ArrayClass<>();
-        Iterator<Podcast> iterator = podcasts.;
 
-        while (iterator.hasNext()) {
-            Podcast podcast = iterator.next();
-            if (podcast.getAuthor().equalsIgnoreCase(author)) {
-                authorPodcasts.insertLast(podcast);
-            }
-        }
-        return authorPodcasts.iterator();
+    public Iterator<Subtitle> getSubtitles(PremiumVideo video){
+        return video.getSubtitles();
     }
 
     @Override
     // Checks if a video id is still unique in the system.
     public boolean isUniqueVideo(String id) {
-        return findVideo(id) == null;
+        return videos.containsKey(normalizeKey(id));
     }
 
     @Override
     // Checks if a podcast title is still unique in the system.
     public boolean isUniquePodcast(String title) {
-        return findPodcast(title) == null;
-    }
-
-    @Override
-    // Checks if an episode id is unique across videos and podcasts.
-    public boolean isUniqueEpisode(String id) {
-        boolean unique = isUniqueVideo(id);
-        Iterator<Podcast> iterator = podcasts.;
-
-        while (iterator.hasNext() && unique) {
-            Podcast podcast = iterator.next();
-            unique = podcast.isUnique(id);
-        }
-        return unique;
+        return podcasts.containsKey(normalizeKey(title));
     }
 
     @Override
     // Checks if a show title is still unique in the system.
     public boolean isUniqueShow(String title) {
-        return findShow(title) == null;
+        return shows.containsKey(normalizeKey(title));
     }
 
     @Override
@@ -180,14 +184,14 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     // Checks if a given video is premium.
     public boolean isPremium(String id) {
-        PublishableVideo video = getVideo(id);
+        Video video = getVideo(id);
         return video instanceof PremiumVideo;
     }
 
     @Override
     // Checks if a given id already belongs to an episode.
     public boolean isEpisode(String videoId) {
-        Iterator<Podcast> iterator = podcasts.iterator();
+        Iterator<Podcast> iterator = podcasts.values().iterator();
         boolean found = false;
 
         while (iterator.hasNext() && !found) {
@@ -247,33 +251,14 @@ public class YouVideoAppClass implements YouVideoApp {
         return valid;
     }
 
-    /**
-     * Finds a video by its identifier.
-     *
-     * @param id video identifier
-     * @return matching video, or null if it does not exist
-     */
-    private PublishableVideo findVideo(String id) {
-        int index = videos.searchIndexOf(new PublishableVideoClass(id));
-        if (index == -1) {
-            return null;
-        }
-        return videos.get(index);
+    public Iterator<String> getTagsIterator(String title){
+        return tags.get(normalizeKey(title)).iterator();
     }
 
-    /**
-     * Finds a podcast by its title.
-     *
-     * @param title podcast title
-     * @return matching podcast, or null if it does not exist
-     */
-    private Podcast findPodcast(String title) {
-        int index = podcasts.searchIndexOf(new PodcastClass(title));
-        if (index == -1) {
-            return null;
-        }
-        return podcasts.get(index);
+    public Iterator<Podcast> getPodcastsByAuthor(String name){
+        return this.createOrGetAuthor(name).getPodcastsIterator();
     }
+
 
     /**
      * Finds a show by its title.

@@ -1,33 +1,26 @@
 package youVideo;
 
-import dataStructures.Array;
-import dataStructures.ArrayClass;
-import dataStructures.Iterator;
-
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * implementation of a podcast.
  */
 public class PodcastClass implements Podcast {
-    private final Array<Episode> episodes;
+    private final List<Episode> episodes;
     private final String title;
-    private final String author;
+    private final Author author;
     private final Locale language;
 
-    public PodcastClass(String title, String author, Locale language) {
+    public PodcastClass(String title, Author author, Locale language) {
         this.title = title;
         this.author = author;
         this.language = language;
-        this.episodes = new ArrayClass<>();
+        this.episodes = new LinkedList<>();
     }
-
-    /**
-     * Search constructor used when only the title matters.
-     */
-    public PodcastClass(String title) {
-        this(title, null, null);
-    }
+    
 
     @Override
     public String getTitle() {
@@ -35,7 +28,7 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
@@ -56,7 +49,7 @@ public class PodcastClass implements Podcast {
 
     @Override
     public void addEpisode(Episode episode) {
-        episodes.insertAt(episode, 0);
+        episodes.addFirst(episode);
     }
 
     @Override
@@ -66,7 +59,7 @@ public class PodcastClass implements Podcast {
 
     @Override
     public boolean hasEpisodes() {
-        return episodes.size() > 0;
+        return episodes.isEmpty();
     }
 
     @Override

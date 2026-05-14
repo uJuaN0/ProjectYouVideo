@@ -24,5 +24,5 @@ public interface Show {
      *
      * @return show author
      */
-    String getAuthor();
+    Author getAuthor();
 }

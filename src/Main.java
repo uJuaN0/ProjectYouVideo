@@ -1,13 +1,6 @@
-import dataStructures.Iterator;
-import youVideo.Episode;
-import youVideo.Podcast;
-import youVideo.PremiumVideo;
-import youVideo.PublishableVideo;
-import youVideo.Show;
-import youVideo.Subtitle;
-import youVideo.YouVideoApp;
-import youVideo.YouVideoAppClass;
+import youVideo.*;
 
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -75,6 +68,7 @@ public class Main {
     private static final String EMPTY_STRING = "";
 
     // Format strings used when printing structured information.
+    private static final String FORMAT_TAGS_HEADER = "Tags:";
     private static final String FORMAT_VIDEO_HEADER = "%sVideo %s %d Title: %s%n";
     private static final String FORMAT_VIDEO_DETAILS = "File: %s Publisher: %s Language: %s%n";
     private static final String FORMAT_SUBTITLES_HEADER = "Subtitles for video %s:%n";
@@ -240,7 +234,7 @@ public class Main {
         if (app.isUniqueVideo(id)) {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         } else {
-            PublishableVideo video = app.getVideo(id);
+            PublishableVideo video = (PublishableVideo) app.getVideo(id);
             printVideo(video, app.isPremium(id));
         }
     }
@@ -253,7 +247,7 @@ public class Main {
             System.out.println(MSG_SUB_NOT_FOUND);
         } else {
             PremiumVideo video = (PremiumVideo) app.getVideo(id);
-            printSubtitles(video);
+            printSubtitles(video, app);
         }
     }
 
@@ -269,7 +263,7 @@ public class Main {
         } else if (!app.isUniquePodcast(title)) {
             System.out.println(MSG_PODCAST_EXISTS);
         } else {
-            app.addPodcast(title, app.getStoredAuthorName(author), toLocale(language));
+            app.addPodcast(title, author, toLocale(language));
             System.out.println(MSG_PODCAST_CREATED);
         }
     }
@@ -286,7 +280,7 @@ public class Main {
             System.out.println(MSG_DURATION);
         } else if (app.isUniquePodcast(title)) {
             System.out.println(MSG_NO_PODCAST);
-        } else if (!app.isUniqueEpisode(id)) {
+        } else if (!app.isUniqueVideo(id)) {
             System.out.println(MSG_EPISODE_EXISTS);
         } else if (!app.isNewer(title, date)) {
             System.out.println(MSG_PODCAST_NEWER);
@@ -305,6 +299,7 @@ public class Main {
         } else {
             Podcast podcast = app.getPodcast(title);
             printPodcast(podcast);
+            printTags(app.getTagsIterator(podcast.getTitle()));
         }
     }
 
@@ -324,9 +319,15 @@ public class Main {
 
     // Handles the print of all podcasts information by a given author.
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
-        String author = in.nextLine().trim();
-        Iterator<Podcast> iterator = app.getPodcastsByAuthor(author);
-        printAuthorPodcasts(author, iterator);
+        String name = in.nextLine().trim();
+        Author author = app.createOrGetAuthor(name);
+        Iterator<Podcast> iterator = app.getPodcastsByAuthor(name);
+
+        if (!author.hasPodcasts()) {
+            System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
+        } else {
+            printAuthorPodcasts(author, iterator);
+        }
     }
 
     // Handles the removal of a podcast.
@@ -343,17 +344,18 @@ public class Main {
 
     // Handles the creation of a show.
     private static void handleCreateShow(Scanner in, YouVideoApp app) {
-        String author = in.nextLine().trim();
+        String name = in.nextLine().trim();
         String videoId = in.next();
         String transmissionDate = in.next();
         in.nextLine();
+        PublishableVideo video = (PublishableVideo) app.getVideo(videoId);
 
         if (app.isUniqueVideo(videoId)) {
             System.out.println(MSG_VIDEO_FOR_SHOW_NOT_EXISTS);
-        } else if (!app.isUniqueShow(app.getVideo(videoId).getTitle())) {
+        } else if (!app.isUniqueShow(video.getTitle())) {
             System.out.println(MSG_SHOW_EXISTS);
         } else {
-            app.createShow(app.getStoredAuthorName(author), videoId, transmissionDate);
+            app.createShow(name, videoId, transmissionDate);
             System.out.println(MSG_SHOW_CREATED);
         }
     }
@@ -367,6 +369,7 @@ public class Main {
         } else {
             Show show = app.getShow(title);
             printShow(show);
+            printTags(app.getTagsIterator(title));
         }
     }
 
@@ -400,6 +403,7 @@ public class Main {
 
     // Prints a video using the required output format.
     private static void printVideo(PublishableVideo video, boolean premium) {
+
         String prefix = EMPTY_STRING;
         if (premium) {
             prefix = PREMIUM_PREFIX;
@@ -421,8 +425,8 @@ public class Main {
     }
 
     // Prints all subtitles of a premium video.
-    private static void printSubtitles(PremiumVideo video) {
-        Iterator<Subtitle> iterator = video.getSubtitles();
+    private static void printSubtitles(PremiumVideo video, YouVideoApp app) {
+        Iterator<Subtitle> iterator = app.getSubtitles(video);
         System.out.printf(FORMAT_SUBTITLES_HEADER, video.getTitle());
 
         while (iterator.hasNext()) {
@@ -449,6 +453,18 @@ public class Main {
         }
     }
 
+
+    // Prints tags, if they exist.
+    private static void printTags(Iterator<String> it){
+        if (it.hasNext()){
+            System.out.println(FORMAT_TAGS_HEADER);
+
+            while (it.hasNext()){
+                System.out.println(it.next());
+            }
+        }
+    }
+
     // Prints all episodes of a podcast.
     private static void printEpisodes(String title, Podcast podcast) {
         Iterator<Episode> iterator = podcast.getEpisodes();
@@ -467,25 +483,17 @@ public class Main {
     }
 
     // Prints all podcasts of a given author.
-    private static void printAuthorPodcasts(String author, Iterator<Podcast> iterator) {
-        boolean found = false;
+    private static void printAuthorPodcasts(Author author, Iterator<Podcast> iterator) {
+        System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author.getName());
 
         while (iterator.hasNext()) {
             Podcast podcast = iterator.next();
-            if (!found) {
-                System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author);
-                found = true;
-            }
             System.out.printf(
                     FORMAT_AUTHOR_PODCASTS_LINE,
                     podcast.getTitle(),
                     podcast.getAuthor(),
                     getLanguageCode(podcast.getLanguage())
             );
-        }
-
-        if (!found) {
-            System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
         }
     }
 

@@ -1,6 +1,7 @@
 package youVideo;
 
-import dataStructures.Iterator;
+
+import java.util.Iterator;
 import java.util.Locale;
 
 public interface YouVideoApp {
@@ -8,12 +9,12 @@ public interface YouVideoApp {
     /**
      * Adds a new publishable video to the system.
      *
-     * @param id video identifier
-     * @param duration video duration
-     * @param location video location
-     * @param title video title
+     * @param id        video identifier
+     * @param duration  video duration
+     * @param location  video location
+     * @param title     video title
      * @param publisher video publisher
-     * @param language video language
+     * @param language  video language
      */
     void addPublishable(String id, int duration, String location, String title,
                         String publisher, Locale language);
@@ -21,12 +22,12 @@ public interface YouVideoApp {
     /**
      * Adds a new premium video to the system.
      *
-     * @param id video identifier
-     * @param duration video duration
-     * @param location video location
-     * @param title video title
-     * @param publisher video publisher
-     * @param language video language
+     * @param id               video identifier
+     * @param duration         video duration
+     * @param location         video location
+     * @param title            video title
+     * @param publisher        video publisher
+     * @param language         video language
      * @param subtitleLocation initial subtitle location
      * @param subtitleLanguage initial subtitle language
      */
@@ -37,9 +38,8 @@ public interface YouVideoApp {
      * Adds a subtitle to an existing premium video.
      *
      * @param subtitleLocation subtitle location
-     * @param language subtitle language
-     * @param id premium video identifier
-     *
+     * @param language         subtitle language
+     * @param id               premium video identifier
      * @pre !isUniqueVideo(id) && isPremium(id)
      */
     void addSubtitle(String subtitleLocation, Locale language, String id);
@@ -47,8 +47,8 @@ public interface YouVideoApp {
     /**
      * Adds a new podcast to the system.
      *
-     * @param title podcast title
-     * @param author podcast author
+     * @param title    podcast title
+     * @param author   podcast author
      * @param language podcast language
      */
     void addPodcast(String title, String author, Locale language);
@@ -56,12 +56,11 @@ public interface YouVideoApp {
     /**
      * Adds a new episode to an existing podcast.
      *
-     * @param title podcast title
-     * @param id episode identifier
+     * @param title    podcast title
+     * @param id       episode identifier
      * @param duration episode duration
      * @param location episode location
-     * @param date episode date
-     *
+     * @param date     episode date
      * @pre !isUniquePodcast(title) && isUniqueEpisode(id) && isNewer(title, date)
      */
     void addEpisode(String title, String id, int duration, String location, String date);
@@ -69,10 +68,9 @@ public interface YouVideoApp {
     /**
      * Creates a show using an existing publishable video.
      *
-     * @param author show author
-     * @param videoId video identifier
+     * @param author           show author
+     * @param videoId          video identifier
      * @param transmissionDate show transmission date
-     *
      * @pre !isUniqueVideo(videoId)
      */
     void createShow(String author, String videoId, String transmissionDate);
@@ -81,7 +79,6 @@ public interface YouVideoApp {
      * Removes a podcast from the system.
      *
      * @param title podcast title
-     *
      * @pre !isUniquePodcast(title)
      */
     void removePodcast(String title);
@@ -90,7 +87,6 @@ public interface YouVideoApp {
      * Removes a show from the system.
      *
      * @param title show title
-     *
      * @pre !isUniqueShow(title)
      */
     void removeShow(String title);
@@ -99,7 +95,6 @@ public interface YouVideoApp {
      * Removes a publishable video from the system.
      *
      * @param videoId video identifier
-     *
      * @pre !isUniqueVideo(videoId) && !isEpisode(videoId) && !isVideoUsedInShow(videoId)
      */
     void removeVideo(String videoId);
@@ -110,7 +105,7 @@ public interface YouVideoApp {
      * @param id video identifier
      * @return the matching video, or null if it does not exist
      */
-    PublishableVideo getVideo(String id);
+    Video getVideo(String id);
 
     /**
      * Returns the podcast with the given title.
@@ -172,7 +167,7 @@ public interface YouVideoApp {
      * Checks whether a podcast accepts a new episode date.
      *
      * @param title podcast title
-     * @param date new episode date
+     * @param date  new episode date
      * @return true if the date is valid, false otherwise
      */
     boolean isNewer(String title, String date);
@@ -216,4 +211,10 @@ public interface YouVideoApp {
      * @return stored author name or the original name if not found
      */
     String getStoredAuthorName(String author);
+
+    Iterator<Subtitle> getSubtitles(PremiumVideo video);
+
+    public Iterator<String> getTagsIterator(String title);
+
+    public Author createOrGetAuthor(String name);
 }

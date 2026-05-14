@@ -1,6 +1,7 @@
 package youVideo;
 
-import dataStructures.Iterator;
+
+import java.util.Iterator;
 
 /**
  * Represents a premium publishable video.

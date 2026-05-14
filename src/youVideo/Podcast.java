@@ -1,7 +1,7 @@
 package youVideo;
 
-import dataStructures.Iterator;
 
+import java.util.Iterator;
 import java.util.Locale;
 
 /**
@@ -21,7 +21,7 @@ public interface Podcast {
      *
      * @return podcast author
      */
-    String getAuthor();
+    Author getAuthor();
 
     /**
      * Returns the language of the podcast.

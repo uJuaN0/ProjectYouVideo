@@ -1,8 +1,9 @@
 package youVideo;
 
-import dataStructures.Array;
-import dataStructures.ArrayClass;
-import dataStructures.Iterator;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -10,11 +11,11 @@ import java.util.Locale;
  */
 public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
 
-    private final Array<Subtitle> subtitles;
+    private final List<Subtitle> subtitles;
 
     public PremiumVideoClass(String id, int duration, String location, String title, String publisher, Locale language, Subtitle subtitle) {
         super(id, duration, location, title, publisher, language);
-        subtitles = new ArrayClass<>();
+        subtitles = new ArrayList<>();
         addInitialSubtitle(subtitle);
     }
 
@@ -29,7 +30,7 @@ public class PremiumVideoClass extends PublishableVideoClass implements PremiumV
 
     @Override
     public void addSubtitle(Subtitle subtitle) {
-        subtitles.insertLast(subtitle);
+        subtitles.add(subtitle);
     }
 
     @Override
