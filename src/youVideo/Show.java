@@ -10,7 +10,7 @@ public interface Show {
      *
      * @return show title
      */
-    String getTitle();
+    PublishableVideo getVideo();
 
     /**
      * Returns the transmission date of the show.

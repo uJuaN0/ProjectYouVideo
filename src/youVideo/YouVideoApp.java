@@ -147,13 +147,6 @@ public interface YouVideoApp {
      */
     boolean isUniquePodcast(String title);
 
-    /**
-     * Checks whether an episode identifier is unique in the whole system.
-     *
-     * @param id episode identifier
-     * @return true if the identifier is unique, false otherwise
-     */
-    boolean isUniqueEpisode(String id);
 
     /**
      * Checks whether a show title is unique in the system.
@@ -204,17 +197,13 @@ public interface YouVideoApp {
      */
     boolean hasEpisodesPodcast(String title);
 
-    /**
-     * Returns the stored version of an author name if it already exists.
-     *
-     * @param author author name
-     * @return stored author name or the original name if not found
-     */
-    String getStoredAuthorName(String author);
-
     Iterator<Subtitle> getSubtitles(PremiumVideo video);
 
     public Iterator<String> getTagsIterator(String title);
 
     public Author createOrGetAuthor(String name);
+
+    public boolean authorHasShows(String name);
+
+    public Iterator<Show> getShowsByAuthorIterator(String name);
 }

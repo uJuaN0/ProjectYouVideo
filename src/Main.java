@@ -26,6 +26,7 @@ public class Main {
     private static final String CMD_REMOVE_SHOW = "removeshow";
     private static final String CMD_AUTHOR_PODCAST = "authorpodcasts";
     private static final String CMD_REMOVE_VIDEO = "removevideo";
+    private static final String CMD_AUTHOR_SHOWS = "authorshows";
     private static final String CMD_HELP = "help";
     private static final String CMD_EXIT = "exit";
 
@@ -60,6 +61,7 @@ public class Main {
     private static final String MSG_VIDEO_IS_SHOW = "Cannot remove: video is used in a show.";
     private static final String MSG_VIDEO_REMOVED = "Video removed successfully.";
     private static final String MSG_NO_PODCASTS_BY_AUTHOR = "No podcasts found for this author.";
+    private static final String MSG_NO_SHOWS_BY_AUTHOR = "No shows found for this author.";
 
     // Special constants used in output formatting.
     private static final String FULAH_CODE = "ff";
@@ -68,6 +70,8 @@ public class Main {
     private static final String EMPTY_STRING = "";
 
     // Format strings used when printing structured information.
+    private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s%n";
+    private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s";
     private static final String FORMAT_TAGS_HEADER = "Tags:";
     private static final String FORMAT_VIDEO_HEADER = "%sVideo %s %d Title: %s%n";
     private static final String FORMAT_VIDEO_DETAILS = "File: %s Publisher: %s Language: %s%n";
@@ -140,6 +144,7 @@ public class Main {
             case CMD_GET_SHOW -> handleGetShow(in, app);
             case CMD_REMOVE_SHOW -> handleRemoveShow(in, app);
             case CMD_REMOVE_VIDEO -> handleRemoveVideo(in, app);
+            case CMD_AUTHOR_SHOWS -> handleAuthorShow(in, app);
             case CMD_HELP -> printHelp();
             case CMD_EXIT -> System.out.println(MSG_EXIT);
             default -> System.out.println(MSG_UNKNOWN_COMMAND);
@@ -521,7 +526,7 @@ public class Main {
     // Prints the information of a show.
     private static void printShow(Show show) {
         System.out.printf(FORMAT_SHOW_HEADER, show.getDate(), show.getAuthor());
-        System.out.printf(FORMAT_SHOW_VIDEO, show.getTitle());
+        System.out.printf(FORMAT_SHOW_VIDEO, show.getVideo());
     }
 
     // Converts a language code into a Locale object.

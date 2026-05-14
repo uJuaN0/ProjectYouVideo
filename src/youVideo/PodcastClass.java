@@ -38,8 +38,8 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
-    public boolean isUnique(String id) {
-        return !episodes.searchBackward(new EpisodeClass(id));
+    public boolean containsEpisode(String id) {
+        return episodes.contains(new EpisodeClass(id));
     }
 
     @Override

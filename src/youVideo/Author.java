@@ -13,4 +13,8 @@ public interface Author {
     public boolean hasPodcasts();
 
     public void addShow(Show show);
+
+    public Iterator<Show> getShowsIterator();
+
+    public boolean hasShows();
 }

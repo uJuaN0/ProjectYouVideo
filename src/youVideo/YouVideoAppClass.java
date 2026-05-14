@@ -85,7 +85,7 @@ public class  YouVideoAppClass implements YouVideoApp {
     public void createShow(String name, String videoId, String transmissionDate) {
         PublishableVideo video = (PublishableVideo) getVideo(videoId);
         Author author = createOrGetAuthor(name);
-        Show show = new ShowClass(video.getTitle(), author, transmissionDate);
+        Show show = new ShowClass(video, author, transmissionDate);
 
         String key = normalizeKey(video.getTitle());
         author.addShow(show);
@@ -151,9 +151,21 @@ public class  YouVideoAppClass implements YouVideoApp {
         return shows.get(normalizeKey(title));
     }
 
-
+    @Override
     public Iterator<Subtitle> getSubtitles(PremiumVideo video){
         return video.getSubtitles();
+    }
+
+    @Override
+    public Iterator<Show> getShowsByAuthorIterator(String name){
+        Author author = createOrGetAuthor(name);
+        return author.getShowsIterator();
+    }
+
+    @Override
+    public boolean authorHasShows(String name){
+        Author author = createOrGetAuthor(name);
+        return author.hasShows();
     }
 
     @Override
@@ -194,9 +206,10 @@ public class  YouVideoAppClass implements YouVideoApp {
         Iterator<Podcast> iterator = podcasts.values().iterator();
         boolean found = false;
 
+        //Checks if the podcast has the episode
         while (iterator.hasNext() && !found) {
             Podcast podcast = iterator.next();
-            found = !podcast.isUnique(videoId);
+            found = podcast.containsEpisode(videoId);
         }
         return found;
     }
@@ -204,8 +217,7 @@ public class  YouVideoAppClass implements YouVideoApp {
     @Override
     // Checks if a video is being used in some show.
     public boolean isVideoUsedInShow(String videoId) {
-        PublishableVideo video = getVideo(videoId);
-        return findShow(video.getTitle()) != null;
+        return getShow(normalizeKey(videoId)) != null;
     }
 
     @Override
@@ -216,20 +228,13 @@ public class  YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
-    // Returns the stored version of an author name, if it already exists.
-    public String getStoredAuthorName(String author) {
-        Iterator<Podcast> iterator = podcasts.iterator();
-        String storedName = author;
-        boolean found = false;
+    public Iterator<String> getTagsIterator(String title){
+        return tags.get(normalizeKey(title)).iterator();
+    }
 
-        while (iterator.hasNext() && !found) {
-            Podcast podcast = iterator.next();
-            if (podcast.getAuthor().equalsIgnoreCase(author)) {
-                storedName = podcast.getAuthor();
-                found = true;
-            }
-        }
-        return storedName;
+    @Override
+    public Iterator<Podcast> getPodcastsByAuthor(String name){
+        return this.createOrGetAuthor(name).getPodcastsIterator();
     }
 
     // Checks if a language code is a valid ISO language.
@@ -249,28 +254,5 @@ public class  YouVideoAppClass implements YouVideoApp {
             }
         }
         return valid;
-    }
-
-    public Iterator<String> getTagsIterator(String title){
-        return tags.get(normalizeKey(title)).iterator();
-    }
-
-    public Iterator<Podcast> getPodcastsByAuthor(String name){
-        return this.createOrGetAuthor(name).getPodcastsIterator();
-    }
-
-
-    /**
-     * Finds a show by its title.
-     *
-     * @param title show title
-     * @return matching show, or null if it does not exist
-     */
-    private Show findShow(String title) {
-        int index = shows.searchIndexOf(new ShowClass(title));
-        if (index == -1) {
-            return null;
-        }
-        return shows.get(index);
     }
 }

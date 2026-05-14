@@ -36,7 +36,7 @@ public interface Podcast {
      * @param id episode identifier
      * @return true if the id is unique, false otherwise
      */
-    boolean isUnique(String id);
+    boolean containsEpisode(String id);
 
     /**
      * Checks if a new episode date is valid according to the latest episode date.

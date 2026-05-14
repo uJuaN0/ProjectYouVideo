@@ -4,23 +4,19 @@ package youVideo;
  * implementation of a show.
  */
 public class ShowClass implements Show {
-    private final String title;
+    private final PublishableVideo video;
     private final Author author;
     private final String transmissionDate;
 
-    public ShowClass(String title) {
-        this(title, null, null);
-    }
-
-    public ShowClass(String title, Author author, String transmissionDate) {
-        this.title = title;
+    public ShowClass(PublishableVideo video, Author author, String transmissionDate) {
+        this.video = video;
         this.author = author;
         this.transmissionDate = transmissionDate;
     }
 
     @Override
-    public String getTitle() {
-        return title;
+    public PublishableVideo getVideo() {
+        return video;
     }
 
     @Override
@@ -33,17 +29,4 @@ public class ShowClass implements Show {
         return author;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-
-        if (!(other instanceof Show)) {
-            return false;
-        }
-
-        Show show = (Show) other;
-        return title != null && title.equalsIgnoreCase(show.getTitle());
-    }
 }

@@ -26,8 +26,16 @@ public class AuthorClass implements Author{
         shows.add(show);
     }
 
+    public boolean hasShows(){
+        return !shows.isEmpty();
+    }
+
     public Iterator<Podcast> getPodcastsIterator(){
         return podcasts.iterator();
+    }
+
+    public Iterator<Show> getShowsIterator(){
+        return shows.iterator();
     }
 
     public boolean hasPodcasts(){
