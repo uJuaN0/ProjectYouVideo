@@ -33,6 +33,11 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
+    public String getAuthorName(){
+        return author.getName();
+    }
+
+    @Override
     public Locale getLanguage() {
         return language;
     }
@@ -54,12 +59,12 @@ public class PodcastClass implements Podcast {
 
     @Override
     public String getLastestDate() {
-        return episodes.get(0).getDate();
+        return episodes.getFirst().getDate();
     }
 
     @Override
     public boolean hasEpisodes() {
-        return episodes.isEmpty();
+        return !episodes.isEmpty();
     }
 
     @Override

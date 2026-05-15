@@ -73,4 +73,6 @@ public interface Podcast {
      * @return episode collection
      */
     Iterator<Episode> getEpisodes();
+
+    public String getAuthorName();
 }

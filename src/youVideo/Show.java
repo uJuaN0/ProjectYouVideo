@@ -25,4 +25,10 @@ public interface Show {
      * @return show author
      */
     Author getAuthor();
+
+    public String getTitle();
+
+    public int compareTo(Show other);
+
+    public String getAuthorName();
 }

@@ -261,7 +261,9 @@ public class Main {
         try {
             Podcast podcast = app.getPodcast(title);
             printPodcast(podcast);
-            printTags(app.getTagsIterator(title));
+            if (app.hasTags(title)){
+                printTags(app.getTagsIterator(title));
+            }
         } catch (PodcastDoesNotExistException e) {
             System.out.println(MSG_NO_PODCAST);
         }
@@ -288,7 +290,7 @@ public class Main {
             System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
         } else {
             Iterator<Podcast> iterator = app.getPodcastsByAuthor(name);
-            printAuthorPodcasts(author, iterator);
+            printAuthorPodcasts( iterator, name);
         }
     }
 
@@ -323,7 +325,9 @@ public class Main {
         try {
             Show show = app.getShow(title);
             printShow(show);
-            printTags(app.getTagsIterator(title));
+            if (app.hasTags(title)){
+                printTags(app.getTagsIterator(title));
+            }
         } catch (ShowDoesNotExistException e) {
             System.out.println(MSG_SHOW_NO_EXIST);
         }
@@ -369,7 +373,7 @@ public class Main {
 
         while (it.hasNext()) {
             Show show = it.next();
-            System.out.printf(FORMAT_AUTHOR_SHOWS_BODY, show.getDate(), show.getVideo().getTitle(),
+            System.out.printf(FORMAT_AUTHOR_SHOWS_BODY, show.getDate(), show.getTitle(),
                     show.getVideo().getDuration(), show.getVideo().getVideoLocation());
         }
     }
@@ -416,7 +420,7 @@ public class Main {
         System.out.printf(
                 FORMAT_PODCAST_INFO,
                 podcast.getTitle(),
-                podcast.getAuthor(),
+                podcast.getAuthorName(),
                 getLanguageCode(podcast.getLanguage())
         );
 
@@ -455,15 +459,16 @@ public class Main {
     }
 
     // Prints all podcasts of a given author.
-    private static void printAuthorPodcasts(Author author, Iterator<Podcast> iterator) {
-        System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, author.getName());
+    private static void printAuthorPodcasts(Iterator<Podcast> iterator,
+                                            String name) {
+        System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, name);
 
         while (iterator.hasNext()) {
             Podcast podcast = iterator.next();
             System.out.printf(
                     FORMAT_AUTHOR_PODCASTS_LINE,
                     podcast.getTitle(),
-                    podcast.getAuthor(),
+                    podcast.getAuthorName(),
                     getLanguageCode(podcast.getLanguage())
             );
         }
@@ -471,8 +476,8 @@ public class Main {
 
     // Prints the information of a show.
     private static void printShow(Show show) {
-        System.out.printf(FORMAT_SHOW_HEADER, show.getDate(), show.getAuthor());
-        System.out.printf(FORMAT_SHOW_VIDEO, show.getVideo());
+        System.out.printf(FORMAT_SHOW_HEADER, show.getDate(), show.getAuthorName());
+        System.out.printf(FORMAT_SHOW_VIDEO, show.getTitle());
     }
 
     // Converts a language code into a Locale object.

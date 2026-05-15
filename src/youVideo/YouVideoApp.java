@@ -47,6 +47,8 @@ public interface YouVideoApp {
 
     Iterator<String> getTagsIterator(String title);
 
+    public boolean hasTags(String title);
+
     Author createOrGetAuthor(String name);
 
     boolean authorHasShows(String name);

@@ -154,13 +154,17 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     public void removePodcast(String title) throws PodcastDoesNotExistException {
         String key = normalizeKey(title);
+        Podcast podcast = podcasts.get(key);
+        Author author = podcast.getAuthor();
         if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
         //Removes the videos from the podcast from "videos"
-        Iterator<Episode> it = podcasts.get(key).getEpisodes();
-        while (it.hasNext())
+        Iterator<Episode> it = podcast.getEpisodes();
+        while (it.hasNext()) {
             videos.remove(normalizeKey(it.next().getId()));
+        }
 
+        author.removePodcast(podcast);
         podcasts.remove(key);
     }
 
@@ -211,10 +215,10 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     public Podcast getPodcast(String title) throws PodcastDoesNotExistException {
-        Podcast p = podcasts.get(normalizeKey(title));
-        if (p == null)
+        if (!podcasts.containsKey(normalizeKey(title))){
             throw new PodcastDoesNotExistException();
-        return p;
+        }
+        return podcasts.get(normalizeKey(title));
     }
 
     @Override
@@ -255,6 +259,11 @@ public class YouVideoAppClass implements YouVideoApp {
     public Iterator<String> getTagsIterator(String title){
         String key = normalizeKey(title);
         return tags.get(key).iterator();
+    }
+
+    public boolean hasTags(String title) {
+        String key = normalizeKey(title);
+        return tags.containsKey(key) && !tags.get(key).isEmpty();
     }
 
     public static boolean isValidLanguage(String lang) {

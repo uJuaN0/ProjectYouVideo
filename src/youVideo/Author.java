@@ -17,4 +17,6 @@ public interface Author {
     public Iterator<Show> getShowsIterator();
 
     public boolean hasShows();
+
+    public void removePodcast(Podcast podcast);
 }
