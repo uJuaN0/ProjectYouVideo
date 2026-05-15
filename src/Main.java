@@ -201,7 +201,7 @@ public class Main {
     private static void handleGetVideo(Scanner in, YouVideoApp app) {
         String id = in.next();
         try {
-            PublishableVideo video = (PublishableVideo) app.getVideo(id);
+            PublishableVideo video = app.getPublishableVideo(id);
             printVideo(video, video instanceof PremiumVideo);
         } catch (VideoDoesNotExistException e) {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);

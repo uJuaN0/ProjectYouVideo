@@ -51,8 +51,10 @@ public interface YouVideoApp {
 
     boolean authorHasShows(String name);
 
-    public void addSubtitle(String subtitleLocation, String language, String id)
+     void addSubtitle(String subtitleLocation, String language, String id)
             throws VideoDoesNotExistException, PremiumVideoRequiredException, InvalidSubtitleLanguageException;
 
-    public boolean isPremium(Video v);
+     boolean isPremium(Video v);
+
+    PublishableVideo getPublishableVideo(String id) throws VideoDoesNotExistException;
 }

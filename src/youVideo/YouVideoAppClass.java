@@ -6,6 +6,7 @@ import java.util.*;
 
 public class YouVideoAppClass implements YouVideoApp {
 
+    //Todo limite de espaço para cada coisa
     private final Map<String, Video> videos;
     private final Map<String, Podcast> podcasts;
     private final Map<String, Show> shows;
@@ -194,6 +195,18 @@ public class YouVideoAppClass implements YouVideoApp {
         if (v == null)
             throw new VideoDoesNotExistException();
         return v;
+    }
+
+    @Override
+    public PublishableVideo getPublishableVideo(String id)
+            throws VideoDoesNotExistException {
+        Video video = videos.get(normalizeKey(id));
+
+        if (video instanceof PublishableVideo publishableVideo) {
+            return publishableVideo;
+        } else {
+            throw new VideoDoesNotExistException();
+        }
     }
 
     @Override
