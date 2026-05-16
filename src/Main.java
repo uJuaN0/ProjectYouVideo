@@ -393,6 +393,19 @@ public class Main {
         }
     }
 
+    private static void handleAddTag(Scanner in, YouVideoApp app){
+        String title = in.nextLine().trim();
+        String tag = in.nextLine();
+        try{
+            app.addTag(tag, title);
+            System.out.println(MSG_TAG_ADDED);
+        } catch (TitleDoesNotExistException e) {
+            System.out.println(MSG_TITLE_DOES_NOT_EXIST);
+        } catch (TitleAlreadyTaggedException e) {
+            System.out.printf(MSG_TITLE_IS_ALREADY_TAGGED, tag);
+        }
+    }
+
     // Prints a video using the required output format.
     private static void printVideo(PublishableVideo video, boolean premium) {
 
