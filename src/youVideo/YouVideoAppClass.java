@@ -26,6 +26,26 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
+    public void addTag(String tag, String title) throws TitleDoesNotExistException, TitleAlreadyTaggedException{
+        String key = normalizeKey(title);
+
+        if (!podcasts.containsKey(key) && !shows.containsKey(key))
+            throw new TitleDoesNotExistException();
+
+        if (containsTag(title,tag))
+            throw new TitleAlreadyTaggedException();
+
+        if (!tags.containsKey(key)) {
+            tags.put(key, new TreeSet<>(new CaseInsensitiveComparator()));
+        }
+
+        tags.get(key).add(tag);
+    }
+
+
+
+
+    @Override
     public void addPublishable(String id, int duration, String location, String title,
                                String publisher, String language)
             throws InvalidDurationException, VideoAlreadyExistsException, InvalidLanguageException{
