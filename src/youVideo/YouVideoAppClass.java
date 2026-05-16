@@ -11,17 +11,17 @@ public class YouVideoAppClass implements YouVideoApp {
     private final Map<String, Podcast> podcasts;
     private final Map<String, Show> shows;
     private final Map<String, Author> authors;
-    private final SortedMap<String, SortedSet<String>> tags;
+    private final Map<String, SortedSet<String>> tags;
 
     public YouVideoAppClass() {
         videos = new HashMap<>();
         podcasts = new HashMap<>();
         shows = new HashMap<>();
         authors = new HashMap<>();
-        tags = new TreeMap<>();
+        tags = new HashMap<>();
     }
 
-    public String normalizeKey(String key) {
+    private String normalizeKey(String key) {
         return key.trim().toUpperCase();
     }
 
@@ -42,7 +42,19 @@ public class YouVideoAppClass implements YouVideoApp {
         tags.get(key).add(tag);
     }
 
+    @Override
+    public void removeTag(String tag, String title)
+            throws TitleDoesNotExistException, TitleNotTaggedException{
+        String key = normalizeKey(title);
 
+        if (!podcasts.containsKey(key) && !shows.containsKey(key))
+            throw new TitleDoesNotExistException();
+
+        if (!containsTag(title,tag))
+            throw new TitleNotTaggedException();
+
+        tags.get(key).remove(tag);
+    }
 
 
     @Override
@@ -291,7 +303,24 @@ public class YouVideoAppClass implements YouVideoApp {
                 productivity.add(author);
             }
         }
+
         return productivity.iterator();
+    }
+
+    private static class CaseInsensitiveComparator implements Comparator<String> {
+        @Override
+        public int compare(String s1, String s2) {
+            return s1.toLowerCase().compareTo(s2.toLowerCase());
+        }
+    }
+
+    private boolean containsTag(String title, String tag) {
+        String titleKey = normalizeKey(title);
+        SortedSet<String> savedTags = tags.get(titleKey);
+        if (savedTags == null)
+            return false;
+
+        return savedTags.contains(tag);
     }
 
     @Override

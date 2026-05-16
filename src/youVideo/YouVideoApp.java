@@ -65,4 +65,8 @@ public interface YouVideoApp {
     public Episode getEpisode(String id) throws VideoDoesNotExistException;
 
     public Iterator<Author> getAuthorsProductivity();
+
+    public void addTag(String tag, String title) throws TitleDoesNotExistException, TitleAlreadyTaggedException;
+
+    public void removeTag(String tag, String title) throws TitleDoesNotExistException, TitleNotTaggedException;
 }

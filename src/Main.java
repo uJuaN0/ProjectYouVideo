@@ -43,6 +43,11 @@ public class Main {
     private static final String MSG_NO_PODCASTS_BY_AUTHOR = "No podcasts found for this author.";
     private static final String MSG_NO_SHOWS_BY_AUTHOR = "No shows found for this author.";
     private static final String MSG_NO_PRODUCTIVE_AUTHORS = "No productive authors.";
+    private static final String MSG_TITLE_DOES_NOT_EXIST = "Title does not exist.";
+    private static final String MSG_TITLE_IS_ALREADY_TAGGED = "Title is already tagged with %s.%n";
+    private static final String MSG_TAG_ADDED = "Tag added successfully.";
+    private static final String MSG_TAG_REMOVED = "Tag removed successfully.";
+    private static final String MSG_TITLE_IS_NOT_TAGGED = "Title is not tagged with %s.%n";
 
     // Special constants used in output formatting.
     private static final String FULAH_CODE = "ff";
@@ -108,8 +113,8 @@ public class Main {
             case REMOVESHOW -> handleRemoveShow(in, app);
             case REMOVEVIDEO -> handleRemoveVideo(in, app);
             case AUTHORSPRODUCTIVITY -> handleAuthorsProductivity(app);
-//            case ADDTAG -> handleAddTag(in, app);
-//            case REMOVETAG -> handleRemoveTag(in, app);
+            case ADDTAG -> handleAddTag(in, app);
+            case REMOVETAG -> handleRemoveTag(in, app);
 //            case TAGGED -> handleTagged(in, app);
             case HELP -> printHelp();
             case EXIT -> System.out.println(MSG_EXIT);
@@ -403,6 +408,19 @@ public class Main {
             System.out.println(MSG_TITLE_DOES_NOT_EXIST);
         } catch (TitleAlreadyTaggedException e) {
             System.out.printf(MSG_TITLE_IS_ALREADY_TAGGED, tag);
+        }
+    }
+
+    private static void handleRemoveTag(Scanner in, YouVideoApp app){
+        String title = in.nextLine().trim();
+        String tag = in.nextLine();
+        try{
+            app.removeTag(tag, title);
+            System.out.println(MSG_TAG_REMOVED);
+        } catch (TitleDoesNotExistException e) {
+            System.out.println(MSG_TITLE_DOES_NOT_EXIST);
+        } catch (TitleNotTaggedException e) {
+            System.out.printf(MSG_TITLE_IS_NOT_TAGGED, tag);
         }
     }
 
