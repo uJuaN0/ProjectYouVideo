@@ -21,4 +21,8 @@ public interface Author {
     public void removePodcast(Podcast podcast);
 
     public void removeShow(Show show);
+
+    public int getProductivity();
+
+    public int compareTo(Author other);
 }

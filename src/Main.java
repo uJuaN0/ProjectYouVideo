@@ -42,6 +42,7 @@ public class Main {
     private static final String MSG_VIDEO_REMOVED = "Video removed successfully.";
     private static final String MSG_NO_PODCASTS_BY_AUTHOR = "No podcasts found for this author.";
     private static final String MSG_NO_SHOWS_BY_AUTHOR = "No shows found for this author.";
+    private static final String MSG_NO_PRODUCTIVE_AUTHORS = "No productive authors.";
 
     // Special constants used in output formatting.
     private static final String FULAH_CODE = "ff";
@@ -50,6 +51,8 @@ public class Main {
     private static final String EMPTY_STRING = "";
 
     // Format strings used when printing structured information.
+    private static final String FORMAT_AUTHOR_PRODUCTIVITY_HEADER = "Authors productivity:";
+    private static final String FORMAT_AUTHOR_PRODUCTIVITY_BODY = "%s with %d contributions.";
     private static final String FORMAT_HELP_BODY = "%s - %s%n";
     private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s:%n";
     private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s%n";
@@ -104,7 +107,7 @@ public class Main {
             case AUTHORSHOWS -> handleAuthorShow(in, app);
             case REMOVESHOW -> handleRemoveShow(in, app);
             case REMOVEVIDEO -> handleRemoveVideo(in, app);
-//            case AUTHORSPRODUCTIVITY -> handleAuthorsProductivity(app);
+            case AUTHORSPRODUCTIVITY -> handleAuthorsProductivity(app);
 //            case ADDTAG -> handleAddTag(in, app);
 //            case REMOVETAG -> handleRemoveTag(in, app);
 //            case TAGGED -> handleTagged(in, app);
@@ -366,6 +369,19 @@ public class Main {
         }
     }
 
+    private static void handleAuthorsProductivity(YouVideoApp app){
+        Iterator <Author> it = app.getAuthorsProductivity();
+        if (!it.hasNext()){
+            System.out.println(MSG_NO_PRODUCTIVE_AUTHORS);
+        } else {
+            System.out.println(FORMAT_AUTHOR_PRODUCTIVITY_HEADER);
+            while (it.hasNext()){
+                Author author = it.next();
+                System.out.printf(FORMAT_AUTHOR_PRODUCTIVITY_BODY, author.getName(),
+                        author.getProductivity());
+            }
+        }
+    }
 
     private static void printShowByAuthor(Iterator<Show> it, String name) {
         System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, name);

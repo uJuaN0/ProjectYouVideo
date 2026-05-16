@@ -2,7 +2,7 @@ package youVideo;
 
 import java.util.*;
 
-public class AuthorClass implements Author{
+public class AuthorClass implements Author, Comparable<Author>{
     private final String name;
     private final List<Podcast> podcasts;
     private final SortedSet<Show> shows; // shows should be listed by ascending order
@@ -48,6 +48,23 @@ public class AuthorClass implements Author{
 
     public boolean hasPodcasts(){
         return !podcasts.isEmpty();
+    }
+
+    public int getProductivity(){
+        return podcasts.size() + shows.size();
+    }
+
+    @Override
+    public int compareTo(Author other) {
+        if (this.getProductivity() > other.getProductivity()) {
+            return -1;
+        }
+
+        if (this.getProductivity() < other.getProductivity()) {
+            return 1;
+        }
+
+        return this.getName().compareToIgnoreCase(other.getName());
     }
 
 }

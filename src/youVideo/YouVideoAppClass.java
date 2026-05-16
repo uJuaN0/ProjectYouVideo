@@ -263,6 +263,18 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
+    public Iterator<Author> getAuthorsProductivity(){
+        SortedSet<Author> productivity = new TreeSet<>();
+
+        for (Author author : authors.values()){
+            if (author.getProductivity() > 0){
+                productivity.add(author);
+            }
+        }
+        return productivity.iterator();
+    }
+
+    @Override
     public boolean authorHasShows(String name) {
         return createOrGetAuthor(name).hasShows();
     }

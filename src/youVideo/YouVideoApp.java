@@ -63,4 +63,6 @@ public interface YouVideoApp {
     PublishableVideo getPublishableVideo(String id) throws VideoDoesNotExistException;
 
     public Episode getEpisode(String id) throws VideoDoesNotExistException;
+
+    public Iterator<Author> getAuthorsProductivity();
 }
