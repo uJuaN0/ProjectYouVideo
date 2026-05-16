@@ -6,7 +6,9 @@ import java.util.*;
 
 public class YouVideoAppClass implements YouVideoApp {
 
-    //Todo limite de espaço para cada coisa
+    private static final int THOUSANDS_SIZE = 2000;
+    private static final int HUNDREDS_SIZE = 200;
+    
     private final Map<String, Video> videos;
     private final Map<String, Podcast> podcasts;
     private final Map<String, Show> shows;
@@ -14,11 +16,11 @@ public class YouVideoAppClass implements YouVideoApp {
     private final Map<String, SortedSet<String>> tags;
 
     public YouVideoAppClass() {
-        videos = new HashMap<>();
-        podcasts = new HashMap<>();
-        shows = new HashMap<>();
-        authors = new HashMap<>();
-        tags = new HashMap<>();
+        videos = new HashMap<>(THOUSANDS_SIZE);
+        podcasts = new HashMap<>(HUNDREDS_SIZE);
+        shows = new HashMap<>(HUNDREDS_SIZE);
+        authors = new HashMap<>(HUNDREDS_SIZE);
+        tags = new HashMap<>(HUNDREDS_SIZE);
     }
 
     private String normalizeKey(String key) {
