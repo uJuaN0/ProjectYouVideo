@@ -19,4 +19,6 @@ public interface Author {
     public boolean hasShows();
 
     public void removePodcast(Podcast podcast);
+
+    public void removeShow(Show show);
 }

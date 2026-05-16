@@ -30,6 +30,10 @@ public class AuthorClass implements Author{
         podcasts.remove(podcast);
     }
 
+    public void removeShow(Show show){
+        shows.remove(show);
+    }
+
     public boolean hasShows(){
         return !shows.isEmpty();
     }

@@ -51,8 +51,8 @@ public class Main {
 
     // Format strings used when printing structured information.
     private static final String FORMAT_HELP_BODY = "%s - %s%n";
-    private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s%n";
-    private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s";
+    private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s:%n";
+    private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s%n";
     private static final String FORMAT_TAGS_HEADER = "Tags:";
     private static final String FORMAT_VIDEO_HEADER = "%sVideo %s %d Title: %s%n";
     private static final String FORMAT_VIDEO_DETAILS = "File: %s Publisher: %s Language: %s%n";
@@ -285,12 +285,11 @@ public class Main {
 
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String name = in.nextLine().trim();
-        Author author = app.createOrGetAuthor(name);
-        if (!author.hasPodcasts()){
+        if (!app.authorHasPodcasts(name)){
             System.out.println(MSG_NO_PODCASTS_BY_AUTHOR);
         } else {
             Iterator<Podcast> iterator = app.getPodcastsByAuthor(name);
-            printAuthorPodcasts( iterator, name);
+            printAuthorPodcasts(iterator, name);
         }
     }
 
@@ -338,8 +337,8 @@ public class Main {
         if (!app.authorHasShows(name)){
             System.out.println(MSG_NO_SHOWS_BY_AUTHOR);
         } else {
-            Author author = app.createOrGetAuthor(name);
-            printShowByAuthor(app.getShowsByAuthorIterator(name), author);
+            Iterator<Show> iterator = app.getShowsByAuthorIterator(name);
+            printShowByAuthor(iterator, name);
         }
     }
 
@@ -368,13 +367,13 @@ public class Main {
     }
 
 
-    private static void printShowByAuthor(Iterator<Show> it, Author author) {
-        System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, author.getName());
+    private static void printShowByAuthor(Iterator<Show> it, String name) {
+        System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, name);
 
         while (it.hasNext()) {
             Show show = it.next();
             System.out.printf(FORMAT_AUTHOR_SHOWS_BODY, show.getDate(), show.getTitle(),
-                    show.getVideo().getDuration(), show.getVideo().getVideoLocation());
+                    show.getVideo().getDuration(), getLanguageCode(show.getVideoLanguage()));
         }
     }
 
@@ -480,10 +479,6 @@ public class Main {
         System.out.printf(FORMAT_SHOW_VIDEO, show.getTitle());
     }
 
-    // Converts a language code into a Locale object.
-    private static Locale toLocale(String languageCode) {
-        return Locale.of(languageCode.toLowerCase());
-    }
 
     // Returns the uppercase language code.
     private static String getLanguageCode(Locale language) {

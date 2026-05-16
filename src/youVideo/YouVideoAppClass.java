@@ -173,22 +173,27 @@ public class YouVideoAppClass implements YouVideoApp {
         String key = normalizeKey(title);
         if (!shows.containsKey(key))
             throw new ShowDoesNotExistException();
+
+        Show show = shows.get(key);
+        Author author = show.getAuthor();
+
+        author.removeShow(show);
         shows.remove(key);
     }
 
     @Override
     public void removeVideo(String videoId)
             throws VideoIsEpisodeException, VideoDoesNotExistException, VideoUsedInShowException {
+        PublishableVideo video = getPublishableVideo(normalizeKey(videoId));
         // Verifica se é episódio
-        for (Podcast p : podcasts.values()) {
-            Episode episode = getEpisode(normalizeKey(videoId));
-            if (p.containsEpisode(episode))
+        for (Podcast p : podcasts.values())
+            if (p.containsEpisode(videoId))
                 throw new VideoIsEpisodeException();
-        }
+
         if (!videos.containsKey(normalizeKey(videoId)))
             throw new VideoDoesNotExistException();
 
-        if (shows.containsKey(normalizeKey(videoId)))
+        if (shows.containsKey(normalizeKey(video.getTitle())))
             throw new VideoUsedInShowException();
 
         videos.remove(normalizeKey(videoId));

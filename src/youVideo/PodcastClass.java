@@ -20,7 +20,7 @@ public class PodcastClass implements Podcast {
         this.language = language;
         this.episodes = new LinkedList<>();
     }
-    
+
 
     @Override
     public String getTitle() {
@@ -43,8 +43,8 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
-    public boolean containsEpisode(Episode episode) {
-        return episodes.contains(episode);
+    public boolean containsEpisode(String id) {
+        return episodes.contains(new EpisodeClass(id));
     }
 
     @Override
