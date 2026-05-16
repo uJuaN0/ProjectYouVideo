@@ -250,6 +250,11 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
+    public boolean authorHasPodcasts(String name) {
+        return createOrGetAuthor(name).hasPodcasts();
+    }
+
+    @Override
     public Iterator<Podcast> getPodcastsByAuthor(String name){
         Author author = createOrGetAuthor(name);
         return author.getPodcastsIterator();
