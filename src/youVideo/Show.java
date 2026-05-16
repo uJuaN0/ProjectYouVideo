@@ -1,5 +1,7 @@
 package youVideo;
 
+import java.util.Locale;
+
 /**
  * Represents a show created from an existing publishable video.
  */
@@ -31,4 +33,6 @@ public interface Show {
     public int compareTo(Show other);
 
     public String getAuthorName();
+
+    public Locale getVideoLanguage();
 }

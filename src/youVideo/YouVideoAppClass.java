@@ -180,10 +180,11 @@ public class YouVideoAppClass implements YouVideoApp {
     public void removeVideo(String videoId)
             throws VideoIsEpisodeException, VideoDoesNotExistException, VideoUsedInShowException {
         // Verifica se é episódio
-        for (Podcast p : podcasts.values())
-            if (p.containsEpisode(videoId))
+        for (Podcast p : podcasts.values()) {
+            Episode episode = getEpisode(normalizeKey(videoId));
+            if (p.containsEpisode(episode))
                 throw new VideoIsEpisodeException();
-
+        }
         if (!videos.containsKey(normalizeKey(videoId)))
             throw new VideoDoesNotExistException();
 
@@ -199,6 +200,18 @@ public class YouVideoAppClass implements YouVideoApp {
         if (v == null)
             throw new VideoDoesNotExistException();
         return v;
+    }
+
+    @Override
+    public Episode getEpisode(String id)
+            throws VideoDoesNotExistException {
+        Video video = videos.get(normalizeKey(id));
+
+        if (video instanceof Episode episode) {
+            return episode;
+        } else {
+            throw new VideoDoesNotExistException();
+        }
     }
 
     @Override

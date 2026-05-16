@@ -53,10 +53,14 @@ public interface YouVideoApp {
 
     boolean authorHasShows(String name);
 
+    public boolean authorHasPodcasts(String name);
+
      void addSubtitle(String subtitleLocation, String language, String id)
             throws VideoDoesNotExistException, PremiumVideoRequiredException, InvalidSubtitleLanguageException;
 
      boolean isPremium(Video v);
 
     PublishableVideo getPublishableVideo(String id) throws VideoDoesNotExistException;
+
+    public Episode getEpisode(String id) throws VideoDoesNotExistException;
 }

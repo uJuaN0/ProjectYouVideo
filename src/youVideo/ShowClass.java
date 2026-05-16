@@ -1,5 +1,7 @@
 package youVideo;
 
+import java.util.Locale;
+
 /**
  * implementation of a show.
  */
@@ -17,6 +19,10 @@ public class ShowClass implements Show, Comparable<Show> {
     @Override
     public PublishableVideo getVideo() {
         return video;
+    }
+
+    public Locale getVideoLanguage(){
+        return video.getLanguage();
     }
 
     @Override

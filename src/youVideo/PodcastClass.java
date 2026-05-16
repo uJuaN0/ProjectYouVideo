@@ -43,8 +43,8 @@ public class PodcastClass implements Podcast {
     }
 
     @Override
-    public boolean containsEpisode(String id) {
-        return episodes.contains(new EpisodeClass(id));
+    public boolean containsEpisode(Episode episode) {
+        return episodes.contains(episode);
     }
 
     @Override

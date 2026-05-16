@@ -33,10 +33,9 @@ public interface Podcast {
     /**
      * Checks if the given episode id is unique inside this podcast.
      *
-     * @param id episode identifier
-     * @return true if the id is unique, false otherwise
+     * @param episode@return true if the id is unique, false otherwise
      */
-    boolean containsEpisode(String id);
+    boolean containsEpisode(Episode episode);
 
     /**
      * Checks if a new episode date is valid according to the latest episode date.
