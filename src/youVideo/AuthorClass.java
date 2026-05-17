@@ -1,5 +1,5 @@
 package youVideo;
-
+//todo override
 import java.util.*;
 
 public class AuthorClass implements Author, Comparable<Author>{
