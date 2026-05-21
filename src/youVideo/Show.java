@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * Represents a show created from an existing publishable video.
  */
-public interface Show {
+public interface Show extends Taggable {
 
     /**
      * Returns the title of the video associated with the show.

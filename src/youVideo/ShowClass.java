@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * implementation of a show.
  */
-public class ShowClass implements Show, Comparable<Show> {
+public class ShowClass extends TaggableClass implements Show, Comparable<Show> {
     private final PublishableVideo video;
     private final Author author;
     private final String transmissionDate;
