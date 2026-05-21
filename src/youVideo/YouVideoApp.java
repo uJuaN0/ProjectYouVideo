@@ -39,7 +39,7 @@ public interface YouVideoApp {
 
     Show getShow(String title) throws ShowDoesNotExistException;
 
-    public Iterator<Subtitle> getSubtitles(Video video) throws PremiumVideoRequiredException;
+    Iterator<Subtitle> getSubtitles(Video video) throws PremiumVideoRequiredException;
 
     Iterator<Show> getShowsByAuthorIterator(String name);
 
@@ -47,7 +47,7 @@ public interface YouVideoApp {
 
     Iterator<String> getTagsIterator(String title);
 
-    public boolean hasTags(String title);
+    boolean hasTags(String title);
 
     Author createOrGetAuthor(String name);
 

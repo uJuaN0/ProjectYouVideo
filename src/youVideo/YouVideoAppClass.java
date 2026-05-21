@@ -6,9 +6,11 @@ import java.util.*;
 
 public class YouVideoAppClass implements YouVideoApp {
 
+    //todo salvar em variavel local as keys e n repetir normalize
+
     private static final int THOUSANDS_SIZE = 2000;
     private static final int HUNDREDS_SIZE = 200;
-    
+
     private final Map<String, Video> videos;
     private final Map<String, Podcast> podcasts;
     private final Map<String, Show> shows;
@@ -42,6 +44,8 @@ public class YouVideoAppClass implements YouVideoApp {
         }
 
         tags.get(key).add(tag);
+
+        //todo equalsignorecase
     }
 
     @Override
