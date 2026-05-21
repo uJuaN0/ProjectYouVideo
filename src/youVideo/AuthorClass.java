@@ -54,6 +54,8 @@ public class AuthorClass implements Author, Comparable<Author>{
         return podcasts.size() + shows.size();
     }
 
+
+    //todo comparador
     @Override
     public int compareTo(Author other) {
         if (this.getProductivity() > other.getProductivity()) {
