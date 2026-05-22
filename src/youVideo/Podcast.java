@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Represents a podcast and its episode collection.
  */
-public interface Podcast {
+public interface Podcast extends Taggable {
 
     /**
      * Returns the title of the podcast.

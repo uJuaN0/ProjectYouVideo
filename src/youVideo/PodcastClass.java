@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * implementation of a podcast.
  */
-public class PodcastClass implements Podcast {
+public class PodcastClass extends TaggableClass implements Podcast {
     private final List<Episode> episodes;
     private final String title;
     private final Author author;
@@ -19,6 +19,7 @@ public class PodcastClass implements Podcast {
         this.author = author;
         this.language = language;
         this.episodes = new LinkedList<>();
+
     }
 
 

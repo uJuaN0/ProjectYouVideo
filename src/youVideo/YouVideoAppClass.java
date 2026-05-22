@@ -348,12 +348,28 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     public Iterator<String> getTagsIterator(String title){
         String key = normalizeKey(title);
-        return tags.get(key).iterator();
+
+        if (podcasts.containsKey(key)){
+            return podcasts.get(key).getTags();
+        }
+
+        if (shows.containsKey(key)){
+            return shows.get(key).getTags();
+        }
+
+        return null;
     }
 
     public boolean hasTags(String title) {
         String key = normalizeKey(title);
-        return tags.containsKey(key) && !tags.get(key).isEmpty();
+
+        if (podcasts.containsKey(key))
+            return podcasts.get(key).hasTags();
+
+        if (shows.containsKey(key))
+            return shows.get(key).hasTags();
+
+        return false;
     }
 
     public static boolean isValidLanguage(String lang) {
