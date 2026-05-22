@@ -4,19 +4,38 @@ import Exceptions.*;
 
 import java.util.*;
 
+/**
+ * Implementation of the YouVideo application.
+ * Manages videos, podcasts, shows, authors and tags.
+ * @author Juan Lima 75513
+ * @author Miguel Passão 75460
+ */
 public class YouVideoAppClass implements YouVideoApp {
 
-    //todo salvar em variavel local as keys e n repetir normalize
-
+    /** Initial capacity for the videos map. */
     private static final int THOUSANDS_SIZE = 2000;
+
+    /** Initial capacity for the remaining maps. */
     private static final int HUNDREDS_SIZE = 200;
 
+    /** Map of videos, keyed by their id. */
     private final Map<String, Video> videos;
-    private final Map<String, Podcast> podcasts;
-    private final Map<String, Show> shows;
-    private final Map<String, Author> authors;
-    private final Map<String, SortedSet<String>> tags;
 
+    /** Map of podcasts, keyed by their title. */
+    private final Map<String, Podcast> podcasts;
+
+    /** Map of shows, keyed by their title. */
+    private final Map<String, Show> shows;
+
+    /** Map of authors, keyed by their name. */
+    private final Map<String, Author> authors;
+
+    /** Inverted index: maps a tag to all taggable content with that tag. */
+    private final Map<String, SortedSet<Taggable>> tags;
+
+    /**
+     * Creates a new YouVideoAppClass instance with empty collections.
+     */
     public YouVideoAppClass() {
         videos = new HashMap<>(THOUSANDS_SIZE);
         podcasts = new HashMap<>(HUNDREDS_SIZE);
@@ -25,60 +44,114 @@ public class YouVideoAppClass implements YouVideoApp {
         tags = new HashMap<>(HUNDREDS_SIZE);
     }
 
+    /**
+     * Normalizes a key by trimming and converting to uppercase.
+     * @param key the key to normalize.
+     * @return the normalized key.
+     */
     private String normalizeKey(String key) {
         return key.trim().toUpperCase();
     }
 
     @Override
-    public void addTag(String tag, String title) throws TitleDoesNotExistException, TitleAlreadyTaggedException{
-        String key = normalizeKey(title);
+    public Iterator<Taggable> getTagged(String tag, String type, String order)
+            throws InvalidTaggedParametersException {
 
-        if (!podcasts.containsKey(key) && !shows.containsKey(key))
-            throw new TitleDoesNotExistException();
+        if (!type.equalsIgnoreCase("SHOW") && !type.equalsIgnoreCase("PODCAST")
+                && !type.equalsIgnoreCase("ALL"))
+            throw new InvalidTaggedParametersException();
 
-        if (containsTag(title,tag))
-            throw new TitleAlreadyTaggedException();
+        if (!order.equalsIgnoreCase("ASC") && !order.equalsIgnoreCase("DES"))
+            throw new InvalidTaggedParametersException();
 
-        if (!tags.containsKey(key)) {
-            tags.put(key, new TreeSet<>(new CaseInsensitiveComparator()));
+        SortedSet<Taggable> content = tags.get(normalizeKey(tag));
+
+        List<Taggable> filtered = new ArrayList<>();
+
+        if (content != null) {
+            for (Taggable t : content) {
+                if (type.equalsIgnoreCase("ALL") ||
+                        (type.equalsIgnoreCase("SHOW") && t.isShow()) ||
+                        (type.equalsIgnoreCase("PODCAST") && !t.isShow()))
+                    filtered.add(t);
+            }
         }
 
-        tags.get(key).add(tag);
+        if (order.equalsIgnoreCase("DES"))
+            filtered.sort(new TaggableDescComparator());
 
-        //todo equalsignorecase
+        return filtered.iterator();
     }
 
     @Override
-    public void removeTag(String tag, String title)
-            throws TitleDoesNotExistException, TitleNotTaggedException{
+    public void addTag(String tag, String title) throws TitleDoesNotExistException, TitleAlreadyTaggedException {
         String key = normalizeKey(title);
+        String tagKey = normalizeKey(tag);
 
-        if (!podcasts.containsKey(key) && !shows.containsKey(key))
+        Podcast podcast = podcasts.get(key);
+        Show show = shows.get(key);
+
+        if (podcast == null && show == null)
             throw new TitleDoesNotExistException();
 
-        if (!containsTag(title,tag))
-            throw new TitleNotTaggedException();
+        // Also check if podcast or show are null, preventing NullPointerException
+        if ((podcast == null || podcast.containsTag(tag)) &&
+                (show == null || show.containsTag(tag)))
+            throw new TitleAlreadyTaggedException();
 
-        tags.get(key).remove(tag);
+        if (!tags.containsKey(tagKey))
+            tags.put(tagKey, new TreeSet<>(new TaggableComparator()));
+
+        if (podcast != null) {
+            podcast.addTag(tag);
+            tags.get(tagKey).add(podcast);
+        }
+        if (show != null) {
+            show.addTag(tag);
+            tags.get(tagKey).add(show);
+        }
     }
 
+    @Override
+    public void removeTag(String tag, String title) throws TitleDoesNotExistException, TitleNotTaggedException {
+        String key = normalizeKey(title);
+        String tagKey = normalizeKey(tag);
+
+        Podcast podcast = podcasts.get(key);
+        Show show = shows.get(key);
+
+        if (podcast == null && show == null)
+            throw new TitleDoesNotExistException();
+
+        // Also check if podcast or show are null, preventing NullPointerException
+        if ((podcast == null || !podcast.containsTag(tag)) &&
+                (show == null || !show.containsTag(tag)))
+            throw new TitleNotTaggedException();
+
+        if (podcast != null && podcast.containsTag(tag)) {
+            podcast.removeTag(tag);
+            tags.get(tagKey).remove(podcast);
+        }
+        if (show != null && show.containsTag(tag)) {
+            show.removeTag(tag);
+            tags.get(tagKey).remove(show);
+        }
+    }
 
     @Override
     public void addPublishable(String id, int duration, String location, String title,
                                String publisher, String language)
-            throws InvalidDurationException, VideoAlreadyExistsException, InvalidLanguageException{
+            throws InvalidDurationException, VideoAlreadyExistsException, InvalidLanguageException {
+        String key = normalizeKey(id);
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
+        if (!YouVideoAppClass.isValidLanguage(language))
             throw new InvalidLanguageException();
-        }
-        if (duration <= 0) {
+        if (duration <= 0)
             throw new InvalidDurationException();
-        }
-        if (videos.containsKey(normalizeKey(id))) {
+        if (videos.containsKey(key))
             throw new VideoAlreadyExistsException();
-        }
 
-        videos.put(normalizeKey(id),
+        videos.put(key,
                 new PublishableVideoClass(id, duration, location, title,
                         publisher, Locale.of(language)));
     }
@@ -90,21 +163,19 @@ public class YouVideoAppClass implements YouVideoApp {
             throws InvalidDurationException, VideoAlreadyExistsException,
             InvalidLanguageException, InvalidSubtitleLanguageException {
 
-        if (!YouVideoAppClass.isValidLanguage(language)) {
+        String key = normalizeKey(id);
+
+        if (!YouVideoAppClass.isValidLanguage(language))
             throw new InvalidLanguageException();
-        }
-        if (!YouVideoAppClass.isValidLanguage(subtitleLanguage)) {
+        if (!YouVideoAppClass.isValidLanguage(subtitleLanguage))
             throw new InvalidSubtitleLanguageException();
-        }
-        if (duration <= 0) {
+        if (duration <= 0)
             throw new InvalidDurationException();
-        }
-        if (videos.containsKey(normalizeKey(id))) {
+        if (videos.containsKey(key))
             throw new VideoAlreadyExistsException();
-        }
 
         Subtitle subtitle = new Subtitle(Locale.of(subtitleLanguage), subtitleLocation);
-        videos.put(normalizeKey(id),
+        videos.put(key,
                 new PremiumVideoClass(id, duration, location, title, publisher,
                         Locale.of(language), subtitle));
     }
@@ -114,45 +185,46 @@ public class YouVideoAppClass implements YouVideoApp {
             throws VideoDoesNotExistException, PremiumVideoRequiredException, InvalidSubtitleLanguageException {
         Video video = videos.get(normalizeKey(id));
 
-        if (!isValidLanguage(language)){
+        if (!isValidLanguage(language))
             throw new InvalidSubtitleLanguageException();
-        }
-        if (video == null) {
+        if (video == null)
             throw new VideoDoesNotExistException();
-        }
-        if (!(isPremium(video))) {
+        if (!isPremium(video))
             throw new PremiumVideoRequiredException();
-        }
+
         ((PremiumVideo) video).addSubtitle(new Subtitle(Locale.of(language), subtitleLocation));
     }
 
     @Override
     public void addPodcast(String title, String name, String language)
             throws PodcastAlreadyExistsException, InvalidLanguageException {
-        if (!YouVideoAppClass.isValidLanguage(language)){
+        String key = normalizeKey(title);
+
+        if (!YouVideoAppClass.isValidLanguage(language))
             throw new InvalidLanguageException();
-        }
-        if (podcasts.containsKey(normalizeKey(title)))
+        if (podcasts.containsKey(key))
             throw new PodcastAlreadyExistsException();
 
         Author author = createOrGetAuthor(name);
         Podcast podcast = new PodcastClass(title, author, Locale.of(language));
         author.addPodcast(podcast);
-        podcasts.put(normalizeKey(title), podcast);
+        podcasts.put(key, podcast);
     }
 
     @Override
     public void addEpisode(String title, String id, int duration, String location, String date)
             throws InvalidDurationException, PodcastDoesNotExistException,
             EpisodeIdAlreadyExistsException, EpisodeDateTooEarlyException {
+        String key = normalizeKey(title);
+
         if (duration <= 0)
             throw new InvalidDurationException();
-        if (!podcasts.containsKey(normalizeKey(title)))
+        if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
         if (videos.containsKey(normalizeKey(id)))
             throw new EpisodeIdAlreadyExistsException();
 
-        Podcast podcast = podcasts.get(normalizeKey(title));
+        Podcast podcast = podcasts.get(key);
         if (!podcast.isNewer(date))
             throw new EpisodeDateTooEarlyException();
 
@@ -164,7 +236,9 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     public void createShow(String name, String videoId, String transmissionDate)
             throws VideoForShowDoesNotExistException, ShowAlreadyExistsException {
-        Video v = videos.get(normalizeKey(videoId));
+        String key = normalizeKey(videoId);
+
+        Video v = videos.get(key);
         if (v == null)
             throw new VideoForShowDoesNotExistException();
 
@@ -178,8 +252,12 @@ public class YouVideoAppClass implements YouVideoApp {
         shows.put(normalizeKey(video.getTitle()), show);
     }
 
-    @Override
-    public Author createOrGetAuthor(String name) {
+    /**
+     * Returns an existing author by name, or creates a new one if not found.
+     * @param name the author's name.
+     * @return the author with the given name.
+     */
+    private Author createOrGetAuthor(String name) {
         String key = normalizeKey(name);
         if (!authors.containsKey(key)) {
             Author author = new AuthorClass(name);
@@ -196,11 +274,11 @@ public class YouVideoAppClass implements YouVideoApp {
         Author author = podcast.getAuthor();
         if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
-        //Removes the videos from the podcast from "videos"
+
+        // Removes all episodes of the podcast from the videos map
         Iterator<Episode> it = podcast.getEpisodes();
-        while (it.hasNext()) {
+        while (it.hasNext())
             videos.remove(normalizeKey(it.next().getId()));
-        }
 
         author.removePodcast(podcast);
         podcasts.remove(key);
@@ -222,19 +300,21 @@ public class YouVideoAppClass implements YouVideoApp {
     @Override
     public void removeVideo(String videoId)
             throws VideoIsEpisodeException, VideoDoesNotExistException, VideoUsedInShowException {
-        PublishableVideo video = getPublishableVideo(normalizeKey(videoId));
-        // Verifica se é episódio
+        String key = normalizeKey(videoId);
+        PublishableVideo video = getPublishableVideo(key);
+
+        // Check if the video is an episode of any podcast
         for (Podcast p : podcasts.values())
             if (p.containsEpisode(videoId))
                 throw new VideoIsEpisodeException();
 
-        if (!videos.containsKey(normalizeKey(videoId)))
+        if (!videos.containsKey(key))
             throw new VideoDoesNotExistException();
 
         if (shows.containsKey(normalizeKey(video.getTitle())))
             throw new VideoUsedInShowException();
 
-        videos.remove(normalizeKey(videoId));
+        videos.remove(key);
     }
 
     @Override
@@ -246,35 +326,21 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
-    public Episode getEpisode(String id)
-            throws VideoDoesNotExistException {
+    public PublishableVideo getPublishableVideo(String id) throws VideoDoesNotExistException {
         Video video = videos.get(normalizeKey(id));
 
-        if (video instanceof Episode episode) {
-            return episode;
-        } else {
-            throw new VideoDoesNotExistException();
-        }
-    }
-
-    @Override
-    public PublishableVideo getPublishableVideo(String id)
-            throws VideoDoesNotExistException {
-        Video video = videos.get(normalizeKey(id));
-
-        if (video instanceof PublishableVideo publishableVideo) {
+        if (video instanceof PublishableVideo publishableVideo)
             return publishableVideo;
-        } else {
+        else
             throw new VideoDoesNotExistException();
-        }
     }
 
     @Override
     public Podcast getPodcast(String title) throws PodcastDoesNotExistException {
-        if (!podcasts.containsKey(normalizeKey(title))){
+        String key = normalizeKey(title);
+        if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
-        }
-        return podcasts.get(normalizeKey(title));
+        return podcasts.get(key);
     }
 
     @Override
@@ -287,9 +353,8 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     public Iterator<Subtitle> getSubtitles(Video video) throws PremiumVideoRequiredException {
-        if (!isPremium(video)){
+        if (!isPremium(video))
             throw new PremiumVideoRequiredException();
-        }
         PremiumVideo v = (PremiumVideo) video;
         return v.getSubtitles();
     }
@@ -301,32 +366,15 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
-    public Iterator<Author> getAuthorsProductivity(){
+    public Iterator<Author> getAuthorsProductivity() {
         SortedSet<Author> productivity = new TreeSet<>();
 
-        for (Author author : authors.values()){
-            if (author.getProductivity() > 0){
+        for (Author author : authors.values()) {
+            if (author.getProductivity() > 0)
                 productivity.add(author);
-            }
         }
 
         return productivity.iterator();
-    }
-
-    private static class CaseInsensitiveComparator implements Comparator<String> {
-        @Override
-        public int compare(String s1, String s2) {
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-        }
-    }
-
-    private boolean containsTag(String title, String tag) {
-        String titleKey = normalizeKey(title);
-        SortedSet<String> savedTags = tags.get(titleKey);
-        if (savedTags == null)
-            return false;
-
-        return savedTags.contains(tag);
     }
 
     @Override
@@ -340,26 +388,25 @@ public class YouVideoAppClass implements YouVideoApp {
     }
 
     @Override
-    public Iterator<Podcast> getPodcastsByAuthor(String name){
+    public Iterator<Podcast> getPodcastsByAuthor(String name) {
         Author author = createOrGetAuthor(name);
         return author.getPodcastsIterator();
     }
 
     @Override
-    public Iterator<String> getTagsIterator(String title){
+    public Iterator<String> getTagsIterator(String title) {
         String key = normalizeKey(title);
 
-        if (podcasts.containsKey(key)){
+        if (podcasts.containsKey(key))
             return podcasts.get(key).getTags();
-        }
 
-        if (shows.containsKey(key)){
+        if (shows.containsKey(key))
             return shows.get(key).getTags();
-        }
 
         return null;
     }
 
+    @Override
     public boolean hasTags(String title) {
         String key = normalizeKey(title);
 
@@ -372,7 +419,12 @@ public class YouVideoAppClass implements YouVideoApp {
         return false;
     }
 
-    public static boolean isValidLanguage(String lang) {
+    /**
+     * Checks if a language code is valid according to ISO 639-1.
+     * @param lang the two-letter language code to check.
+     * @return true if valid, false otherwise.
+     */
+    private static boolean isValidLanguage(String lang) {
         if (lang == null || lang.length() != 2) return false;
         lang = lang.toLowerCase();
         for (String l : Locale.getISOLanguages())
@@ -380,7 +432,12 @@ public class YouVideoAppClass implements YouVideoApp {
         return false;
     }
 
-    public boolean isPremium(Video v){
+    /**
+     * Checks if a video is a premium video.
+     * @param v the video to check.
+     * @return true if the video is premium, false otherwise.
+     */
+    private boolean isPremium(Video v) {
         return v instanceof PremiumVideo;
     }
 }

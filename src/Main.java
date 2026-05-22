@@ -4,6 +4,7 @@ import youVideo.*; //todo usar apenas necessário
 //todo png do diagrama
 
 //todo diagrama
+import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
@@ -52,6 +53,13 @@ public class Main {
     private static final String MSG_TAG_ADDED = "Tag added successfully.";
     private static final String MSG_TAG_REMOVED = "Tag removed successfully.";
     private static final String MSG_TITLE_IS_NOT_TAGGED = "Title is not tagged with %s.%n";
+    private static final String MSG_NO_CONTENT_TAGGED = "No content tagged with %s.%n";
+    private static final String MSG_TAGGED_HEADER = "Content tagged with %s in %s order:%n";
+    private static final String MSG_TAGGED_SHOW = "Show Title: %s Author: %s%n";
+    private static final String MSG_TAGGED_PODCAST = "Podcast Title: %s Author: %s%n";
+    private static final String MSG_INVALID_TAGGED_PARAMS = "Invalid tagged parameters.";
+    private static final String ORDER_ASC = "Ascending";
+    private static final String ORDER_DES = "Descending";
 
     // Special constants used in output formatting.
     private static final String FULAH_CODE = "ff";
@@ -61,7 +69,7 @@ public class Main {
 
     // Format strings used when printing structured information.
     private static final String FORMAT_AUTHOR_PRODUCTIVITY_HEADER = "Authors productivity:";
-    private static final String FORMAT_AUTHOR_PRODUCTIVITY_BODY = "%s with %d contributions.";
+    private static final String FORMAT_AUTHOR_PRODUCTIVITY_BODY = "%s with %d contributions.%n";
     private static final String FORMAT_HELP_BODY = "%s - %s%n";
     private static final String FORMAT_AUTHOR_SHOWS_HEADER = "Shows by author %s:%n";
     private static final String FORMAT_AUTHOR_SHOWS_BODY = "Date: %s Show: %s Duration: %d Language: %s%n";
@@ -119,7 +127,7 @@ public class Main {
             case AUTHORSPRODUCTIVITY -> handleAuthorsProductivity(app);
             case ADDTAG -> handleAddTag(in, app);
             case REMOVETAG -> handleRemoveTag(in, app);
-//            case TAGGED -> handleTagged(in, app);
+            case TAGGED -> handleTagged(in, app);
             case HELP -> printHelp();
             case EXIT -> System.out.println(MSG_EXIT);
             case UNKNOWN -> System.out.println(MSG_UNKNOWN_COMMAND);
@@ -427,6 +435,33 @@ public class Main {
             System.out.printf(MSG_TITLE_IS_NOT_TAGGED, tag);
         }
     }
+
+    private static void handleTagged(Scanner in, YouVideoApp app) {
+        String tag = in.next();
+        String type = in.next();
+        String order = in.nextLine().trim();
+        try {
+            Iterator<Taggable> it = app.getTagged(tag, type, order);
+            if (!it.hasNext()) {
+                System.out.printf(MSG_NO_CONTENT_TAGGED, tag);
+            } else {
+                System.out.printf(MSG_TAGGED_HEADER, tag, order.equalsIgnoreCase("ASC")
+                        ? ORDER_ASC : ORDER_DES);
+                while (it.hasNext()) {
+                    Taggable t = it.next();
+                    if (t.isShow()) {
+                        System.out.printf(MSG_TAGGED_SHOW, t.getTitle(), t.getAuthorName());
+                    } else {
+                        System.out.printf(MSG_TAGGED_PODCAST, t.getTitle(), t.getAuthorName());
+                    }
+                }
+            }
+        } catch (InvalidTaggedParametersException e) {
+            System.out.println(MSG_INVALID_TAGGED_PARAMS);
+        }
+    }
+
+
 
     // Prints a video using the required output format.
     private static void printVideo(PublishableVideo video, boolean premium) {
