@@ -1,72 +1,74 @@
 package youVideo;
-//todo override
+
 import java.util.*;
 
-public class AuthorClass implements Author, Comparable<Author>{
+public class AuthorClass implements Author, Comparable<Author> {
     private final String name;
     private final List<Podcast> podcasts;
-    private final SortedSet<Show> shows; // shows should be listed by ascending order
-    // of transmission date
+    private final SortedSet<Show> shows;
 
-    public AuthorClass(String name){
+    public AuthorClass(String name) {
         this.name = name;
         this.podcasts = new LinkedList<>();
         this.shows = new TreeSet<>();
     }
 
-    public String getName(){
+    @Override
+    public String getName() {
         return this.name;
     }
 
-    public void addPodcast(Podcast podcast){
+    @Override
+    public void addPodcast(Podcast podcast) {
         podcasts.add(podcast);
     }
 
-    public void addShow(Show show){
+    @Override
+    public void addShow(Show show) {
         shows.add(show);
     }
 
-    public void removePodcast(Podcast podcast){
+    @Override
+    public void removePodcast(Podcast podcast) {
         podcasts.remove(podcast);
     }
 
-    public void removeShow(Show show){
+    @Override
+    public void removeShow(Show show) {
         shows.remove(show);
     }
 
-    public boolean hasShows(){
+    @Override
+    public boolean hasShows() {
         return !shows.isEmpty();
     }
 
-    public Iterator<Podcast> getPodcastsIterator(){
+    @Override
+    public Iterator<Podcast> getPodcastsIterator() {
         return podcasts.iterator();
     }
 
-    public Iterator<Show> getShowsIterator(){
+    @Override
+    public Iterator<Show> getShowsIterator() {
         return shows.iterator();
     }
 
-    public boolean hasPodcasts(){
+    @Override
+    public boolean hasPodcasts() {
         return !podcasts.isEmpty();
     }
 
-    public int getProductivity(){
+    @Override
+    public int getProductivity() {
         return podcasts.size() + shows.size();
     }
 
-
-    //todo comparador
     @Override
     public int compareTo(Author other) {
-        if (this.getProductivity() > other.getProductivity()) {
+        if (this.getProductivity() > other.getProductivity())
             return -1;
-        }
-
-        if (this.getProductivity() < other.getProductivity()) {
+        if (this.getProductivity() < other.getProductivity())
             return 1;
-        }
-
         return this.getName().compareToIgnoreCase(other.getName());
     }
-
 }
