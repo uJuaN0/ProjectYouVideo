@@ -29,6 +29,16 @@ public class PodcastClass extends TaggableClass implements Podcast {
     }
 
     @Override
+    public int getTagOrder() {
+        return 1;
+    }
+
+    @Override
+    public boolean isShow() {
+        return false;
+    }
+
+    @Override
     public Author getAuthor() {
         return author;
     }

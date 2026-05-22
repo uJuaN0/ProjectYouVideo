@@ -30,6 +30,16 @@ public class ShowClass extends TaggableClass implements Show, Comparable<Show> {
         return video.getTitle();
     }
 
+    @Override
+    public int getTagOrder() {
+        return 0;
+    }
+
+    @Override
+    public boolean isShow() {
+        return true;
+    }
+
     public String getAuthorName(){
         return author.getName();
     }
