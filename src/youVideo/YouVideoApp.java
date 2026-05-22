@@ -241,4 +241,11 @@ public interface YouVideoApp {
      * @return true if the title has tags, false otherwise.
      */
     boolean hasTags(String title);
+
+    /**
+     * Checks if a video is a premium video.
+     * @param v the video to check.
+     * @return true if the video is premium, false otherwise.
+     */
+     boolean isPremium(Video v);
 }

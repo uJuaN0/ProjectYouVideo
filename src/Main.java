@@ -222,7 +222,7 @@ public class Main {
         String id = in.next();
         try {
             PublishableVideo video = app.getPublishableVideo(id);
-            printVideo(video, video instanceof PremiumVideo);
+            printVideo(video, app.isPremium(video));
         } catch (VideoDoesNotExistException e) {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         }

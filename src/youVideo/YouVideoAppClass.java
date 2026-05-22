@@ -216,12 +216,13 @@ public class YouVideoAppClass implements YouVideoApp {
             throws InvalidDurationException, PodcastDoesNotExistException,
             EpisodeIdAlreadyExistsException, EpisodeDateTooEarlyException {
         String key = normalizeKey(title);
+        String videoKey = normalizeKey(id);
 
         if (duration <= 0)
             throw new InvalidDurationException();
         if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
-        if (videos.containsKey(normalizeKey(id)))
+        if (videos.containsKey(videoKey))
             throw new EpisodeIdAlreadyExistsException();
 
         Podcast podcast = podcasts.get(key);
@@ -230,7 +231,7 @@ public class YouVideoAppClass implements YouVideoApp {
 
         Episode episode = new EpisodeClass(id, duration, location, date);
         podcast.addEpisode(episode);
-        videos.put(normalizeKey(id), episode);
+        videos.put(videoKey, episode);
     }
 
     @Override
@@ -271,10 +272,11 @@ public class YouVideoAppClass implements YouVideoApp {
     public void removePodcast(String title) throws PodcastDoesNotExistException {
         String key = normalizeKey(title);
         Podcast podcast = podcasts.get(key);
-        Author author = podcast.getAuthor();
+
         if (!podcasts.containsKey(key))
             throw new PodcastDoesNotExistException();
 
+        Author author = podcast.getAuthor();
         // Removes all episodes of the podcast from the videos map
         Iterator<Episode> it = podcast.getEpisodes();
         while (it.hasNext())
@@ -301,19 +303,21 @@ public class YouVideoAppClass implements YouVideoApp {
     public void removeVideo(String videoId)
             throws VideoIsEpisodeException, VideoDoesNotExistException, VideoUsedInShowException {
         String key = normalizeKey(videoId);
-        PublishableVideo video = getPublishableVideo(key);
 
-        // Check if the video is an episode of any podcast
-        for (Podcast p : podcasts.values())
-            if (p.containsEpisode(videoId))
-                throw new VideoIsEpisodeException();
 
-        if (!videos.containsKey(key))
+        if (!videos.containsKey(key)) {
             throw new VideoDoesNotExistException();
+        }
+        // Check if the video is an episode of any podcast
+        for (Podcast p : podcasts.values()) {
+            if (p.containsEpisode(key))
+                throw new VideoIsEpisodeException();
+        }
 
-        if (shows.containsKey(normalizeKey(video.getTitle())))
+        PublishableVideo video = getPublishableVideo(key);
+        if (shows.containsKey(normalizeKey(video.getTitle()))) {
             throw new VideoUsedInShowException();
-
+        }
         videos.remove(key);
     }
 
@@ -432,12 +436,7 @@ public class YouVideoAppClass implements YouVideoApp {
         return false;
     }
 
-    /**
-     * Checks if a video is a premium video.
-     * @param v the video to check.
-     * @return true if the video is premium, false otherwise.
-     */
-    private boolean isPremium(Video v) {
+    public boolean isPremium(Video v) {
         return v instanceof PremiumVideo;
     }
 }
