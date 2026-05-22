@@ -371,7 +371,7 @@ public class YouVideoAppClass implements YouVideoApp {
 
     @Override
     public Iterator<Author> getAuthorsProductivity() {
-        SortedSet<Author> productivity = new TreeSet<>();
+        SortedSet<Author> productivity = new TreeSet<>(new ProductivityComparator());
 
         for (Author author : authors.values()) {
             if (author.getProductivity() > 0)

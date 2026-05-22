@@ -23,6 +23,4 @@ public interface Author {
     public void removeShow(Show show);
 
     public int getProductivity();
-
-    public int compareTo(Author other);
 }

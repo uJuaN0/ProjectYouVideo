@@ -2,7 +2,7 @@ package youVideo;
 
 import java.util.*;
 
-public class AuthorClass implements Author, Comparable<Author> {
+public class AuthorClass implements Author {
     private final String name;
     private final List<Podcast> podcasts;
     private final SortedSet<Show> shows;
@@ -63,12 +63,4 @@ public class AuthorClass implements Author, Comparable<Author> {
         return podcasts.size() + shows.size();
     }
 
-    @Override
-    public int compareTo(Author other) {
-        if (this.getProductivity() > other.getProductivity())
-            return -1;
-        if (this.getProductivity() < other.getProductivity())
-            return 1;
-        return this.getName().compareToIgnoreCase(other.getName());
-    }
 }

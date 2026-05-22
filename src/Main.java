@@ -1,7 +1,6 @@
-import youVideo.*; //todo usar apenas necessário
+import youVideo.*;
 //todo commentarios
 
-//todo png do diagrama
 
 //todo diagrama
 import java.security.InvalidParameterException;
