@@ -1,4 +1,6 @@
-package youVideo;
+package Comparators;
+
+import youVideo.Author;
 
 import java.util.Comparator;
 

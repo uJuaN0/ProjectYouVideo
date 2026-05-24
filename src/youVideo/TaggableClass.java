@@ -5,9 +5,15 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * Abstract class that provides a base implementation for taggable content.
+ */
 public abstract class TaggableClass implements Taggable {
+
+    /** Tags associated with this content, ordered alphabetically. */
     private final SortedSet<String> tags;
 
+    /** Comparator used to order tags in a case insensitive. */
     private static final Comparator<String> TAG_COMPARATOR = new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
@@ -15,27 +21,35 @@ public abstract class TaggableClass implements Taggable {
         }
     };
 
-    public TaggableClass(){
+    /**
+     * Creates a new TaggableClass with an empty tag collection.
+     */
+    public TaggableClass() {
         this.tags = new TreeSet<>(TAG_COMPARATOR);
     }
 
-    public boolean containsTag(String tag){
+    @Override
+    public boolean containsTag(String tag) {
         return tags.contains(tag);
     }
 
-    public void addTag(String tag){
+    @Override
+    public void addTag(String tag) {
         tags.add(tag);
     }
 
-    public void removeTag(String tag){
+    @Override
+    public void removeTag(String tag) {
         tags.remove(tag);
     }
 
+    @Override
     public Iterator<String> getTags() {
         return tags.iterator();
     }
 
-    public boolean hasTags(){
+    @Override
+    public boolean hasTags() {
         return !tags.isEmpty();
     }
 }

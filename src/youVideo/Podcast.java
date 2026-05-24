@@ -1,6 +1,5 @@
 package youVideo;
 
-
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -11,68 +10,64 @@ public interface Podcast extends Taggable {
 
     /**
      * Returns the title of the podcast.
-     *
-     * @return podcast title
+     * @return the title.
      */
     String getTitle();
 
     /**
      * Returns the author of the podcast.
-     *
-     * @return podcast author
+     * @return the author.
      */
     Author getAuthor();
 
     /**
      * Returns the language of the podcast.
-     *
-     * @return podcast language
+     * @return the language.
      */
     Locale getLanguage();
 
     /**
-     * Checks if the given episode id is unique inside this podcast.
-     *
-     * @param id episode identifier
-     * @return true if the id is unique, false otherwise
+     * Checks if the podcast contains an episode with the given id.
+     * @param id the episode id.
+     * @return true if the episode exists, false otherwise.
      */
     boolean containsEpisode(String id);
 
     /**
-     * Checks if a new episode date is valid according to the latest episode date.
-     *
-     * @param date date to validate
-     * @return true if the date is valid, false otherwise
+     * Checks if a new episode date is valid.
+     * The date must be greater than or equal to the latest episode date.
+     * @param date the date to validate.
+     * @return true if the date is valid, false otherwise.
      */
     boolean isNewer(String date);
 
     /**
      * Adds an episode to the podcast.
-     *
-     * @param episode episode to add
+     * @param episode the episode to add.
      */
     void addEpisode(Episode episode);
 
     /**
-     * Returns the latest episode date of the podcast.
-     *
-     * @return latest episode date
+     * Returns the date of the most recent episode.
+     * @return the latest episode date.
      */
     String getLastestDate();
 
     /**
-     * Checks if the podcast already contains episodes.
-     *
-     * @return true if the podcast has episodes, false otherwise
+     * Checks if the podcast has any episodes.
+     * @return true if there is at least one episode, false otherwise.
      */
     boolean hasEpisodes();
 
     /**
-     * Returns all episodes of the podcast.
-     *
-     * @return episode collection
+     * Returns an iterator over all episodes in reverse chronological order.
+     * @return an iterator over the episodes.
      */
     Iterator<Episode> getEpisodes();
 
-    public String getAuthorName();
+    /**
+     * Returns the name of the author of the podcast.
+     * @return the author name.
+     */
+    String getAuthorName();
 }

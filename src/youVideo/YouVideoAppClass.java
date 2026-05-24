@@ -1,5 +1,8 @@
 package youVideo;
 
+import Comparators.ProductivityComparator;
+import Comparators.TaggableComparator;
+import Comparators.TaggableDescComparator;
 import Exceptions.*;
 
 import java.util.*;
@@ -57,6 +60,7 @@ public class YouVideoAppClass implements YouVideoApp {
     public Iterator<Taggable> getTagged(String tag, String type, String order)
             throws InvalidTaggedParametersException {
 
+        // Validate the type and order parameters
         if (!type.equalsIgnoreCase("SHOW") && !type.equalsIgnoreCase("PODCAST")
                 && !type.equalsIgnoreCase("ALL"))
             throw new InvalidTaggedParametersException();
@@ -64,10 +68,12 @@ public class YouVideoAppClass implements YouVideoApp {
         if (!order.equalsIgnoreCase("ASC") && !order.equalsIgnoreCase("DES"))
             throw new InvalidTaggedParametersException();
 
+        // Get all content tagged with the given tag (may be null if tag doesn't exist)
         SortedSet<Taggable> content = tags.get(normalizeKey(tag));
 
         List<Taggable> filtered = new ArrayList<>();
 
+        // Filter by type, if content exists
         if (content != null) {
             for (Taggable t : content) {
                 if (type.equalsIgnoreCase("ALL") ||
@@ -77,6 +83,9 @@ public class YouVideoAppClass implements YouVideoApp {
             }
         }
 
+        // The filtered list is already in ASC order (from the TreeSet).
+        // For DES, we sort using the desc comparator which reverses the title order
+        // but keeps shows before podcasts when titles are equal.
         if (order.equalsIgnoreCase("DES"))
             filtered.sort(new TaggableDescComparator());
 

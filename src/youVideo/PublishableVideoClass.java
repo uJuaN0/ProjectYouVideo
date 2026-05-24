@@ -18,16 +18,6 @@ public class PublishableVideoClass extends VideoClass implements PublishableVide
         this.language = language;
     }
 
-    /**
-     * Search constructor used when only the id matters.
-     */
-    public PublishableVideoClass(String id) {
-        super(id);
-        this.title = null;
-        this.publisher = null;
-        this.language = null;
-    }
-
     @Override
     public String getTitle() {
         return title;

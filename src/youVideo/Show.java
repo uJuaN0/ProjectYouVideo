@@ -8,31 +8,46 @@ import java.util.Locale;
 public interface Show extends Taggable {
 
     /**
-     * Returns the title of the video associated with the show.
-     *
-     * @return show title
+     * Returns the video associated with the show.
+     * @return the video.
      */
     PublishableVideo getVideo();
 
     /**
      * Returns the transmission date of the show.
-     *
-     * @return show date
+     * @return the transmission date.
      */
     String getDate();
 
     /**
      * Returns the author of the show.
-     *
-     * @return show author
+     * @return the author.
      */
     Author getAuthor();
 
-    public String getTitle();
+    /**
+     * Returns the title of the show.
+     * @return the title.
+     */
+    String getTitle();
 
-    public int compareTo(Show other);
+    /**
+     * Compares this show to another for ordering purposes.
+     * Shows are ordered by date, then by title.
+     * @param other the other show.
+     * @return a negative, zero or positive value.
+     */
+    int compareTo(Show other);
 
-    public String getAuthorName();
+    /**
+     * Returns the name of the author of the show.
+     * @return the author name.
+     */
+    String getAuthorName();
 
-    public Locale getVideoLanguage();
+    /**
+     * Returns the language of the video associated with the show.
+     * @return the video language.
+     */
+    Locale getVideoLanguage();
 }
