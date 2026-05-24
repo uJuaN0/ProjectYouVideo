@@ -21,6 +21,7 @@ public class ShowClass extends TaggableClass implements Show, Comparable<Show> {
         return video;
     }
 
+    @Override
     public Locale getVideoLanguage(){
         return video.getLanguage();
     }
@@ -40,6 +41,7 @@ public class ShowClass extends TaggableClass implements Show, Comparable<Show> {
         return true;
     }
 
+    @Override
     public String getAuthorName(){
         return author.getName();
     }

@@ -21,9 +21,6 @@ public abstract class TaggableClass implements Taggable {
         }
     };
 
-    /**
-     * Creates a new TaggableClass with an empty tag collection.
-     */
     public TaggableClass() {
         this.tags = new TreeSet<>(TAG_COMPARATOR);
     }
