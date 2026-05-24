@@ -35,7 +35,6 @@ class PublishableVideoClass {
   - publisher: String
   - language: Locale
   + PublishableVideoClass(String, int, String, String, String, Locale)
-  + PublishableVideoClass(String)
   + getTitle(): String
   + getPublisher(): String
   + getLanguage(): Locale
@@ -113,23 +112,28 @@ abstract class TaggableClass {
   + hasTags(): boolean
 }
 
-class TaggableComparator {
-  + compare(Taggable, Taggable): int
-}
-
-class TaggableDescComparator {
-  + compare(Taggable, Taggable): int
-}
-
-class ProductivityComparator {
-  + compare(Author, Author): int
-}
-
 TaggableClass ..|> Taggable
+
+
+'Comparators'
+
+package Comparators {
+  class TaggableComparator {
+    + compare(Taggable, Taggable): int
+  }
+
+  class TaggableDescComparator {
+    + compare(Taggable, Taggable): int
+  }
+
+  class ProductivityComparator {
+    + compare(Author, Author): int
+  }
+}
+
 TaggableComparator ..> Taggable
 TaggableDescComparator ..> Taggable
 ProductivityComparator ..> Author
-
 
 
 'Podcasts and shows'
@@ -257,44 +261,35 @@ interface YouVideoApp {
   + getPublishableVideo(String): PublishableVideo
   + getSubtitles(Video): Iterator<Subtitle>
   + removeVideo(String): void
-
   + addPodcast(String, String, String): void
   + addEpisode(String, String, int, String, String): void
   + getPodcast(String): Podcast
   + removePodcast(String): void
   + getPodcastsByAuthor(String): Iterator<Podcast>
   + authorHasPodcasts(String): boolean
-
   + createShow(String, String, String): void
   + getShow(String): Show
   + removeShow(String): void
   + getShowsByAuthorIterator(String): Iterator<Show>
   + authorHasShows(String): boolean
-
   + getAuthorsProductivity(): Iterator<Author>
-
   + addTag(String, String): void
   + removeTag(String, String): void
   + getTagged(String, String, String): Iterator<Taggable>
   + getTagsIterator(String): Iterator<String>
   + hasTags(String): boolean
-
-  + isPremium(Video): boolean
 }
 
 class YouVideoAppClass {
   {static} - THOUSANDS_SIZE: int
   {static} - HUNDREDS_SIZE: int
-
   - videos: Map<String, Video>
   - podcasts: Map<String, Podcast>
   - shows: Map<String, Show>
   - authors: Map<String, Author>
   - tags: Map<String, SortedSet<Taggable>>
-
   + YouVideoAppClass()
   - normalizeKey(String): String
-
   + addPublishable(String, int, String, String, String, String): void
   + addPremium(String, int, String, String, String, String, String, String): void
   + addSubtitle(String, String, String): void
@@ -302,31 +297,26 @@ class YouVideoAppClass {
   + getPublishableVideo(String): PublishableVideo
   + getSubtitles(Video): Iterator<Subtitle>
   + removeVideo(String): void
-
   + addPodcast(String, String, String): void
   + addEpisode(String, String, int, String, String): void
   + getPodcast(String): Podcast
   + removePodcast(String): void
   + getPodcastsByAuthor(String): Iterator<Podcast>
   + authorHasPodcasts(String): boolean
-
   + createShow(String, String, String): void
   + getShow(String): Show
   + removeShow(String): void
   + getShowsByAuthorIterator(String): Iterator<Show>
   + authorHasShows(String): boolean
-
   + getAuthorsProductivity(): Iterator<Author>
   - createOrGetAuthor(String): Author
-
   + addTag(String, String): void
   + removeTag(String, String): void
   + getTagged(String, String, String): Iterator<Taggable>
   + getTagsIterator(String): Iterator<String>
   + hasTags(String): boolean
-
   {static} - isValidLanguage(String): boolean
-  + isPremium(Video): boolean
+  - isPremium(Video): boolean
 }
 
 YouVideoAppClass ..|> YouVideoApp
@@ -349,7 +339,7 @@ YouVideoAppClass ..> TaggableDescComparator : descending order
 YouVideoAppClass ..> ProductivityComparator : order authors
 
 
-'COmands'
+'Commands'
 
 enum Command {
   CREATEPUBLISHABLE
