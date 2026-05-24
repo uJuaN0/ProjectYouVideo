@@ -9,7 +9,9 @@ import Exceptions.*;
  * @author Miguel Passão 75460
  */
 public class Main {
-    // Output messages.
+    /**
+     * Output messages.
+     */
     private static final String MSG_ADD_PREMIUM = "PREMIUM Video %s created successfully.";
     private static final String MSG_LANG_SUBTITLE = "Invalid language type in subtitle.";
     private static final String MSG_VIDEO_ID_NOT_FOUND = "Publishable Video %s does not exist.";
@@ -55,13 +57,17 @@ public class Main {
     private static final String ORDER_ASC = "Ascending";
     private static final String ORDER_DES = "Descending";
 
-    // Special constants used in output formatting.
+    /**
+     * Special constants used in output formatting.
+     */
     private static final String FULAH_CODE = "ff";
     private static final String FULAH_NAME = "FULAH";
     private static final String PREMIUM_PREFIX = "PREMIUM ";
     private static final String EMPTY_STRING = "";
 
-    // Format strings used when printing structured information.
+    /**
+     *Format strings used when printing structured information.
+     */
     private static final String FORMAT_AUTHOR_PRODUCTIVITY_HEADER = "Authors productivity:";
     private static final String FORMAT_AUTHOR_PRODUCTIVITY_BODY = "%s with %d contributions.%n";
     private static final String FORMAT_HELP_BODY = "%s - %s%n";
@@ -82,15 +88,11 @@ public class Main {
     private static final String FORMAT_SHOW_HEADER = "Show Date: %s Author: %s%n";
     private static final String FORMAT_SHOW_VIDEO = "Video: %s%n";
     private static final String FORMAT_ONE_VALUE_NEWLINE = "%s%n";
-
-    public static void main(String[] args) {
-        Locale.setDefault(Locale.ENGLISH);
-        Scanner in = new Scanner(System.in);
-        YouVideoApp app = new YouVideoAppClass();
-        processCommands(app, in);
-        in.close();
-    }
-
+    /**
+     * Processes the command while it is not the exit command.
+     * @param app the YouVideoApp being implemented.
+     * @param in the Scanner.
+     */
     private static void processCommands(YouVideoApp app, Scanner in) {
         Command command;
 
@@ -100,6 +102,12 @@ public class Main {
         } while (!command.equals(Command.EXIT));
     }
 
+    /**
+     * Processes the command and executes it according to what it is.
+     * @param app the YouVideoApp being implemented.
+     * @param command the command being processed.
+     * @param in the Scanner.
+     */
     private static void processCommand(YouVideoApp app, Command command, Scanner in) {
         switch (command) {
             case CREATEPUBLISHABLE -> handleAddPublishable(in, app);
@@ -128,6 +136,11 @@ public class Main {
         }
     }
 
+    /**
+     * Reads the next command that is going to be processed.
+     * @param in the Scanner.
+     * @return the command.
+     */
     private static Command getCommand(Scanner in) {
         try {
             String command = in.next().toUpperCase();
@@ -137,7 +150,9 @@ public class Main {
         }
     }
 
-    // Prints the help information.
+    /**
+     * Prints the help information.
+     */
     private static void printHelp() {
         for (Command command : Command.values()){
             if (command != Command.UNKNOWN){
@@ -147,6 +162,11 @@ public class Main {
         }
     }
 
+    /**
+     * Executes the CREATEPUBLISHABLE command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddPublishable(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -168,6 +188,11 @@ public class Main {
         }
     }
 
+    /**
+     * Executes the CREATEPREMIUM command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddPremium(Scanner in, YouVideoApp app) {
         String id = in.next();
         int duration = in.nextInt();
@@ -194,6 +219,11 @@ public class Main {
         }
     }
 
+    /**
+     * Executes the ADDSUBTITLE command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddSubtitle(Scanner in, YouVideoApp app) {
         String id = in.next();
         String location = in.next();
@@ -211,7 +241,11 @@ public class Main {
             System.out.println(MSG_REQUIRES_PREMIUM);
         }
     }
-
+    /**
+     * Executes the GETVIDEO command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetVideo(Scanner in, YouVideoApp app) {
         String id = in.next();
         try {
@@ -221,7 +255,11 @@ public class Main {
             printFormatted(MSG_VIDEO_ID_NOT_FOUND, id);
         }
     }
-
+    /**
+     * Executes the GETVIDEO command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetSubtitles(Scanner in, YouVideoApp app) {
         String id = in.next();
         try {
@@ -232,7 +270,11 @@ public class Main {
             System.out.println(MSG_SUB_NOT_FOUND);
         }
     }
-
+    /**
+     * Executes the CREATEPODCAST command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String author = in.nextLine();
@@ -248,7 +290,11 @@ public class Main {
             System.out.println(MSG_PODCAST_EXISTS);
         }
     }
-
+    /**
+     * Executes the ADDEPISODE command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddEpisode(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         String id = in.next();
@@ -269,7 +315,11 @@ public class Main {
             System.out.println(MSG_PODCAST_NEWER);
         }
     }
-
+    /**
+     * Executes the GETPODCAST command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetPodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         try {
@@ -282,7 +332,11 @@ public class Main {
             System.out.println(MSG_NO_PODCAST);
         }
     }
-
+    /**
+     * Executes the EPISODES command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetEpisodes(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         try {
@@ -296,7 +350,11 @@ public class Main {
             System.out.println(MSG_NO_PODCAST);
         }
     }
-
+    /**
+     * Executes the AUTHORPODCASTS command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetAuthorPodcasts(Scanner in, YouVideoApp app) {
         String name = in.nextLine().trim();
         if (!app.authorHasPodcasts(name)){
@@ -306,7 +364,11 @@ public class Main {
             printAuthorPodcasts(iterator, name);
         }
     }
-
+    /**
+     * Executes the REMOVEPODCAST command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleRemovePodcast(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         try {
@@ -316,7 +378,11 @@ public class Main {
             System.out.println(MSG_NO_PODCAST);
         }
     }
-
+    /**
+     * Executes the CREATESHOW command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleCreateShow(Scanner in, YouVideoApp app) {
         String name = in.nextLine().trim();
         String videoId = in.next();
@@ -332,7 +398,11 @@ public class Main {
             System.out.println(MSG_SHOW_EXISTS);
         }
     }
-
+    /**
+     * Executes the GETSHOW command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleGetShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         try {
@@ -345,7 +415,11 @@ public class Main {
             System.out.println(MSG_SHOW_NO_EXIST);
         }
     }
-
+    /**
+     * Executes the AUTHORSHOWS command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAuthorShow(Scanner in, YouVideoApp app){
         String name = in.nextLine().trim();
         if (!app.authorHasShows(name)){
@@ -355,7 +429,11 @@ public class Main {
             printShowByAuthor(iterator, name);
         }
     }
-
+    /**
+     * Executes the REMOVESHOW command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleRemoveShow(Scanner in, YouVideoApp app) {
         String title = in.nextLine().trim();
         try {
@@ -365,7 +443,11 @@ public class Main {
             System.out.println(MSG_SHOW_NO_EXIST);
         }
     }
-
+    /**
+     * Executes the REMOVEVIDEO command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleRemoveVideo(Scanner in, YouVideoApp app) {
         String videoId = in.nextLine().trim();
         try {
@@ -379,7 +461,10 @@ public class Main {
             System.out.println(MSG_VIDEO_IS_SHOW);
         }
     }
-
+    /**
+     * Executes the AUTHORSPRODUCTIVITY command.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAuthorsProductivity(YouVideoApp app){
         Iterator <Author> it = app.getAuthorsProductivity();
         if (!it.hasNext()){
@@ -393,7 +478,11 @@ public class Main {
             }
         }
     }
-
+    /**
+     * Prints all the shows produced by a specific author.
+     * @param it the Iterator containing the shows.
+     * @param name the name of the author.
+     */
     private static void printShowByAuthor(Iterator<Show> it, String name) {
         System.out.printf(FORMAT_AUTHOR_SHOWS_HEADER, name);
 
@@ -403,7 +492,11 @@ public class Main {
                     show.getVideo().getDuration(), getLanguageCode(show.getVideoLanguage()));
         }
     }
-
+    /**
+     * Executes the ADDTAG command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleAddTag(Scanner in, YouVideoApp app){
         String title = in.nextLine().trim();
         String tag = in.nextLine();
@@ -416,7 +509,11 @@ public class Main {
             System.out.printf(MSG_TITLE_IS_ALREADY_TAGGED, tag);
         }
     }
-
+    /**
+     * Executes the REMOVETAG command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleRemoveTag(Scanner in, YouVideoApp app){
         String title = in.nextLine().trim();
         String tag = in.nextLine();
@@ -429,7 +526,11 @@ public class Main {
             System.out.printf(MSG_TITLE_IS_NOT_TAGGED, tag);
         }
     }
-
+    /**
+     * Executes the TAGGED command.
+     * @param in the Scanner.
+     * @param app the YouVideoApp being implemented.
+     */
     private static void handleTagged(Scanner in, YouVideoApp app) {
         String tag = in.next();
         String type = in.next();
@@ -457,7 +558,11 @@ public class Main {
 
 
 
-    // Prints a video using the required output format.
+    /**
+     * Prints a video using the required output format.
+     * @param video the PublishableVideo to print.
+     * @param premium true if the video is premium, false otherwise.
+     */
     private static void printVideo(PublishableVideo video, boolean premium) {
 
         String prefix = EMPTY_STRING;
@@ -480,7 +585,11 @@ public class Main {
         );
     }
 
-    // Prints all subtitles of a premium video.
+    /**
+     * Prints all subtitles of a premium video.
+     * @param v the PremiumVideo object.
+     * @param iterator the Iterator over the Subtitles.
+     */
     private static void printSubtitles(Video v, Iterator<Subtitle> iterator) {
         System.out.printf(FORMAT_SUBTITLES_HEADER, ((PremiumVideo) v).getTitle());
 
@@ -494,7 +603,10 @@ public class Main {
         }
     }
 
-    // Prints the information of a podcast.
+    /**
+     * Prints the information of a podcast.
+     * @param podcast the Podcast object to print.
+     */
     private static void printPodcast(Podcast podcast) {
         System.out.printf(
                 FORMAT_PODCAST_INFO,
@@ -509,7 +621,10 @@ public class Main {
     }
 
 
-    // Prints tags, if they exist.
+    /**
+     * Prints tags, if they exist.
+     * @param it the Iterator containing the tags as Strings.
+     */
     private static void printTags(Iterator<String> it){
         if (it.hasNext()){
             System.out.println(FORMAT_TAGS_HEADER);
@@ -520,7 +635,11 @@ public class Main {
         }
     }
 
-    // Prints all episodes of a podcast.
+    /**
+     * Prints all episodes of a podcast.
+     * @param title the title of the podcast.
+     * @param podcast the Podcast object.
+     */
     private static void printEpisodes(String title, Podcast podcast) {
         Iterator<Episode> iterator = podcast.getEpisodes();
         System.out.printf(FORMAT_EPISODES_HEADER, title);
@@ -537,7 +656,11 @@ public class Main {
         }
     }
 
-    // Prints all podcasts of a given author.
+    /**
+     * Prints all podcasts of a given author.
+     * @param iterator the Iterator over the podcasts.
+     * @param name the author's name.
+     */
     private static void printAuthorPodcasts(Iterator<Podcast> iterator,
                                             String name) {
         System.out.printf(FORMAT_AUTHOR_PODCASTS_HEADER, name);
@@ -553,19 +676,30 @@ public class Main {
         }
     }
 
-    // Prints the information of a show.
+    /**
+     * Prints the information of a show.
+     * @param show the Show object.
+     */
     private static void printShow(Show show) {
         System.out.printf(FORMAT_SHOW_HEADER, show.getDate(), show.getAuthorName());
         System.out.printf(FORMAT_SHOW_VIDEO, show.getTitle());
     }
 
 
-    // Returns the uppercase language code.
+    /**
+     * Returns the uppercase language code.
+     * @param language the Locale representation of the language.
+     * @return the uppercase language code.
+     */
     private static String getLanguageCode(Locale language) {
         return language.getLanguage().toUpperCase();
     }
 
-    // Returns the language display name in the expected format.
+    /**
+     * Returns the language display name in the expected format.
+     * @param language the Locale representation of the language.
+     * @return the formatted display name string.
+     */
     private static String getLanguageDisplayName(Locale language) {
         String code = language.getLanguage().toLowerCase();
         if (FULAH_CODE.equals(code)) {
@@ -574,8 +708,20 @@ public class Main {
         return language.getDisplayLanguage(Locale.ENGLISH).toUpperCase();
     }
 
-    // Prints a formatted message followed by a newline.
+    /**
+     * Prints a formatted message followed by a newline.
+     * @param message the format template string.
+     * @param value the dynamic variable string to replace in the message.
+     */
     private static void printFormatted(String message, String value) {
         System.out.printf(FORMAT_ONE_VALUE_NEWLINE, String.format(message, value));
+    }
+
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.ENGLISH);
+        Scanner in = new Scanner(System.in);
+        YouVideoApp app = new YouVideoAppClass();
+        processCommands(app, in);
+        in.close();
     }
 }

@@ -15,25 +15,39 @@ import java.util.*;
  */
 public class YouVideoAppClass implements YouVideoApp {
 
-    /** Initial capacity for the videos map. */
+    /**
+     * Initial capacity for the videos map.
+     */
     private static final int THOUSANDS_SIZE = 2000;
 
-    /** Initial capacity for the remaining maps. */
+    /**
+     * Initial capacity for the remaining maps.
+     */
     private static final int HUNDREDS_SIZE = 200;
 
-    /** Map of videos, keyed by their id. */
+    /**
+     * Map of videos, keyed by their id.
+     */
     private final Map<String, Video> videos;
 
-    /** Map of podcasts, keyed by their title. */
+    /**
+     * Map of podcasts, keyed by their title.
+     */
     private final Map<String, Podcast> podcasts;
 
-    /** Map of shows, keyed by their title. */
+    /**
+     * Map of shows, keyed by their title.
+     */
     private final Map<String, Show> shows;
 
-    /** Map of authors, keyed by their name. */
+    /**
+     * Map of authors, keyed by their name.
+     */
     private final Map<String, Author> authors;
 
-    /** Inverted index: maps a tag to all taggable content with that tag. */
+    /**
+     * Inverted index: maps a tag to all taggable content with that tag.
+     */
     private final Map<String, SortedSet<Taggable>> tags;
 
     /**
