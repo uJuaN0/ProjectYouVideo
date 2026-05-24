@@ -9,9 +9,21 @@ import java.util.Locale;
  * implementation of a podcast.
  */
 public class PodcastClass extends TaggableClass implements Podcast {
+    /**
+     * The list of episodes belonging to this podcast, ordered chronologically.
+     */
     private final List<Episode> episodes;
+    /**
+     * The title of the podcast.
+     */
     private final String title;
+    /**
+     * The author responsible for creating the podcast.
+     */
     private final Author author;
+    /**
+     * The language representation of the podcast content.
+     */
     private final Locale language;
 
     public PodcastClass(String title, Author author, Locale language) {

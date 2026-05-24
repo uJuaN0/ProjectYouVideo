@@ -4,8 +4,17 @@ package youVideo;
  * Abstract base class for every video in the system.
  */
 public abstract class VideoClass implements Video {
+    /**
+     * The unique identifier of the video.
+     */
     private final String id;
+    /**
+     * The duration of the video in minutes.
+     */
     private final int duration;
+    /**
+     * The URL or storage location of the video file.
+     */
     private final String videoLocation;
 
     public VideoClass(String id, int duration, String videoLocation) {

@@ -6,8 +6,17 @@ import java.util.Locale;
  * implementation of a show.
  */
 public class ShowClass extends TaggableClass implements Show, Comparable<Show> {
+    /**
+     * The publishable video associated with the show.
+     */
     private final PublishableVideo video;
+    /**
+     * The author responsible for producing or presenting the show.
+     */
     private final Author author;
+    /**
+     * The date when the show is scheduled to be transmitted.
+     */
     private final String transmissionDate;
 
     public ShowClass(PublishableVideo video, Author author, String transmissionDate) {

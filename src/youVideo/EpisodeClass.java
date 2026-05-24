@@ -4,7 +4,9 @@ package youVideo;
  * implementation of a podcast episode.
  */
 public class EpisodeClass extends VideoClass implements Episode {
-
+    /**
+     * The release date of the episode in YYYY-MM-DD format.
+     */
     private final String date;
 
     public EpisodeClass(String id, int duration, String videoLocation, String date) {

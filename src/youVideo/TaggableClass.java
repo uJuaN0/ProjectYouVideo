@@ -10,10 +10,14 @@ import java.util.TreeSet;
  */
 public abstract class TaggableClass implements Taggable {
 
-    /** Tags associated with this content, ordered alphabetically. */
+    /**
+     * Tags associated with this content, ordered alphabetically.
+     */
     private final SortedSet<String> tags;
 
-    /** Comparator used to order tags in a case insensitive. */
+    /**
+     * Comparator used to order tags in a case insensitive.
+     */
     private static final Comparator<String> TAG_COMPARATOR = new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {

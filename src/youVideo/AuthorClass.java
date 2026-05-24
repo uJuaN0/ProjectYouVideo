@@ -3,8 +3,17 @@ package youVideo;
 import java.util.*;
 
 public class AuthorClass implements Author {
+    /**
+     * The name of the author.
+     */
     private final String name;
+    /**
+     * The list of podcasts created by this author.
+     */
     private final List<Podcast> podcasts;
+    /**
+     * The sorted set of shows produced by this author.
+     */
     private final SortedSet<Show> shows;
 
     public AuthorClass(String name) {

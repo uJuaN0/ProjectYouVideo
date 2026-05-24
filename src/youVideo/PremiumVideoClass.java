@@ -10,7 +10,9 @@ import java.util.Locale;
  * Implementation of a premium video.
  */
 public class PremiumVideoClass extends PublishableVideoClass implements PremiumVideo {
-
+    /**
+     * The list of subtitles available for this premium video.
+     */
     private final List<Subtitle> subtitles;
 
     public PremiumVideoClass(String id, int duration, String location, String title, String publisher, Locale language, Subtitle subtitle) {
