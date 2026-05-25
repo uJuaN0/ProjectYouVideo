@@ -56,6 +56,7 @@ public class Main {
     private static final String MSG_INVALID_TAGGED_PARAMS = "Invalid tagged parameters.";
     private static final String ORDER_ASC = "Ascending";
     private static final String ORDER_DES = "Descending";
+    private static final String ASC = "ASC";
 
     /**
      * Special constants used in output formatting.
@@ -533,30 +534,39 @@ public class Main {
      */
     private static void handleTagged(Scanner in, YouVideoApp app) {
         String tag = in.next();
-        String type = in.next();
-        String order = in.nextLine().trim();
+        String type = in.next().toUpperCase();
+        String order = in.nextLine().trim().toUpperCase();
         try {
             Iterator<Taggable> it = app.getTagged(tag, type, order);
-            if (!it.hasNext()) {
-                System.out.printf(MSG_NO_CONTENT_TAGGED, tag);
-            } else {
-                System.out.printf(MSG_TAGGED_HEADER, tag, order.equalsIgnoreCase("ASC")
-                        ? ORDER_ASC : ORDER_DES);
-                while (it.hasNext()) {
-                    Taggable t = it.next();
-                    if (t.isShow()) {
-                        System.out.printf(MSG_TAGGED_SHOW, t.getTitle(), t.getAuthorName());
-                    } else {
-                        System.out.printf(MSG_TAGGED_PODCAST, t.getTitle(), t.getAuthorName());
-                    }
-                }
-            }
+            printTagged(it, tag, order);
         } catch (InvalidTaggedParametersException e) {
             System.out.println(MSG_INVALID_TAGGED_PARAMS);
         }
     }
 
 
+    /**
+     * Handles the printing of the Tagged Command
+     * @param it Iterator that contains the ordered tags
+     * @param tag String of the tag
+     * @param order String of the order
+     */
+    private static void printTagged(Iterator<Taggable> it, String tag, String order) {
+        if (!it.hasNext()) {
+            System.out.printf(MSG_NO_CONTENT_TAGGED, tag);
+        } else {
+            System.out.printf(MSG_TAGGED_HEADER, tag, order.equals(ASC)
+                    ? ORDER_ASC : ORDER_DES);
+            while (it.hasNext()) {
+                Taggable t = it.next();
+                if (t.isShow()) {
+                    System.out.printf(MSG_TAGGED_SHOW, t.getTitle(), t.getAuthorName());
+                } else {
+                    System.out.printf(MSG_TAGGED_PODCAST, t.getTitle(), t.getAuthorName());
+                }
+            }
+        }
+    }
 
     /**
      * Prints a video using the required output format.

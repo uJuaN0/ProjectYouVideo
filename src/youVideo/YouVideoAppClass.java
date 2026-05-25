@@ -15,6 +15,12 @@ import java.util.*;
  */
 public class YouVideoAppClass implements YouVideoApp {
 
+    private static final String SHOW = "SHOW";
+    private static final String PODCAST = "PODCAST";
+    private static final String ALL = "ALL";
+    private static final String ASC = "ASC";
+    private static final String DES = "DES";
+
     /**
      * Initial capacity for the videos map.
      */
@@ -75,13 +81,14 @@ public class YouVideoAppClass implements YouVideoApp {
             throws InvalidTaggedParametersException {
 
         // Validate the type and order parameters
-        if (!type.equalsIgnoreCase("SHOW") && !type.equalsIgnoreCase("PODCAST")
-                && !type.equalsIgnoreCase("ALL"))
+        if (!type.equals(SHOW) && !type.equals(PODCAST)
+                && !type.equals(ALL)){
             throw new InvalidTaggedParametersException();
+        }
 
-        if (!order.equalsIgnoreCase("ASC") && !order.equalsIgnoreCase("DES"))
+        if (!order.equals(ASC) && !order.equals(DES)) {
             throw new InvalidTaggedParametersException();
-
+        }
         // Get all content tagged with the given tag (may be null if tag doesn't exist)
         SortedSet<Taggable> content = tags.get(normalizeKey(tag));
 
@@ -90,17 +97,17 @@ public class YouVideoAppClass implements YouVideoApp {
         // Filter by type, if content exists
         if (content != null) {
             for (Taggable t : content) {
-                if (type.equalsIgnoreCase("ALL") ||
-                        (type.equalsIgnoreCase("SHOW") && t.isShow()) ||
-                        (type.equalsIgnoreCase("PODCAST") && !t.isShow()))
+                if (type.equals(ALL) ||
+                        (type.equals(SHOW) && t.isShow()) ||
+                        (type.equals(PODCAST) && !t.isShow()))
                     filtered.add(t);
             }
         }
 
-        // The filtered list is already in ASC order (from the TreeSet).
+        // The filtered list is already in ASC order.
         // For DES, we sort using the desc comparator which reverses the title order
         // but keeps shows before podcasts when titles are equal.
-        if (order.equalsIgnoreCase("DES"))
+        if (order.equals(DES))
             filtered.sort(new TaggableDescComparator());
 
         return filtered.iterator();
