@@ -1,5 +1,7 @@
 package youVideo;
 
+import Comparators.TagComparator;
+
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -15,18 +17,8 @@ public abstract class TaggableClass implements Taggable {
      */
     private final SortedSet<String> tags;
 
-    /**
-     * Comparator used to order tags in a case insensitive.
-     */
-    private static final Comparator<String> TAG_COMPARATOR = new Comparator<String>() {
-        @Override
-        public int compare(String s1, String s2) {
-            return s1.compareToIgnoreCase(s2);
-        }
-    };
-
     public TaggableClass() {
-        this.tags = new TreeSet<>(TAG_COMPARATOR);
+        this.tags = new TreeSet<>(new TagComparator());
     }
 
     @Override
